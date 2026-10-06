@@ -9,8 +9,8 @@
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <style>html, body { background: #111416; }</style>
   <!-- Štýly appky Tréner (1 : 1) + rozloženie webu -->
-  <link rel="stylesheet" href="css/trainer.css?v=4">
-  <link rel="stylesheet" href="css/styles.css?v=4">
+  <link rel="stylesheet" href="css/trainer.css?v=5">
+  <link rel="stylesheet" href="css/styles.css?v=5">
 </head>
 <body>
   <header class="site-top">
@@ -19,7 +19,8 @@
       <nav class="menu" aria-label="Hlavné menu">
         <a href="#o-mne">O mne</a>
         <a href="#sluzby">Služby</a>
-        <a href="#ako">Ako to prebieha</a>
+        <a href="#vysledky">Výsledky</a>
+        <a href="#faq">Otázky</a>
         <a href="app/" class="btn small primary">Klientska zóna</a>
       </nav>
     </div>
@@ -32,7 +33,7 @@
         <h1>Silnejší, zdravší a&nbsp;s&nbsp;plánom, ktorý <em>funguje</em>.</h1>
         <p class="lead">Individuálne tréningy prispôsobené tvojmu cieľu – chudnutie, sila, kondícia alebo návrat po zranení. Každý tréning si zapisujem, takže vidíš presne, ako napreduješ.</p>
         <div class="actions">
-          <a href="#kontakt" class="btn primary">Dohodnúť prvý tréning</a>
+          <a href="#rezervacia" class="btn primary">Dohodnúť prvý tréning</a>
           <a href="#sluzby" class="btn">Pozrieť cenník</a>
           <a href="app/" class="btn">Klientska zóna</a>
         </div>
@@ -106,6 +107,94 @@
       </div>
     </section>
 
+
+    <section id="vysledky" class="section">
+      <div class="wrap">
+        <p class="eyebrow">Výsledky</p>
+        <h2>Premeny mojich klientov</h2>
+        <div class="cards transform">
+          <article class="card">
+            <div class="ba" aria-hidden="true"><div><span>Pred</span></div><div><span>Po</span></div></div>
+            <h3>[Meno], [vek]</h3>
+            <p class="muted">[−8 kg a −9 cm v páse za 4 mesiace]</p>
+          </article>
+          <article class="card">
+            <div class="ba" aria-hidden="true"><div><span>Pred</span></div><div><span>Po</span></div></div>
+            <h3>[Meno], [vek]</h3>
+            <p class="muted">[Drep z 40 na 80 kg za pol roka]</p>
+          </article>
+          <article class="card">
+            <div class="ba" aria-hidden="true"><div><span>Pred</span></div><div><span>Po</span></div></div>
+            <h3>[Meno], [vek]</h3>
+            <p class="muted">[Návrat po zranení kolena bez bolesti]</p>
+          </article>
+        </div>
+        <p class="muted small-note">Fotky sú zverejnené so súhlasom klientov.</p>
+      </div>
+    </section>
+
+    <section id="referencie" class="section">
+      <div class="wrap">
+        <p class="eyebrow">Referencie</p>
+        <h2>Čo hovoria klienti</h2>
+        <div class="cards">
+          <blockquote class="card quote">
+            <p>„[Krátky citát klienta – napr. Nikdy som nevydržala cvičiť dlhšie ako mesiac, s [meno] trénujem už rok a tréningy ma bavia.]“</p>
+            <footer><span class="avatar">[M]</span><div><b>[Meno klienta]</b><small>[cieľ alebo výsledok]</small></div></footer>
+          </blockquote>
+          <blockquote class="card quote">
+            <p>„[Krátky citát klienta – napr. Každý tréning je iný, všetko mi zapisuje a vidím, ako sa posúvam.]“</p>
+            <footer><span class="avatar">[M]</span><div><b>[Meno klienta]</b><small>[cieľ alebo výsledok]</small></div></footer>
+          </blockquote>
+          <blockquote class="card quote">
+            <p>„[Krátky citát klienta – napr. Po zranení som sa bál cvičiť, dnes drepujem bez bolesti.]“</p>
+            <footer><span class="avatar">[M]</span><div><b>[Meno klienta]</b><small>[cieľ alebo výsledok]</small></div></footer>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+    <section id="rezervacia" class="section">
+      <div class="wrap two-col">
+        <div>
+          <p class="eyebrow">Rezervácia</p>
+          <h2>Dohodni si prvý tréning</h2>
+          <p class="lead">Vyplň pár údajov a správa sa ti pripraví rovno do WhatsAppu alebo e-mailu. Ozvem sa do 24 hodín.</p>
+          <ul class="checks">
+            <li>Prvé stretnutie bez záväzkov</li>
+            <li>Vhodné aj pre úplných začiatočníkov</li>
+            <li>Termíny ráno, cez deň aj večer</li>
+          </ul>
+        </div>
+        <form class="card booking" id="booking">
+          <label>Meno<input name="name" required autocomplete="name" placeholder="Tvoje meno"></label>
+          <label>Telefón<input name="phone" type="tel" required autocomplete="tel" placeholder="+421 900 000 000"></label>
+          <label>Cieľ<select name="goal"><option>Schudnúť</option><option>Nabrať silu a svaly</option><option>Spevniť postavu</option><option>Kondícia a zdravie</option><option>Návrat po zranení</option><option>Iné</option></select></label>
+          <label>Kedy ti vyhovuje<input name="when" placeholder="napr. utorok a štvrtok večer"></label>
+          <label>Správa (nepovinné)<textarea name="note" rows="3" placeholder="Skúsenosti, zranenia, otázky…"></textarea></label>
+          <div class="row">
+            <button class="btn primary" type="submit" data-send="wa">Poslať cez WhatsApp</button>
+            <button class="btn" type="submit" data-send="mail">Poslať e-mailom</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="faq" class="section">
+      <div class="wrap">
+        <p class="eyebrow">Časté otázky</p>
+        <h2>Na čo sa pýtate najčastejšie</h2>
+        <div class="faq">
+          <details class="card" open><summary>Som úplný začiatočník, zvládnem to?</summary><p>Áno. Začíname od toho, kde si teraz – technika, základné cviky a záťaž, ktorá ti sedí. Väčšina mojich klientov začínala od nuly.</p></details>
+          <details class="card"><summary>Ako prebieha prvý tréning?</summary><p>Porozprávame sa o cieli, zdraví a skúsenostiach, urobíme prvé meranie a ľahký skúšobný tréning, aby som videl, ako sa hýbeš. Trvá asi 60 minút.</p></details>
+          <details class="card"><summary>Čo si mám vziať?</summary><p>Pohodlné športové oblečenie, tenisky do haly, uterák a vodu. Nič iné netreba.</p></details>
+          <details class="card"><summary>Ako sa platí?</summary><p>Každý tréning sa platí zvlášť, hotovosťou alebo na účet. Nezaplatené tréningy vidíš prehľadne v klientskej zóne.</p></details>
+          <details class="card"><summary>Čo ak musím tréning zrušiť?</summary><p>Daj mi vedieť aspoň 24 hodín vopred a tréning preložíme bez poplatku. [Uprav podľa svojich pravidiel.]</p></details>
+          <details class="card"><summary>Mám zranenie / zdravotné obmedzenie, dá sa trénovať?</summary><p>Vo väčšine prípadov áno, tréning prispôsobím. Pri vážnejších problémoch sa poradíme s tvojím lekárom alebo fyzioterapeutom.</p></details>
+        </div>
+      </div>
+    </section>
+
     <section id="kontakt" class="section">
       <div class="wrap contact-sec">
         <p class="eyebrow">Kontakt</p>
@@ -117,7 +206,18 @@
           <a class="btn" href="mailto:[email]">[tvoj@email.sk]</a>
           <a class="btn" href="https://instagram.com/[instagram]">Instagram</a>
         </div>
-        <p class="muted">[Názov fitka, adresa, mesto]</p>
+        <div class="card place">
+          <div>
+            <p class="eyebrow">Kde trénujeme</p>
+            <h3>[Názov fitka]</h3>
+            <p class="muted">[Ulica a číslo], [Mesto]<br>Parkovanie priamo pri fitku · [otváracie hodiny]</p>
+            <a class="btn" href="https://www.google.com/maps/search/?api=1&query=[N%C3%A1zov+fitka]+[Mesto]" target="_blank" rel="noopener">Otvoriť v Google Maps</a>
+          </div>
+          <a class="map" href="https://www.google.com/maps/search/?api=1&query=[N%C3%A1zov+fitka]+[Mesto]" target="_blank" rel="noopener" aria-label="Mapa">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.1 7-12a7 7 0 0 0-14 0c0 5.9 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg>
+            <span>Zobraziť mapu</span>
+          </a>
+        </div>
       </div>
     </section>
   </main>
@@ -125,6 +225,30 @@
   <footer class="footer">
     <div class="wrap">© <span id="year">2026</span> [Tvoje meno] · osobný tréner</div>
   </footer>
-  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    // Rezervácia: z vyplnených polí sa zloží správa a otvorí sa WhatsApp alebo e-mail (bez servera)
+    const PHONE = '421900000000';          // číslo trénera pre WhatsApp (bez + a medzier)
+    const EMAIL = '[tvoj@email.sk]';
+    const form = document.getElementById('booking');
+    let send = 'wa';
+    form.querySelectorAll('[data-send]').forEach((b) => b.addEventListener('click', () => { send = b.dataset.send; }));
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const f = new FormData(form);
+      const msg = [
+        `Ahoj, mám záujem o prvý tréning.`,
+        `Meno: ${f.get('name')}`,
+        `Telefón: ${f.get('phone')}`,
+        `Cieľ: ${f.get('goal')}`,
+        f.get('when') ? `Vyhovuje mi: ${f.get('when')}` : '',
+        f.get('note') ? `Poznámka: ${f.get('note')}` : ''
+      ].filter(Boolean).join('\n');
+      const url = send === 'mail'
+        ? `mailto:${EMAIL}?subject=${encodeURIComponent('Rezervácia prvého tréningu')}&body=${encodeURIComponent(msg)}`
+        : `https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    });
+  </script>
 </body>
 </html>

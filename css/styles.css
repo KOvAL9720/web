@@ -72,3 +72,49 @@ p { margin: 0 0 1em; }
 
 .footer { border-top: 1px solid var(--border); padding: 32px 0; color: var(--muted); font-size: .9rem; text-align: center; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* Premeny pred / po */
+.transform .card { padding: 16px; }
+.ba { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.ba div { aspect-ratio: 3 / 4; border-radius: 16px; background: linear-gradient(160deg, var(--surface-3), var(--surface)); display: grid; place-items: end start; padding: 10px; }
+.ba div:last-child { background: linear-gradient(160deg, var(--primary-soft), var(--surface)); }
+.ba span { font-size: .72rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: rgba(0, 0, 0, .45); color: var(--text); }
+.small-note { font-size: .85rem; margin-top: 18px; }
+
+/* Referencie */
+.quote { margin: 0; padding: 24px; display: flex; flex-direction: column; gap: 18px; }
+.quote p { margin: 0; font-size: 1.05rem; line-height: 1.5; flex: 1; }
+.quote footer { display: flex; align-items: center; gap: 12px; }
+.quote footer b { display: block; }
+.quote footer small { color: var(--muted); }
+
+/* Rezervačný formulár */
+.booking { display: grid; gap: 12px; padding: 24px; }
+.booking label { display: grid; gap: 6px; font-size: .85rem; font-weight: 600; color: var(--muted); }
+.booking input, .booking select, .booking textarea { width: 100%; padding: 12px 14px; font: inherit; color: var(--text); font-size: 1rem; }
+.booking textarea { resize: vertical; }
+.booking .row { margin-top: 6px; }
+.booking .btn { flex: 1; }
+
+/* Časté otázky */
+.faq { display: grid; gap: 10px; margin-top: 28px; }
+.faq details { padding: 0; }
+.faq summary { cursor: pointer; list-style: none; padding: 18px 48px 18px 20px; font-weight: 700; position: relative; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); color: var(--primary); font-weight: 800; }
+.faq details[open] summary::after { content: "–"; }
+.faq details p { margin: 0; padding: 0 20px 20px; color: var(--muted); }
+
+/* Kde trénujeme – fitko a mapa */
+.place { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center; text-align: left; margin-top: 32px; padding: 24px; }
+@media (max-width: 720px) { .place { grid-template-columns: 1fr; } }
+.place h3 { margin-bottom: .3em; }
+.place .btn { margin-top: 8px; }
+.map { display: grid; place-items: center; gap: 8px; aspect-ratio: 4 / 3; border-radius: 18px; background:
+  radial-gradient(circle at 30% 40%, var(--primary-soft), transparent 50%),
+  repeating-linear-gradient(0deg, transparent 0 28px, rgba(255, 255, 255, .05) 28px 29px),
+  repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 255, 255, .05) 28px 29px),
+  var(--surface-2);
+  color: var(--muted); font-size: .85rem; font-weight: 600; transition: background .2s; }
+.map:hover { color: var(--text); }
+.map svg { width: 44px; height: 44px; fill: none; stroke: var(--primary); stroke-width: 2; stroke-linejoin: round; }

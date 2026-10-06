@@ -1,0 +1,187 @@
+/* Klientska zóna – rovnaký tmavý dizajn s ružovým akcentom ako appka Tréner */
+:root {
+  --bg: #09090b;
+  --surface: #141417;
+  --surface-2: #1d1d22;
+  --surface-3: #26262c;
+  --text: #f6f6f8;
+  --muted: #8c8c97;
+  --border: #26262c;
+  --primary: #ffa8d5;
+  --primary-strong: #ff7ebf;
+  --primary-ink: #1a0611;
+  --primary-soft: rgba(255, 168, 213, .14);
+  --ok: #6ee7a0;
+  --ok-soft: rgba(110, 231, 160, .14);
+  --warn: #ffc857;
+  --danger: #ff6b6b;
+  --radius: 20px;
+  --nav-h: 72px;
+  --font: "Inter", system-ui, -apple-system, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background:
+    radial-gradient(900px 500px at 100% -10%, rgba(255, 126, 191, .10), transparent 60%),
+    var(--bg);
+  color: var(--text);
+  font: 16px/1.45 var(--font);
+  min-height: 100vh;
+  padding-bottom: calc(var(--nav-h) + 24px + env(safe-area-inset-bottom));
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+}
+body.login { padding-bottom: 0; }
+a { color: inherit; text-decoration: none; }
+h1, h2, h3 { margin: 0; letter-spacing: -.02em; line-height: 1.15; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.05rem; font-weight: 700; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+[hidden] { display: none !important; }
+
+/* Hlavička */
+.topbar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
+  background: rgba(9, 9, 11, .82);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; }
+.brand .avatar { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--primary); color: var(--primary-ink); font-size: .85rem; font-weight: 800; }
+.brand small { display: block; color: var(--muted); font-size: .72rem; font-weight: 500; }
+.icon-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-size: .8rem; font-weight: 600; cursor: pointer; }
+.icon-btn:hover { color: var(--text); background: var(--surface-2); }
+
+/* Spodná navigácia */
+.nav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+  height: calc(var(--nav-h) + env(safe-area-inset-bottom));
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+  background: rgba(9, 9, 11, .88);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid var(--border);
+}
+.nav a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 16px; color: var(--muted); font-size: .68rem; font-weight: 700; letter-spacing: .02em; transition: background .2s, color .2s; }
+.nav svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.nav a.active { color: var(--primary-ink); background: var(--primary); }
+
+main { max-width: 640px; margin: 0 auto; padding: 18px 16px 0; }
+.page-head { margin: 6px 0 16px; }
+.page-head p { color: var(--muted); margin-top: 4px; }
+
+/* Karty */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.card + .card { margin-top: 14px; }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.card-head .badge { font-size: .72rem; font-weight: 700; color: var(--primary); background: var(--primary-soft); padding: 3px 10px; border-radius: 999px; }
+.hero-card { background: linear-gradient(135deg, rgba(255, 168, 213, .18), var(--surface) 60%); border-color: rgba(255, 168, 213, .35); }
+.hero-card .eyebrow { color: var(--primary); font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.hero-card b { display: block; font-size: 1.6rem; font-weight: 800; margin: 6px 0 2px; letter-spacing: -.02em; }
+.hero-card .sub { color: var(--muted); }
+.hero-card .row { margin-top: 14px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 14px; }
+.stat b { display: block; font-size: 1.7rem; font-weight: 900; line-height: 1.1; letter-spacing: -.03em; color: var(--primary); font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: .66rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+
+/* Tlačidlá a čipy */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 42px; padding: 8px 18px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font-weight: 700; font-size: .85rem; cursor: pointer; transition: transform .1s, background .2s; }
+.btn:active { transform: scale(.97); }
+.btn.primary { background: var(--primary); border-color: var(--primary); color: var(--primary-ink); }
+.btn.block { width: 100%; }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; margin-bottom: 12px; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex: 0 0 auto; min-height: 34px; padding: 4px 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-2); color: var(--muted); font-size: .78rem; font-weight: 700; cursor: pointer; }
+.chip.active { background: var(--primary); border-color: var(--primary); color: var(--primary-ink); }
+
+/* Tréningy */
+.session { position: relative; display: flex; align-items: center; gap: 12px; padding: 10px 0 10px 14px; }
+.session + .session { border-top: 1px solid var(--border); }
+.session::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 4px; border-radius: 2px; background: var(--primary); }
+.session.done::before { background: var(--ok); }
+.session.cancelled::before { background: var(--surface-3); }
+.session.cancelled .when { text-decoration: line-through; color: var(--muted); }
+.session .when { font-weight: 700; }
+.session .when small { display: block; color: var(--muted); font-weight: 500; font-size: .8rem; }
+.session .spacer { flex: 1; }
+.tag { font-size: .68rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--surface-3); color: var(--muted); white-space: nowrap; }
+.tag.ok { background: var(--ok-soft); color: var(--ok); }
+.tag.primary { background: var(--primary-soft); color: var(--primary); }
+.empty { color: var(--muted); padding: 8px 0; }
+
+/* Plán */
+.plan-item { display: grid; grid-template-columns: 32px 1fr; gap: 10px; padding: 10px 0; }
+.plan-item + .plan-item { border-top: 1px solid var(--border); }
+.plan-item .no { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary); font-size: .78rem; font-weight: 800; }
+.plan-item .name { font-weight: 700; }
+.plan-item .dose { color: var(--muted); font-size: .85rem; margin-top: 2px; }
+.plan-item .note { color: var(--warn); font-size: .8rem; margin-top: 2px; }
+
+/* Výkony v tréningu */
+.log { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); }
+.log div { display: flex; justify-content: space-between; gap: 8px; font-size: .85rem; padding: 3px 0; }
+.log span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+.session.open { flex-wrap: wrap; cursor: pointer; }
+.session.open .log { flex-basis: 100%; }
+
+/* Graf (rovnaký ako v appke Tréner) */
+.chart-sum { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.chart-sum div { background: var(--surface-2); border-radius: 14px; padding: 10px 12px; }
+.chart-sum span { display: block; color: var(--muted); font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.chart-sum b { font-size: 1.3rem; font-weight: 800; }
+.chart-sum b small { color: var(--muted); font-size: .8rem; font-weight: 600; }
+.chart-sum .chg { color: var(--primary); }
+.chart { position: relative; height: 160px; }
+.chart svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.chart-dot { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--bg); border: 2px solid var(--primary); transform: translate(-50%, -50%); }
+.chart-dot.last { width: 12px; height: 12px; background: var(--primary-strong); border-color: #fff; box-shadow: 0 0 0 4px rgba(255, 126, 191, .25); }
+.chart-val { position: absolute; transform: translate(-50%, -150%); font-size: .72rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.chart-val.last { color: var(--text); transform: translate(-50%, -160%); }
+.chart-axis { display: flex; justify-content: space-between; color: var(--muted); font-size: .72rem; margin-top: 6px; }
+
+table.measure { width: 100%; border-collapse: collapse; font-size: .85rem; font-variant-numeric: tabular-nums; }
+table.measure th { color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .05em; text-align: right; padding: 6px 4px; font-weight: 700; }
+table.measure th:first-child, table.measure td:first-child { text-align: left; }
+table.measure td { padding: 8px 4px; border-top: 1px solid var(--border); text-align: right; }
+table.measure .d { display: block; font-size: .68rem; color: var(--muted); }
+table.measure .d.down { color: var(--ok); }
+table.measure .d.up { color: var(--primary); }
+
+.records { display: grid; gap: 8px; }
+.record { display: flex; align-items: center; gap: 12px; background: var(--surface-2); border-radius: 14px; padding: 10px 12px; }
+.record .medal { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary); font-size: 1rem; }
+.record b { display: block; }
+.record small { color: var(--muted); }
+.record .val { margin-left: auto; font-weight: 800; color: var(--primary); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* Prihlásenie */
+.login-wrap { min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
+.login-box { width: 100%; max-width: 380px; }
+.login-box .logo { width: 56px; height: 56px; border-radius: 18px; background: var(--primary); display: grid; place-items: center; margin-bottom: 20px; }
+.login-box .logo svg { width: 30px; height: 30px; stroke: var(--primary-ink); fill: none; stroke-width: 2.2; stroke-linecap: round; }
+.login-box p { color: var(--muted); margin: 8px 0 22px; }
+.login-box label { display: block; font-size: .78rem; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+.login-box input { width: 100%; min-height: 52px; padding: 10px 16px; border-radius: 16px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font: 700 1.3rem/1 var(--font); letter-spacing: .14em; text-transform: uppercase; text-align: center; outline: none; }
+.login-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+.login-box .btn { margin-top: 12px; min-height: 50px; font-size: .95rem; }
+.login-box .error { color: var(--danger); font-size: .85rem; margin: 10px 0 0; min-height: 1.3em; }
+.login-box .demo { margin-top: 26px; font-size: .8rem; }
+.login-box .demo code { color: var(--primary); font-weight: 700; }
+.back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: .85rem; margin-bottom: 24px; }
+
+/* Animácia prechodu */
+main.enter > * { animation: up .3s ease both; }
+main.enter > *:nth-child(2) { animation-delay: .04s; }
+main.enter > *:nth-child(3) { animation-delay: .08s; }
+main.enter > *:nth-child(4) { animation-delay: .12s; }
+@keyframes up { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { main.enter > * { animation: none; } }

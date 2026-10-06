@@ -2,10 +2,11 @@
 
 /* =========================================================
    Klientska zóna – prihlásenie kódom, prehľad, tréningy, plán, progres
-   Dáta zatiaľ z js/data.js (ukážka); neskôr zo zdieľanej databázy.
+   Dáta: kód DEMO → ukážka (js/data.js), skutočný kód → cloud (js/cloud.js)
    ========================================================= */
 
-const SESSION_KEY = 'klient-zona-id';
+const CODE_KEY = 'klient-zona-code';
+const CACHE_KEY = 'klient-zona-data';
 const DAYS = ['pondelok', 'utorok', 'streda', 'štvrtok', 'piatok', 'sobota', 'nedeľa'];
 const DAYS_SHORT = ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
 const METRICS = [['weight', 'Váha', 'kg'], ['bodyFat', 'Tuk', '%'], ['waist', 'Pás', 'cm'], ['hips', 'Boky', 'cm']];
@@ -35,25 +36,98 @@ const topSet = (sets) => sets.reduce((a, b) => (betterSet(b, a) > 0 ? b : a));
 
 /* ---------- Prihlásenie ---------- */
 let clientId = null;
-try { clientId = sessionStorage.getItem(SESSION_KEY) || localStorage.getItem(SESSION_KEY); } catch (e) { /* úložisko nedostupné */ }
+let authCode = null;
+try { authCode = localStorage.getItem(CODE_KEY); } catch (e) { /* úložisko nedostupné */ }
 
 const client = () => DB.clients.find((c) => c.id === clientId);
 const mySessions = () => DB.sessions.filter((s) => s.clientId === clientId).sort(bySessionTime);
 const myPlans = () => DB.plans.filter((p) => p.clientId === clientId);
 const myMeasurements = () => DB.measurements.filter((m) => m.clientId === clientId).sort((a, b) => a.date.localeCompare(b.date));
 
-function login(code) {
-  const id = ACCESS_CODES[code.trim().toUpperCase()];
-  if (!id) return false;
-  clientId = id;
-  try { localStorage.setItem(SESSION_KEY, id); } catch (e) { /* ok */ }
-  return true;
+const normCode = (raw) => String(raw || '').replace(/[^a-z0-9]/gi, '').toUpperCase();
+const intlPhone = (phone) => { const p = String(phone || '').replace(/[^\d+]/g, ''); return p.startsWith('+') ? p.slice(1) : p.startsWith('00') ? p.slice(2) : p.startsWith('0') ? '421' + p.slice(1) : p; };
+
+// Dáta z cloudu → rovnaká štruktúra, akú používajú obrazovky
+function applySnapshot(snap) {
+  const cid = snap.clientId;
+  DB = {
+    clients: [{ id: cid, name: snap.client?.name || 'Klient', goal: snap.client?.goal || '', since: snap.client?.since || '', photo: snap.client?.photo || '' }],
+    sessions: (snap.sessions || []).map((x) => ({ ...x, clientId: cid })),
+    plans: (snap.plans || []).map((p) => ({ ...p, clientId: cid })),
+    exercises: snap.exercises || [],
+    measurements: (snap.measurements || []).map((m) => ({ ...m, clientId: cid }))
+  };
+  const phone = snap.trainer?.phone || '';
+  TRAINER = { name: snap.trainer?.name || 'Tréner', phone, whatsapp: phone ? `https://wa.me/${intlPhone(phone)}` : '' };
+  clientId = cid;
+  lastUpdated = snap.updatedAt || null;
 }
-function logout() {
-  clientId = null;
-  try { localStorage.removeItem(SESSION_KEY); sessionStorage.removeItem(SESSION_KEY); } catch (e) { /* ok */ }
+let lastUpdated = null;
+
+const cloudReady = () => (window.clientCloud ? Promise.resolve() : new Promise((r) => window.addEventListener('client-cloud-ready', r, { once: true })));
+
+async function login(raw) {
+  const code = normCode(raw);
+  if (!code) return { ok: false, msg: 'Zadaj prístupový kód.' };
+  if (ACCESS_CODES[code]) {
+    DB = DEMO_DB; TRAINER = DEMO_TRAINER; clientId = ACCESS_CODES[code]; authCode = code;
+    try { localStorage.setItem(CODE_KEY, code); localStorage.removeItem(CACHE_KEY); } catch (e) { /* ok */ }
+    return { ok: true };
+  }
+  if (!navigator.onLine) return { ok: false, msg: 'Si offline – na prvé prihlásenie treba internet.' };
+  await Promise.race([cloudReady(), new Promise((r) => setTimeout(r, 6000))]);
+  if (!window.clientCloud) return { ok: false, msg: 'Nepodarilo sa pripojiť k serveru. Skús to o chvíľu.' };
+  try {
+    const snap = await window.clientCloud.fetch(code);
+    if (!snap) return { ok: false, msg: 'Tento kód nepoznáme. Skontroluj ho alebo sa ozvi trénerovi.' };
+    applySnapshot(snap); authCode = code;
+    try { localStorage.setItem(CODE_KEY, code); localStorage.setItem(CACHE_KEY, JSON.stringify(snap)); } catch (e) { /* ok */ }
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, msg: e?.code === 'permission-denied' ? 'Prístup bol zamietnutý. Ozvi sa trénerovi.' : 'Nepodarilo sa načítať dáta. Skontroluj internet a skús znova.' };
+  }
+}
+
+// Pri ďalšom otvorení: hneď ukázať uložené dáta, na pozadí stiahnuť nové
+async function refresh() {
+  if (!authCode || ACCESS_CODES[authCode] || !navigator.onLine) return;
+  try {
+    await cloudReady();
+    const snap = await window.clientCloud.fetch(authCode);
+    if (!snap) { logout('Tréner zrušil tvoj prístup. Ak je to omyl, ozvi sa mu.'); return; }
+    if ((snap.updatedAt || 0) !== (lastUpdated || 0)) {
+      applySnapshot(snap);
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify(snap)); } catch (e) { /* ok */ }
+      render();
+    }
+  } catch (e) { /* bez siete – ostávajú uložené dáta */ }
+}
+
+let logoutMsg = '';
+function logout(msg = '') {
+  clientId = null; authCode = null; logoutMsg = msg;
+  DB = DEMO_DB; TRAINER = DEMO_TRAINER;
+  try { localStorage.removeItem(CODE_KEY); localStorage.removeItem(CACHE_KEY); } catch (e) { /* ok */ }
   location.hash = '';
   render();
+}
+
+// Štart: kód z odkazu (#/k/KÓD), uložený kód + uložené dáta, alebo prihlásenie (volá sa na konci súboru)
+function boot() {
+  const m = location.hash.match(/^#\/k\/([A-Za-z0-9-]+)/);
+  if (m) {
+    history.replaceState(null, '', location.pathname + location.search + '#/');
+    render();
+    login(m[1]).then((r) => { if (!r.ok) { logoutMsg = r.msg; } render(); if (r.ok) refresh(); });
+    return;
+  }
+  if (authCode && ACCESS_CODES[authCode]) { DB = DEMO_DB; TRAINER = DEMO_TRAINER; clientId = ACCESS_CODES[authCode]; return; }
+  if (authCode) {
+    let cached = null;
+    try { cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null'); } catch (e) { /* ok */ }
+    if (cached) { applySnapshot(cached); refresh(); }
+    else { const code = authCode; authCode = null; login(code).then((r) => { if (!r.ok) logoutMsg = r.msg; render(); }); }
+  }
 }
 
 /* ---------- Obrazovky ---------- */
@@ -73,7 +147,7 @@ function viewHome() {
   <section class="hero">
     <span class="eyebrow">Najbližší tréning</span>
     ${next ? `<h2 class="hero-title">${fmtDay(next.date)} o ${esc(next.time)}</h2><p class="hero-sub">${next.note ? esc(next.note) + ' · ' : ''}${DAYS[weekday(next.date)]} ${fmtShort(next.date)}</p>` : `<h2 class="hero-title">Zatiaľ nič naplánované</h2><p class="hero-sub">Dohodni si termín s trénerom.</p>`}
-    <div class="row"><a class="btn primary" href="${TRAINER.whatsapp}">Napísať trénerovi</a><a class="btn" href="#/sessions">Všetky tréningy</a></div>
+    <div class="row">${TRAINER.whatsapp ? `<a class="btn primary" href="${TRAINER.whatsapp}" target="_blank" rel="noopener">Napísať trénerovi</a>` : ''}<a class="btn" href="#/sessions">Všetky tréningy</a></div>
   </section>
   <div class="stats">
     <div class="stat"><b>${done.length}</b><span>odtrénované</span></div>
@@ -216,9 +290,9 @@ function viewLogin() {
       <label for="code">Prístupový kód</label>
       <input id="code" name="code" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" placeholder="KÓD" required>
       <button class="btn primary block" type="submit">Prihlásiť sa</button>
-      <p class="error" id="login-error"></p>
+      <p class="error" id="login-error">${esc(logoutMsg)}</p>
     </form>
-    <p class="demo">Ukážka: skús kód <code>DEMO</code></p>
+    <p class="demo">Kód ti pošle tréner. Chceš si to len pozrieť? Skús <code>DEMO</code>.</p>
   </div></div>`;
 }
 
@@ -232,10 +306,14 @@ function render() {
   if (!c) {
     document.body.classList.add('login');
     app.innerHTML = viewLogin();
-    document.getElementById('login-form').addEventListener('submit', (e) => {
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (login(document.getElementById('code').value)) { location.hash = ''; render(); }
-      else document.getElementById('login-error').textContent = 'Tento kód nepoznáme. Skontroluj ho alebo sa ozvi trénerovi.';
+      const btn = e.target.querySelector('button[type=submit]');
+      btn.disabled = true; btn.textContent = 'Overujem…';
+      logoutMsg = '';
+      const r = await login(document.getElementById('code').value);
+      if (r.ok) { location.hash = ''; render(); refresh(); }
+      else { btn.disabled = false; btn.textContent = 'Prihlásiť sa'; document.getElementById('login-error').textContent = r.msg; }
     });
     document.getElementById('code').focus();
     return;
@@ -245,7 +323,7 @@ function render() {
   const view = ROUTES[r] || viewHome;
   app.innerHTML = `
   <header class="topbar">
-    <a href="#/" class="brand"><span class="avatar">${initials(c.name)}</span><span>${esc(c.name)}<small>Tréner: ${esc(TRAINER.name)}</small></span></a>
+    <a href="#/" class="brand"><span class="avatar">${c.photo ? `<img src="${c.photo}" alt="" decoding="sync">` : initials(c.name)}</span><span>${esc(c.name)}<small>Tréner: ${esc(TRAINER.name)}</small></span></a>
     <button class="topbar-btn text" id="logout" type="button">Odhlásiť</button>
   </header>
   <main id="main" class="enter">${view()}</main>
@@ -255,7 +333,7 @@ function render() {
     <a href="#/plan" class="${r === 'plan' ? 'active' : ''}"><svg viewBox="0 0 24 24"><path d="M9 5h10M9 12h10M9 19h10M5 5h.01M5 12h.01M5 19h.01"/></svg><span>Plán</span></a>
     <a href="#/progress" class="${r === 'progress' ? 'active' : ''}"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8M14 7h7v7"/></svg><span>Progres</span></a>
   </nav>`;
-  document.getElementById('logout').addEventListener('click', logout);
+  document.getElementById('logout').addEventListener('click', () => logout());
   window.scrollTo(0, 0);
 }
 
@@ -268,4 +346,6 @@ document.addEventListener('click', (e) => {
   if (t) { const id = t.dataset.toggle; openLogs.has(id) ? openLogs.delete(id) : openLogs.add(id); render(); }
 });
 window.addEventListener('hashchange', render);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refresh(); });
+boot();
 render();

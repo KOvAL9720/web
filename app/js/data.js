@@ -2,8 +2,8 @@
 
 /* =========================================================
    Ukážkové dáta klientskej appky
-   Štruktúra je rovnaká ako v appke Tréner (clients, sessions, plans,
-   exercises, measurements), aby sa dala neskôr nahradiť zdieľanou databázou.
+   Použijú sa pri kóde DEMO. Skutočné dáta prichádzajú z cloudu (js/cloud.js)
+   v rovnakej štruktúre.
    ========================================================= */
 
 const pad = (n) => String(n).padStart(2, '0');
@@ -13,7 +13,8 @@ const parseDate = (s) => { const [y, m, d] = s.split('-').map(Number); return ne
 const addDays = (s, n) => { const d = parseDate(s); d.setDate(d.getDate() + n); return isoDate(d); };
 
 // Prístupové kódy: kód → id klienta. Neskôr ich bude generovať appka Tréner.
-const ACCESS_CODES = { DEMO: 'c1', LUCIA: 'c1', PETER: 'c2' };
+// Ukážkové kódy (skutočné kódy vydáva appka Tréner a dáta prichádzajú z cloudu)
+const ACCESS_CODES = { DEMO: 'c1', PETER: 'c2' };
 
 const EXERCISES = [
   ['e1', 'Drep', 'Nohy'], ['e2', 'Hip thrust', 'Zadok'], ['e3', 'Veslovanie s činkou', 'Chrbát'],
@@ -92,6 +93,8 @@ const MEASUREMENTS = [
   { id: 'm6', clientId: 'c2', date: addDays(t, -5), weight: 85.5, bodyFat: 16, waist: 87, hips: 100 }
 ];
 
-const TRAINER = { name: '[Tvoje meno]', phone: '+421900000000', whatsapp: 'https://wa.me/421900000000' };
+const DEMO_TRAINER = { name: 'Tréner', phone: '+421 900 000 000', whatsapp: 'https://wa.me/421900000000' };
+let TRAINER = DEMO_TRAINER;
 
-const DB = { clients: CLIENTS, sessions: SESSIONS, plans: PLANS, exercises: EXERCISES, measurements: MEASUREMENTS };
+const DEMO_DB = { clients: CLIENTS, sessions: SESSIONS, plans: PLANS, exercises: EXERCISES, measurements: MEASUREMENTS };
+let DB = DEMO_DB;

@@ -58,7 +58,8 @@ function applySnapshot(snap) {
     measurements: (snap.measurements || []).map((m) => ({ ...m, clientId: cid }))
   };
   const phone = snap.trainer?.phone || '';
-  TRAINER = { name: snap.trainer?.name || 'Tréner', phone, whatsapp: phone ? `https://wa.me/${intlPhone(phone)}` : '' };
+  const photo = typeof snap.trainer?.photo === 'string' && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(snap.trainer.photo) ? snap.trainer.photo : '';
+  TRAINER = { name: snap.trainer?.name || 'Tréner', phone, whatsapp: phone ? `https://wa.me/${intlPhone(phone)}` : '', photo };
   clientId = cid;
   lastUpdated = snap.updatedAt || null;
 }
@@ -170,7 +171,7 @@ function trainerCard() {
   return `<section class="card trainer-card">
     <div class="card-head"><h2>Tvoj tréner</h2></div>
     <div class="trainer-row">
-      <span class="avatar lg">${initials(t.name)}</span>
+      <span class="avatar lg">${t.photo ? `<img src="${t.photo}" alt="" decoding="sync">` : initials(t.name)}</span>
       <div class="info"><strong>${esc(t.name)}</strong>${phone ? `<small>${esc(t.phone)}</small>` : '<small class="muted">Osobný tréner</small>'}</div>
     </div>
     ${phone ? `<div class="row" style="margin-top:12px">

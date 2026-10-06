@@ -93,7 +93,7 @@ const MEASUREMENTS = [
   { id: 'm6', clientId: 'c2', date: addDays(t, -5), weight: 85.5, bodyFat: 16, waist: 87, hips: 100 }
 ];
 
-const DEMO_TRAINER = { name: 'Tréner', phone: '+421 900 000 000', whatsapp: 'https://wa.me/421900000000' };
+const DEMO_TRAINER = { name: 'Jakub', phone: '+421 900 000 000', whatsapp: 'https://wa.me/421900000000' };
 let TRAINER = DEMO_TRAINER;
 
 const DEMO_DB = { clients: CLIENTS, sessions: SESSIONS, plans: PLANS, exercises: EXERCISES, measurements: MEASUREMENTS };

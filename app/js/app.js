@@ -69,13 +69,13 @@ function viewHome() {
   const weekStart = addDays(today(), -weekday(today()));
   const thisWeek = all.filter((s) => s.status !== 'cancelled' && s.date >= weekStart && s.date < addDays(weekStart, 7));
   return `
-  <div class="page-head"><h1>Ahoj, ${esc(c.name.split(' ')[0])} 👋</h1><p>${esc(c.goal)}</p></div>
-  <section class="card hero-card">
+  <div class="page-head"><div><h1>Ahoj, ${esc(c.name.split(' ')[0])} 👋</h1><p class="muted">${esc(c.goal)}</p></div></div>
+  <section class="hero">
     <span class="eyebrow">Najbližší tréning</span>
-    ${next ? `<b>${fmtDay(next.date)} o ${esc(next.time)}</b><p class="sub">${next.note ? esc(next.note) + ' · ' : ''}${DAYS[weekday(next.date)]} ${fmtShort(next.date)}</p>` : `<b>Zatiaľ nič naplánované</b><p class="sub">Dohodni si termín s trénerom.</p>`}
+    ${next ? `<h2 class="hero-title">${fmtDay(next.date)} o ${esc(next.time)}</h2><p class="hero-sub">${next.note ? esc(next.note) + ' · ' : ''}${DAYS[weekday(next.date)]} ${fmtShort(next.date)}</p>` : `<h2 class="hero-title">Zatiaľ nič naplánované</h2><p class="hero-sub">Dohodni si termín s trénerom.</p>`}
     <div class="row"><a class="btn primary" href="${TRAINER.whatsapp}">Napísať trénerovi</a><a class="btn" href="#/sessions">Všetky tréningy</a></div>
   </section>
-  <div class="stats" style="margin-top:14px">
+  <div class="stats">
     <div class="stat"><b>${done.length}</b><span>odtrénované</span></div>
     <div class="stat"><b>${thisWeek.length}</b><span>tento týždeň</span></div>
     <div class="stat"><b>${dw == null ? '–' : (dw > 0 ? '+' : '') + fmtNum(dw)}</b><span>kg od začiatku</span></div>
@@ -84,11 +84,11 @@ function viewHome() {
     <div class="card-head"><h2>Tento týždeň</h2><span class="badge">${DAYS_SHORT[0]} ${fmtShort(weekStart)} – ${DAYS_SHORT[6]} ${fmtShort(addDays(weekStart, 6))}</span></div>
     ${sessionList(thisWeek, 'Tento týždeň nemáš žiadny tréning.')}
   </section>
-  ${myPlans().length ? `<section class="card"><div class="card-head"><h2>Tvoj plán</h2><a class="icon-btn" href="#/plan">Otvoriť</a></div>${myPlans().map((p) => `<div class="session"><span class="when">${esc(p.name)}<small>${cnt(p.items.length, 'cvik', 'cviky', 'cvikov')}</small></span></div>`).join('')}</section>` : ''}`;
+  ${myPlans().length ? `<section class="card"><div class="card-head"><h2>Tvoj plán</h2><a class="btn small" href="#/plan">Otvoriť</a></div>${myPlans().map((p) => `<div class="session"><span class="when">${esc(p.name)}<small>${cnt(p.items.length, 'cvik', 'cviky', 'cvikov')}</small></span></div>`).join('')}</section>` : ''}`;
 }
 
 function sessionRow(s, open = false) {
-  const tag = s.status === 'done' ? '<span class="tag ok">Odtrénovaný</span>' : s.status === 'cancelled' ? '<span class="tag">Zrušený</span>' : '<span class="tag primary">Naplánovaný</span>';
+  const tag = s.status === 'done' ? '<span class="badge done">Odtrénovaný</span>' : s.status === 'cancelled' ? '<span class="badge cancelled">Zrušený</span>' : '<span class="badge planned">Naplánovaný</span>';
   const log = open && s.log ? `<div class="log">${s.log.map((e) => `<div><span>${esc(exName(e.exerciseId))}</span><span>${e.sets.map(fmtSet).join(' · ')}</span></div>`).join('')}</div>` : '';
   return `<div class="session ${s.status}${s.log ? ' open' : ''}" ${s.log ? `data-toggle="${s.id}"` : ''}>
     <span class="when">${fmtDay(s.date)}${s.time ? ` o ${esc(s.time)}` : ''}<small>${s.note ? esc(s.note) : s.log ? `${cnt(s.log.length, 'cvik', 'cviky', 'cvikov')} · ťukni pre výkony` : DAYS[weekday(s.date)]}</small></span>
@@ -108,22 +108,22 @@ function viewSessions() {
   };
   const chips = [['upcoming', 'Najbližšie'], ['done', 'Odtrénované'], ['all', 'Všetky']];
   return `
-  <div class="page-head"><h1>Tréningy</h1><p>${cnt(lists.done.length, 'odtrénovaný tréning', 'odtrénované tréningy', 'odtrénovaných tréningov')}</p></div>
-  <div class="chips">${chips.map(([k, l]) => `<button class="chip${sessionsFilter === k ? ' active' : ''}" data-filter="${k}">${l}</button>`).join('')}</div>
+  <div class="page-head"><div><h1>Tréningy</h1><p class="muted">${cnt(lists.done.length, 'odtrénovaný tréning', 'odtrénované tréningy', 'odtrénovaných tréningov')}</p></div></div>
+  <div class="chips chart-chips">${chips.map(([k, l]) => `<button class="chip${sessionsFilter === k ? ' active' : ''}" data-filter="${k}">${l}</button>`).join('')}</div>
   <section class="card">${sessionList(lists[sessionsFilter], sessionsFilter === 'upcoming' ? 'Žiadny naplánovaný tréning.' : 'Zatiaľ žiadne tréningy.')}</section>`;
 }
 
 function viewPlan() {
   const plans = myPlans();
-  if (!plans.length) return `<div class="page-head"><h1>Tréningový plán</h1></div><section class="card"><p class="empty">Tréner ti zatiaľ nepripravil plán.</p></section>`;
+  if (!plans.length) return `<div class="page-head"><div><h1>Tréningový plán</h1></div></div><section class="card"><p class="empty">Tréner ti zatiaľ nepripravil plán.</p></section>`;
   return `
-  <div class="page-head"><h1>Tréningový plán</h1><p>Na dni, keď trénuješ sám/sama.</p></div>
+  <div class="page-head"><div><h1>Tréningový plán</h1><p class="muted">Na dni, keď trénuješ sám/sama.</p></div></div>
   ${plans.map((p) => `<section class="card">
     <div class="card-head"><h2>${esc(p.name)}</h2><span class="badge">${cnt(p.items.length, 'cvik', 'cviky', 'cvikov')}</span></div>
-    ${p.items.map((it, i) => {
+    <ul class="plan-items">${p.items.map((it, i) => {
       const dose = [it.sets && it.reps ? `${it.sets} × ${it.reps}` : it.sets ? `${it.sets} sérií` : it.reps || '', it.weight || '', it.rest ? `pauza ${it.rest}` : ''].filter(Boolean).join(' · ');
-      return `<div class="plan-item"><span class="no">${i + 1}</span><div><div class="name">${esc(exName(it.exerciseId))}</div><div class="dose">${esc(dose)}</div>${it.note ? `<div class="note">${esc(it.note)}</div>` : ''}</div></div>`;
-    }).join('')}
+      return `<li><span class="n">${i + 1}</span><div class="info"><strong>${esc(exName(it.exerciseId))}</strong><div class="dose">${esc(dose)}</div>${it.note ? `<div class="note">${esc(it.note)}</div>` : ''}</div></li>`;
+    }).join('')}</ul>
   </section>`).join('')}`;
 }
 
@@ -148,8 +148,8 @@ function chartHtml(points, unit) {
   return `<div class="chart" role="img" aria-label="Graf: ${points.map((p) => `${fmtShort(p.date)} ${fmtNum(p.value)} ${unit}`).join(', ')}">
     <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
       <defs>
-        <linearGradient id="${id}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff7ebf" stop-opacity=".32"/><stop offset="1" stop-color="#ff7ebf" stop-opacity="0"/></linearGradient>
-        <linearGradient id="${id}l" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="0"><stop offset="0" stop-color="#ffa8d5"/><stop offset="1" stop-color="#b98cff"/></linearGradient>
+        <linearGradient id="${id}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#46b3a7" stop-opacity=".32"/><stop offset="1" stop-color="#46b3a7" stop-opacity="0"/></linearGradient>
+        <linearGradient id="${id}l" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="0"><stop offset="0" stop-color="#8fdcd2"/><stop offset="1" stop-color="#7fb3d5"/></linearGradient>
       </defs>
       <path d="${area}" fill="url(#${id}a)"/>
       <path d="${line}" fill="none" stroke="url(#${id}l)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
@@ -188,16 +188,16 @@ function viewProgress() {
   if (!avail.some(([k]) => k === metric)) metric = avail[0]?.[0];
   const [key, label, unit] = METRICS.find(([k]) => k === metric) || [];
   const points = key ? ms.filter((m) => m[key] != null).map((m) => ({ date: m.date, value: m[key] })) : [];
-  const delta = (v, p) => (v == null || p == null ? '' : `<span class="d ${v < p ? 'down' : v > p ? 'up' : ''}">${v > p ? '+' : ''}${fmtNum(v - p)}</span>`);
+  const delta = (v, p) => (v == null || p == null ? '' : `<span class="d ${v < p ? 'delta-down' : v > p ? 'delta-up' : ''}">${v > p ? '+' : ''}${fmtNum(v - p)}</span>`);
   const recs = records();
   return `
-  <div class="page-head"><h1>Progres</h1><p>Merania od trénera a tvoje osobné rekordy.</p></div>
+  <div class="page-head"><div><h1>Progres</h1><p class="muted">Merania od trénera a tvoje osobné rekordy.</p></div></div>
   <section class="card">
     <div class="card-head"><h2>Merania</h2><span class="badge">${cnt(ms.length, 'meranie', 'merania', 'meraní')}</span></div>
-    ${ms.length ? `<div class="chips">${avail.map(([k, l]) => `<button class="chip${k === metric ? ' active' : ''}" data-metric="${k}">${l}</button>`).join('')}</div>
+    ${ms.length ? `<div class="chips chart-chips">${avail.map(([k, l]) => `<button class="chip${k === metric ? ' active' : ''}" data-metric="${k}">${l}</button>`).join('')}</div>
       ${points.length ? chartSummary(points, unit, label) + chartHtml(points, unit) : ''}
-      <table class="measure" style="margin-top:14px"><thead><tr><th>Dátum</th><th>kg</th><th>% tuk</th><th>pás</th><th>boky</th></tr></thead><tbody>
-      ${[...ms].reverse().map((m, i, arr) => { const p = arr[i + 1] || {}; return `<tr><td>${fmtShort(m.date)}</td><td>${fmtNum(m.weight)}${delta(m.weight, p.weight)}</td><td>${fmtNum(m.bodyFat)}${delta(m.bodyFat, p.bodyFat)}</td><td>${fmtNum(m.waist)}${delta(m.waist, p.waist)}</td><td>${fmtNum(m.hips)}${delta(m.hips, p.hips)}</td></tr>`; }).join('')}
+      <table style="margin-top:14px"><thead><tr><th>Dátum</th><th class="num">kg</th><th class="num">% tuk</th><th class="num">pás</th><th class="num">boky</th></tr></thead><tbody>
+      ${[...ms].reverse().map((m, i, arr) => { const p = arr[i + 1] || {}; return `<tr><td>${fmtShort(m.date)}</td><td class="num">${fmtNum(m.weight)}${delta(m.weight, p.weight)}</td><td class="num">${fmtNum(m.bodyFat)}${delta(m.bodyFat, p.bodyFat)}</td><td class="num">${fmtNum(m.waist)}${delta(m.waist, p.waist)}</td><td class="num">${fmtNum(m.hips)}${delta(m.hips, p.hips)}</td></tr>`; }).join('')}
       </tbody></table>` : '<p class="empty">Zatiaľ žiadne merania.</p>'}
   </section>
   <section class="card">
@@ -209,7 +209,7 @@ function viewProgress() {
 function viewLogin() {
   return `<div class="login-wrap"><div class="login-box">
     <a class="back" href="../">← Späť na web</a>
-    <div class="logo"><svg viewBox="0 0 24 24"><path d="M6 5v14M18 5v14M3 8v8M21 8v8M6 12h12"/></svg></div>
+    <img class="logo" src="../icons/icon.svg" alt="" style="display:block">
     <h1>Klientska zóna</h1>
     <p>Zadaj prístupový kód, ktorý si dostal/a od trénera.</p>
     <form id="login-form">
@@ -245,8 +245,8 @@ function render() {
   const view = ROUTES[r] || viewHome;
   app.innerHTML = `
   <header class="topbar">
-    <div class="brand"><span class="avatar">${initials(c.name)}</span><span>${esc(c.name)}<small>Tréner: ${esc(TRAINER.name)}</small></span></div>
-    <button class="icon-btn" id="logout" type="button">Odhlásiť</button>
+    <a href="#/" class="brand"><span class="avatar">${initials(c.name)}</span><span>${esc(c.name)}<small>Tréner: ${esc(TRAINER.name)}</small></span></a>
+    <button class="topbar-btn text" id="logout" type="button">Odhlásiť</button>
   </header>
   <main id="main" class="enter">${view()}</main>
   <nav class="nav" aria-label="Hlavná navigácia">

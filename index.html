@@ -5,44 +5,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>[Tvoje meno] – osobný tréner</title>
   <meta name="description" content="Osobný tréner v meste [Mesto]. Individuálne tréningy, tréningové plány a merania progresu.">
-  <meta name="theme-color" content="#07070a">
+  <meta name="theme-color" content="#111416">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <style>html, body { background: #111416; }</style>
+  <!-- Štýly appky Tréner (1 : 1) + rozloženie webu -->
+  <link rel="stylesheet" href="css/trainer.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="wrap topbar-inner">
-      <a href="#" class="logo">[Tvoje meno]<span>.</span></a>
+  <header class="site-top">
+    <div class="wrap">
+      <a href="#" class="brand"><img src="icons/icon.svg" alt=""> [Tvoje meno]</a>
       <nav class="menu" aria-label="Hlavné menu">
         <a href="#o-mne">O mne</a>
         <a href="#sluzby">Služby</a>
         <a href="#ako">Ako to prebieha</a>
-        <a href="app/" class="btn btn-small">Klientska zóna</a>
+        <a href="app/" class="btn small primary">Klientska zóna</a>
       </nav>
     </div>
   </header>
 
   <main>
-    <section class="hero">
+    <section class="hero-section">
       <div class="wrap">
         <p class="eyebrow">Osobný tréner · [Mesto]</p>
         <h1>Silnejší, zdravší a&nbsp;s&nbsp;plánom, ktorý <em>funguje</em>.</h1>
         <p class="lead">Individuálne tréningy prispôsobené tvojmu cieľu – chudnutie, sila, kondícia alebo návrat po zranení. Každý tréning si zapisujem, takže vidíš presne, ako napreduješ.</p>
         <div class="actions">
-          <a href="#kontakt" class="btn">Dohodnúť prvý tréning</a>
-          <a href="#sluzby" class="btn btn-ghost">Pozrieť cenník</a>
-          <a href="app/" class="btn btn-ghost">Klientska zóna</a>
+          <a href="#kontakt" class="btn primary">Dohodnúť prvý tréning</a>
+          <a href="#sluzby" class="btn">Pozrieť cenník</a>
+          <a href="app/" class="btn">Klientska zóna</a>
         </div>
-        <ul class="stats">
-          <li><strong>[5+]</strong><span>rokov praxe</span></li>
-          <li><strong>[100+]</strong><span>spokojných klientov</span></li>
-          <li><strong>1 : 1</strong><span>individuálny prístup</span></li>
-        </ul>
+        <div class="stats">
+          <div class="stat"><b>[5+]</b><span>rokov praxe</span></div>
+          <div class="stat"><b>[100+]</b><span>spokojných klientov</span></div>
+          <div class="stat"><b>1 : 1</b><span>individuálny prístup</span></div>
+        </div>
       </div>
     </section>
 
     <section id="o-mne" class="section">
       <div class="wrap two-col">
-        <div class="photo" aria-hidden="true"><span>Sem príde tvoja fotka</span></div>
+        <div class="card photo" aria-hidden="true"><span>Sem príde tvoja fotka</span></div>
         <div>
           <p class="eyebrow">O mne</p>
           <h2>Ahoj, som [Tvoje meno]</h2>
@@ -71,8 +75,8 @@
               <li>Sledovanie osobných rekordov</li>
             </ul>
           </article>
-          <article class="card featured">
-            <p class="badge">Najobľúbenejšie</p>
+          <article class="hero">
+            <span class="badge">Najobľúbenejšie</span>
             <h3>Tréning + plán</h3>
             <p class="price">[cena]&nbsp;€ <span>/ mesiac</span></p>
             <ul class="checks">
@@ -100,23 +104,23 @@
         <p class="eyebrow">Ako to prebieha</p>
         <h2>Tri kroky k výsledkom</h2>
         <ol class="steps">
-          <li><h3>Úvodné stretnutie</h3><p>Porozprávame sa o tvojom cieli, skúsenostiach a prípadných zraneniach. Urobíme prvé meranie.</p></li>
-          <li><h3>Plán na mieru</h3><p>Pripravím tréningy, ktoré sedia tvojmu cieľu, času aj kondícii.</p></li>
-          <li><h3>Tréning a progres</h3><p>Trénujeme spolu, všetko zapisujem a pravidelne vyhodnocujeme, ako sa posúvaš.</p></li>
+          <li class="card"><h3>Úvodné stretnutie</h3><p>Porozprávame sa o tvojom cieli, skúsenostiach a prípadných zraneniach. Urobíme prvé meranie.</p></li>
+          <li class="card"><h3>Plán na mieru</h3><p>Pripravím tréningy, ktoré sedia tvojmu cieľu, času aj kondícii.</p></li>
+          <li class="card"><h3>Tréning a progres</h3><p>Trénujeme spolu, všetko zapisujem a pravidelne vyhodnocujeme, ako sa posúvaš.</p></li>
         </ol>
       </div>
     </section>
 
     <section id="kontakt" class="section">
-      <div class="wrap contact">
+      <div class="wrap contact-sec">
         <p class="eyebrow">Kontakt</p>
         <h2>Poďme do toho</h2>
         <p class="lead">Napíš mi a dohodneme si prvý tréning.</p>
         <div class="contact-links">
-          <a class="btn" href="https://wa.me/421900000000">WhatsApp</a>
-          <a class="btn btn-ghost" href="tel:+421900000000">[+421 900 000 000]</a>
-          <a class="btn btn-ghost" href="mailto:[email]">[tvoj@email.sk]</a>
-          <a class="btn btn-ghost" href="https://instagram.com/[instagram]">Instagram</a>
+          <a class="btn primary" href="https://wa.me/421900000000">WhatsApp</a>
+          <a class="btn" href="tel:+421900000000">[+421 900 000 000]</a>
+          <a class="btn" href="mailto:[email]">[tvoj@email.sk]</a>
+          <a class="btn" href="https://instagram.com/[instagram]">Instagram</a>
         </div>
         <p class="muted">[Názov fitka, adresa, mesto]</p>
       </div>

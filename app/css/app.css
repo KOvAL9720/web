@@ -1,265 +1,68 @@
-/* Klientska zóna – sklenený dizajn ako appka Tréner (iOS „liquid glass“) */
-:root {
-  --bg: #07070a;
-  --surface: rgba(255, 255, 255, .06);
-  --surface-2: rgba(255, 255, 255, .09);
-  --surface-3: rgba(255, 255, 255, .13);
-  --border: rgba(255, 255, 255, .09);
-  --edge: rgba(255, 255, 255, .16);
-  --text: #f5f5f7;
-  --muted: #a3a3ad;
-  --primary: #ff9fd0;
-  --primary-strong: #ff79bd;
-  --primary-ink: #2a0618;
-  --primary-soft: rgba(255, 159, 208, .16);
-  --violet: #b892ff;
-  --grad: linear-gradient(135deg, #ff9fd0 0%, #ff79bd 45%, #b892ff 100%);
-  --grad-deep: linear-gradient(135deg, #ec4899 0%, #c026d3 55%, #7c3aed 100%);
-  --ok: #6ee7a0;
-  --ok-soft: rgba(110, 231, 160, .16);
-  --warn: #ffc857;
-  --danger: #ff6b6b;
-  --radius: 24px;
-  --nav-h: 64px;
-  --glass: blur(28px) saturate(170%);
-  --font: -apple-system, "SF Pro Display", "SF Pro Text", system-ui, "Segoe UI", Roboto, "Inter", sans-serif;
-  color-scheme: dark;
-}
+/* Klientska zóna – doplnky k trainer.css (štýly appky Tréner, použité 1:1).
+   Tu sú len prvky, ktoré appka Tréner nemá: prihlásenie, zoznam výkonov, rekordy. */
 
-* { box-sizing: border-box; }
-html, body { margin: 0; }
-html { scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font: 16px/1.45 var(--font);
-  letter-spacing: -.01em;
-  min-height: 100vh;
-  padding-bottom: calc(var(--nav-h) + 40px + env(safe-area-inset-bottom));
-  -webkit-tap-highlight-color: transparent;
-  -webkit-font-smoothing: antialiased;
-  overscroll-behavior-y: none;
-}
-body.login { padding-bottom: 0; }
-
-/* Pozadie: rozmazaná fotka fitka + farebné žiary, pevne za obsahom */
-body::before {
-  content: ""; position: fixed; inset: -40px; z-index: -2;
-  background: url("../bg-gym.jpg") center / cover no-repeat;
-  filter: blur(26px) brightness(.38) saturate(.85);
-  transform: scale(1.1);
-}
-body::after {
-  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background:
-    radial-gradient(60% 40% at 100% 0%, rgba(236, 72, 153, .26), transparent 70%),
-    radial-gradient(50% 35% at 0% 30%, rgba(124, 58, 237, .20), transparent 70%),
-    radial-gradient(60% 40% at 50% 110%, rgba(236, 72, 153, .12), transparent 70%),
-    linear-gradient(rgba(7, 7, 10, .35), rgba(7, 7, 10, .55));
-}
-
-a { color: inherit; text-decoration: none; }
-h1, h2, h3 { margin: 0; line-height: 1.12; }
-h1 { font-size: 2.1rem; font-weight: 800; letter-spacing: -.035em; }
-h2 { font-size: 1.12rem; font-weight: 700; letter-spacing: -.02em; }
-p { margin: 0; }
-button { font: inherit; color: inherit; }
+body.login { padding: 0; }
 [hidden] { display: none !important; }
 
-/* Sklo – spoločný základ kariet, lišty a menu */
-.glass {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass);
-  box-shadow: inset 0 1px 0 var(--edge), 0 14px 40px -20px rgba(0, 0, 0, .85);
-}
+/* Hlavička – meno klienta ako v appke Tréner (.brand), vpravo odhlásenie */
+.brand small { display: block; color: var(--muted); font-size: .74rem; font-weight: 500; letter-spacing: 0; text-transform: none; }
+.brand .avatar { width: 36px; height: 36px; font-size: .8rem; }
+.topbar-btn.text { width: auto; border-radius: 999px; padding: 0 14px; font-size: .82rem; font-weight: 650; color: var(--muted); }
 
-/* Hlavička */
-.topbar {
-  position: sticky; top: 0; z-index: 10;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
-  background: rgba(7, 7, 10, .45);
-  backdrop-filter: blur(22px) saturate(160%); -webkit-backdrop-filter: blur(22px) saturate(160%);
-  border-bottom: 1px solid rgba(255, 255, 255, .06);
-}
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.05rem; letter-spacing: -.02em; }
-.brand .avatar { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--grad); color: var(--primary-ink); font-size: .85rem; font-weight: 800; box-shadow: 0 0 0 2px rgba(255, 255, 255, .08), 0 10px 24px -10px rgba(255, 121, 189, .8); }
-.brand small { display: block; color: var(--muted); font-size: .74rem; font-weight: 500; letter-spacing: 0; }
-.icon-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-2); color: var(--muted); font-size: .82rem; font-weight: 650; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: inset 0 1px 0 var(--edge); transition: background .2s, color .2s; }
-.icon-btn:hover { color: var(--text); background: var(--surface-3); }
+/* Hero – najbližší tréning */
+.hero .hero-sub { color: rgba(255, 255, 255, .8); margin: 4px 0 0; }
+.hero .row { margin-top: 16px; }
+.hero .btn:not(.primary) { background: rgba(255, 255, 255, .14); border-color: rgba(255, 255, 255, .22); color: #fff; }
 
-/* Plávajúce spodné menu – sklenená pilulka */
-.nav {
-  position: fixed; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 20;
-  transform: translateX(-50%);
-  width: min(calc(100% - 28px), 460px);
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
-  height: var(--nav-h); padding: 6px;
-  background: rgba(22, 22, 28, .55);
-  border: 1px solid rgba(255, 255, 255, .10);
-  border-radius: 999px;
-  backdrop-filter: blur(26px) saturate(180%); -webkit-backdrop-filter: blur(26px) saturate(180%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 20px 50px -18px rgba(0, 0, 0, .9);
-}
-.nav a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 999px; color: var(--muted); font-size: .68rem; font-weight: 600; transition: background .25s, color .25s, transform .25s; }
-.nav a:active { transform: scale(.94); }
-.nav svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.nav a.active { color: var(--primary); background: rgba(255, 159, 208, .16); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12); }
-.nav a.active svg { filter: drop-shadow(0 0 8px rgba(255, 121, 189, .6)); }
-
-main { max-width: 640px; margin: 0 auto; padding: 20px 16px 0; }
-.page-head { margin: 4px 0 18px; }
-.page-head p { color: var(--muted); margin-top: 6px; font-size: .95rem; }
-
-/* Karty */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 20px;
-  backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass);
-  box-shadow: inset 0 1px 0 var(--edge), 0 14px 40px -20px rgba(0, 0, 0, .85);
-}
-.card + .card, .stats + .card { margin-top: 14px; }
-.card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
-.badge { font-size: .74rem; font-weight: 650; color: var(--primary); background: var(--primary-soft); padding: 4px 10px; border-radius: 999px; }
-
-/* Hero – živý prechod ružová → fialová so svetelnými škvrnami */
-.hero-card {
-  position: relative; overflow: hidden;
-  background: var(--grad-deep); border-color: rgba(255, 255, 255, .18); color: #fff;
-  box-shadow: 0 24px 50px -24px rgba(192, 38, 211, .75), inset 0 1px 0 rgba(255, 255, 255, .25);
-}
-.hero-card::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background:
-    radial-gradient(closest-side at 25% 30%, rgba(255, 255, 255, .28), transparent),
-    radial-gradient(closest-side at 80% 75%, rgba(255, 159, 208, .45), transparent);
-}
-.hero-card > * { position: relative; }
-.hero-card .eyebrow { color: rgba(255, 255, 255, .82); font-size: .8rem; font-weight: 600; }
-.hero-card b { display: block; font-size: 1.75rem; font-weight: 800; margin: 6px 0 2px; letter-spacing: -.03em; }
-.hero-card .sub { color: rgba(255, 255, 255, .8); }
-.hero-card .row { margin-top: 16px; }
-.hero-card .btn.primary { background: #fff; color: #7c1d5c; box-shadow: none; }
-.hero-card .btn:not(.primary) { background: rgba(255, 255, 255, .16); border-color: rgba(255, 255, 255, .22); color: #fff; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-.row { display: flex; flex-wrap: wrap; gap: 8px; }
-
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
-.stat {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 16px 14px;
-  backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass);
-  box-shadow: inset 0 1px 0 var(--edge), 0 10px 30px -18px rgba(0, 0, 0, .8);
-}
-.stat b { display: block; font-size: 1.8rem; font-weight: 800; line-height: 1.1; letter-spacing: -.04em; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; font-variant-numeric: tabular-nums; }
-.stat span { display: block; margin-top: 4px; color: var(--muted); font-size: .76rem; font-weight: 600; }
-
-/* Tlačidlá a čipy */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 10px 18px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font-weight: 650; font-size: .92rem; cursor: pointer; transition: transform .12s, background .2s, filter .2s; box-shadow: inset 0 1px 0 var(--edge); }
-.btn:active { transform: scale(.97); }
-.btn.primary { background: var(--grad); border: 0; color: var(--primary-ink); box-shadow: 0 8px 22px -10px rgba(255, 121, 189, .8); }
-.btn.primary:hover { filter: brightness(1.05); }
-.btn.block { width: 100%; }
-.chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: none; margin-bottom: 12px; scroll-snap-type: x proximity; }
-.chips::-webkit-scrollbar { display: none; }
-.chip { flex: 0 0 auto; scroll-snap-align: start; min-height: 36px; padding: 6px 16px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-2); color: var(--muted); font-size: .86rem; font-weight: 650; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: inset 0 1px 0 var(--edge); transition: background .2s, color .2s; }
-.chip.active { background: var(--grad); border-color: transparent; color: var(--primary-ink); box-shadow: 0 8px 20px -10px rgba(255, 121, 189, .8); }
-
-/* Tréningy */
-.session { position: relative; display: flex; align-items: center; gap: 12px; padding: 12px 8px 12px 16px; margin: 0 -8px; border-radius: 16px; transition: background .2s; }
-.session + .session { border-top: 1px solid rgba(255, 255, 255, .05); border-radius: 0 0 16px 16px; }
-.session::before { content: ""; position: absolute; left: 4px; top: 16px; bottom: 16px; width: 3px; border-radius: 3px; background: var(--grad); }
-.session.done::before { background: var(--ok); }
-.session.cancelled::before { background: var(--surface-3); }
-.session.cancelled .when { text-decoration: line-through; color: var(--muted); }
-.session .when { font-weight: 700; }
+/* Tréning – riadok s dátumom a stavom */
+.session .when { flex: 1; min-width: 0; font-weight: 700; }
 .session .when small { display: block; color: var(--muted); font-weight: 500; font-size: .82rem; }
-.session .spacer { flex: 1; }
-.tag { font-size: .72rem; font-weight: 650; padding: 4px 10px; border-radius: 999px; background: var(--surface-3); color: var(--muted); white-space: nowrap; }
-.tag.ok { background: var(--ok-soft); color: var(--ok); }
-.tag.primary { background: var(--primary-soft); color: var(--primary); }
-.empty { color: var(--muted); padding: 8px 0; }
-
-/* Plán */
-.plan-item { display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 12px 0; }
-.plan-item + .plan-item { border-top: 1px solid rgba(255, 255, 255, .05); }
-.plan-item .no { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--grad); color: var(--primary-ink); font-size: .8rem; font-weight: 800; box-shadow: 0 6px 16px -8px rgba(255, 121, 189, .8); }
-.plan-item .name { font-weight: 700; }
-.plan-item .dose { color: var(--muted); font-size: .88rem; margin-top: 2px; }
-.plan-item .note { color: var(--warn); font-size: .82rem; margin-top: 3px; }
-
-/* Výkony v tréningu */
-.log { margin-top: 10px; padding: 10px 12px; border-radius: 14px; background: rgba(255, 255, 255, .05); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06); }
+.session.open { flex-wrap: wrap; cursor: pointer; border-radius: 14px; }
+.session.open:hover { background: var(--surface-2); }
+.log { flex-basis: 100%; margin-top: 8px; padding: 10px 12px; border-radius: 14px; background: var(--surface-2); }
 .log div { display: flex; justify-content: space-between; gap: 8px; font-size: .86rem; padding: 4px 0; }
 .log span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
-.session.open { flex-wrap: wrap; cursor: pointer; }
-.session.open:hover { background: rgba(255, 255, 255, .04); }
-.session.open .log { flex-basis: 100%; }
 
-/* Graf (rovnaký ako v appke Tréner) */
-.chart-sum { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-.chart-sum div { background: rgba(255, 255, 255, .05); border-radius: 16px; padding: 12px 14px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06); }
-.chart-sum span { display: block; color: var(--muted); font-size: .76rem; font-weight: 600; }
-.chart-sum b { font-size: 1.35rem; font-weight: 800; letter-spacing: -.03em; }
-.chart-sum b small { color: var(--muted); font-size: .8rem; font-weight: 600; }
-.chart-sum .chg { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.chart-sum .chg small { color: var(--muted); -webkit-text-fill-color: var(--muted); }
-.chart { position: relative; height: 160px; }
-.chart svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.chart-dot { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #1a1a22; border: 2px solid var(--primary); transform: translate(-50%, -50%); }
-.chart-dot.last { width: 12px; height: 12px; background: var(--primary-strong); border-color: #fff; box-shadow: 0 0 0 5px rgba(255, 126, 191, .25); }
-.chart-val { position: absolute; transform: translate(-50%, -150%); font-size: .74rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
-.chart-val.last { color: var(--text); transform: translate(-50%, -160%); }
-.chart-axis { display: flex; justify-content: space-between; color: var(--muted); font-size: .74rem; margin-top: 8px; }
+/* Plán – poznámka trénera */
+.plan-items { list-style: none; margin: 0; padding: 0; }
+.plan-items li + li { border-top: 1px solid var(--border); }
+.plan-items .dose { color: var(--muted); font-size: .88rem; }
+.plan-items .note { color: var(--warn); font-size: .82rem; margin-top: 2px; }
 
-table.measure { width: 100%; border-collapse: collapse; font-size: .88rem; font-variant-numeric: tabular-nums; }
-table.measure th { color: var(--muted); font-size: .74rem; text-align: right; padding: 6px 4px; font-weight: 600; }
-table.measure th:first-child, table.measure td:first-child { text-align: left; }
-table.measure td { padding: 9px 4px; border-top: 1px solid rgba(255, 255, 255, .05); text-align: right; }
-table.measure .d { display: block; font-size: .7rem; color: var(--muted); }
-table.measure .d.down { color: var(--ok); }
-table.measure .d.up { color: var(--primary); }
+/* Merania – zmena od predchádzajúceho merania */
+td .d { display: block; font-size: .7rem; font-weight: 500; color: var(--muted); }
 
+/* Osobné rekordy */
 .records { display: grid; gap: 8px; }
-.record { display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, .05); border-radius: 16px; padding: 12px 14px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06); }
-.record .medal { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--primary-soft); font-size: 1.05rem; }
+.record { display: flex; align-items: center; gap: 12px; background: var(--surface-2); border-radius: 16px; padding: 12px 14px; }
+.record .medal { width: 36px; height: 36px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--primary-soft); font-size: 1.05rem; }
 .record b { display: block; }
 .record small { color: var(--muted); }
-.record .val { margin-left: auto; font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.record .val { margin-left: auto; font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--primary); }
 
-/* Prihlásenie */
+/* Prihlásenie – sklenená karta ako dialógy v appke Tréner */
 .login-wrap { min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
 .login-box {
   width: 100%; max-width: 400px; padding: 28px 24px;
-  background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .10); border-radius: 28px;
-  backdrop-filter: blur(30px) saturate(170%); -webkit-backdrop-filter: blur(30px) saturate(170%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), 0 30px 70px -30px rgba(0, 0, 0, .9);
+  background: rgba(24, 29, 31, .86); border: 1px solid rgba(255, 255, 255, .08); border-radius: 28px;
+  backdrop-filter: blur(30px) saturate(160%); -webkit-backdrop-filter: blur(30px) saturate(160%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), 0 30px 70px -30px rgba(0, 0, 0, .9);
 }
-.login-box .logo { width: 60px; height: 60px; border-radius: 20px; background: var(--grad); display: grid; place-items: center; margin-bottom: 20px; box-shadow: 0 14px 30px -12px rgba(255, 121, 189, .9); }
-.login-box .logo svg { width: 32px; height: 32px; stroke: var(--primary-ink); fill: none; stroke-width: 2.2; stroke-linecap: round; }
-.login-box h1 { font-size: 1.8rem; }
+.login-box .logo { width: 64px; height: 64px; border-radius: 18px; margin-bottom: 20px; }
 .login-box p { color: var(--muted); margin: 8px 0 22px; }
 .login-box label { display: block; font-size: .82rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
-.login-box input { width: 100%; min-height: 54px; padding: 10px 16px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, .1); background: rgba(255, 255, 255, .07); color: var(--text); font: 700 1.3rem/1 var(--font); letter-spacing: .14em; text-transform: uppercase; text-align: center; outline: none; transition: border-color .2s, box-shadow .2s; }
+.login-box input { width: 100%; min-height: 54px; padding: 10px 16px; color: var(--text); font: 700 1.3rem/1 var(--font); letter-spacing: .14em; text-transform: uppercase; text-align: center; outline: none; }
 .login-box input::placeholder { color: rgba(255, 255, 255, .3); }
-.login-box input:focus { border-color: rgba(255, 159, 208, .7); box-shadow: 0 0 0 4px rgba(255, 159, 208, .15); }
-.login-box .btn { margin-top: 12px; min-height: 50px; font-size: .95rem; }
+.login-box .btn { width: 100%; margin-top: 12px; min-height: 50px; font-size: .95rem; }
 .login-box .error { color: var(--danger); font-size: .85rem; margin: 10px 0 0; min-height: 1.3em; }
 .login-box .demo { margin: 20px 0 0; font-size: .82rem; }
 .login-box .demo code { color: var(--primary); font-weight: 700; }
-.back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: .86rem; margin-bottom: 22px; }
+.back { display: flex; width: max-content; align-items: center; gap: 6px; color: var(--muted); font-size: .86rem; margin-bottom: 22px; }
 
-/* Plynulé objavenie obsahu pri prepnutí obrazovky */
-main.enter > * { animation: up .38s cubic-bezier(.2, .7, .2, 1) both; }
-main.enter > *:nth-child(2) { animation-delay: .05s; }
-main.enter > *:nth-child(3) { animation-delay: .1s; }
-main.enter > *:nth-child(4) { animation-delay: .15s; }
-@keyframes up { from { opacity: 0; transform: translateY(12px) scale(.985); } }
-@media (prefers-reduced-motion: reduce) { main.enter > * { animation: none; } html { scroll-behavior: auto; } }
-
-/* Prehliadače bez rozmazania pozadia – nepriehľadnejšie sklo */
-@supports not (backdrop-filter: blur(1px)) {
-  .card, .stat, .login-box { background: rgba(24, 24, 30, .9); }
-  .nav { background: rgba(22, 22, 28, .94); }
-  .topbar { background: rgba(7, 7, 10, .92); }
-}
+/* Objavenie obsahu pri prepnutí obrazovky */
+main.enter > * { animation: up .32s cubic-bezier(.2, .7, .2, 1) both; }
+main.enter > *:nth-child(2) { animation-delay: .04s; }
+main.enter > *:nth-child(3) { animation-delay: .08s; }
+main.enter > *:nth-child(4) { animation-delay: .12s; }
+@keyframes up { from { opacity: 0; transform: translateY(10px); } }
+@media (prefers-reduced-motion: reduce) { main.enter > * { animation: none; } }

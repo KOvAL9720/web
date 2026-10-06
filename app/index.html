@@ -16,6 +16,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <!-- Štýly appky Tréner (1 : 1) + doplnky klientskej zóny -->
   <link rel="preload" as="image" href="../icons/bg-gym.jpg">
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://identitytoolkit.googleapis.com">
+  <link rel="preconnect" href="https://firestore.googleapis.com">
   <style>
     /* Úvodná obrazovka – rovnaká ako v appke Tréner (inline, ukáže sa okamžite) */
     #splash { position: fixed; inset: 0; z-index: 1000; background: #111416; display: grid; place-items: center; transition: opacity .35s ease, visibility .35s; }
@@ -35,7 +38,11 @@
   <div id="splash" aria-hidden="true"><div class="line"></div></div>
   <div id="app"></div>
   <script src="js/data.js?v=8"></script>
-  <script src="js/app.js?v=12"></script>
-  <script type="module" src="js/cloud.js?v=7"></script>
+  <script src="js/app.js?v=13"></script>
+  <script type="module">
+    // Firebase sa načíta až po vykreslení obsahu, aby nebrzdil štart
+    const loadCloud = () => import('./js/cloud.js?v=7').catch(() => {});
+    if (document.readyState === 'complete') loadCloud(); else window.addEventListener('load', loadCloud, { once: true });
+  </script>
 </body>
 </html>

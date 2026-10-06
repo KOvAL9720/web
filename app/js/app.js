@@ -416,7 +416,7 @@ if (clientId) {
   document.body.classList.add('no-anim', 'bg-ready', 'ready');
   splash?.remove();
 } else {
-  const wait = reduceMotion.matches ? 0 : Math.max(0, 750 - performance.now());
+  const wait = reduceMotion.matches ? 0 : Math.max(0, 500 - performance.now());
   Promise.all([bgReady, new Promise((r) => setTimeout(r, wait))]).then(() => {
     if (splash) splash.classList.add('hide');
     document.body.classList.add('ready');

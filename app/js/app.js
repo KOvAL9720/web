@@ -410,10 +410,29 @@ const bgReady = new Promise((resolve) => {
 boot();
 render(false);
 const splash = document.getElementById('splash');
-const wait = reduceMotion.matches ? 0 : Math.max(0, 750 - performance.now());
-Promise.all([bgReady, new Promise((r) => setTimeout(r, wait))]).then(() => {
-  if (splash) splash.classList.add('hide');
-  document.body.classList.add('ready');
-  if (!reduceMotion.matches) animateEnter();
-  setTimeout(() => splash?.remove(), 450);
-});
+// Opakované otvorenie (klient už prihlásený): obsah hneď, bez úvodnej čiary a bez animácií – iPhone inak
+// ukáže posledný stav appky, potom tmavú obrazovku a znova obsah, čo pôsobí ako blikanie
+if (clientId) {
+  document.body.classList.add('no-anim', 'bg-ready', 'ready');
+  splash?.remove();
+} else {
+  const wait = reduceMotion.matches ? 0 : Math.max(0, 750 - performance.now());
+  Promise.all([bgReady, new Promise((r) => setTimeout(r, wait))]).then(() => {
+    if (splash) splash.classList.add('hide');
+    document.body.classList.add('ready');
+    if (!reduceMotion.matches) animateEnter();
+    setTimeout(() => splash?.remove(), 450);
+  });
+}
+// po prihlásení už animácie bežia normálne
+document.addEventListener('click', () => document.body.classList.remove('no-anim'), { once: true });
+
+// Offline a okamžité spustenie: súbory z pamäte telefónu, nová verzia na pozadí
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((reg) => {
+      reg.update().catch(() => {});
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
+    }).catch(() => {});
+  });
+}

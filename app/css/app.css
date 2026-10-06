@@ -68,3 +68,7 @@ main.animate .records > .record, main.animate .plan-items > li { animation: rise
 .trainer-row .info { display: flex; flex-direction: column; }
 .trainer-row .info strong { font-size: 1.1rem; }
 .trainer-row .info small { color: var(--muted); }
+
+/* Opakované otvorenie – bez prechodov (pozadie hneď, bez zatočenia avatara) */
+body.no-anim::before { transition: none; }
+body.no-anim .brand .avatar { animation: none; }

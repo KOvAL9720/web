@@ -118,7 +118,7 @@ function boot() {
   if (m) {
     history.replaceState(null, '', location.pathname + location.search + '#/');
     render();
-    login(m[1]).then((r) => { if (!r.ok) { logoutMsg = r.msg; } render(); if (r.ok) refresh(); });
+    login(m[1]).then((r) => { if (!r.ok) { logoutMsg = r.msg; } render(r.ok); if (r.ok) refresh(); });
     return;
   }
   if (authCode && ACCESS_CODES[authCode]) { DB = DEMO_DB; TRAINER = DEMO_TRAINER; clientId = ACCESS_CODES[authCode]; return; }
@@ -320,7 +320,7 @@ function viewLogin() {
 const ROUTES = { '': viewHome, sessions: viewSessions, plan: viewPlan, progress: viewProgress };
 function route() { return location.hash.replace(/^#\/?/, '').split('/')[0]; }
 
-function render(animate = true) {
+function render(animate = false) {
   const app = document.getElementById('app');
   const c = client();
   if (!c) {
@@ -332,7 +332,7 @@ function render(animate = true) {
       btn.disabled = true; btn.textContent = 'Overujem…';
       logoutMsg = '';
       const r = await login(document.getElementById('code').value);
-      if (r.ok) { location.hash = ''; render(); refresh(); }
+      if (r.ok) { location.hash = ''; render(true); refresh(); }
       else { btn.disabled = false; btn.textContent = 'Prihlásiť sa'; document.getElementById('login-error').textContent = r.msg; }
     });
     document.getElementById('code').focus();
@@ -397,7 +397,7 @@ document.addEventListener('click', (e) => {
   const t = e.target.closest('[data-toggle]');
   if (t) { const id = t.dataset.toggle; openLogs.has(id) ? openLogs.delete(id) : openLogs.add(id); render(); }
 });
-window.addEventListener('hashchange', render);
+window.addEventListener('hashchange', () => render());
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refresh(); });
 // Štart: úvodná čiara, fotka pozadia sa roztmaví až po načítaní, potom nabehne obsah
 const bgReady = new Promise((resolve) => {

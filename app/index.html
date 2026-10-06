@@ -15,13 +15,27 @@
   <meta name="apple-mobile-web-app-title" content="Klient">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <!-- Štýly appky Tréner (1 : 1) + doplnky klientskej zóny -->
-  <link rel="stylesheet" href="../css/trainer.css?v=6">
-  <link rel="stylesheet" href="css/app.css?v=6">
+  <link rel="preload" as="image" href="../icons/bg-gym.jpg">
+  <style>
+    /* Úvodná obrazovka – rovnaká ako v appke Tréner (inline, ukáže sa okamžite) */
+    #splash { position: fixed; inset: 0; z-index: 1000; background: #111416; display: grid; place-items: center; transition: opacity .35s ease, visibility .35s; }
+    #splash.hide { opacity: 0; visibility: hidden; }
+    #splash .line { position: relative; width: 100vw; height: 3px; background: rgba(143, 220, 210, .12); overflow: hidden; }
+    #splash .line::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, #b9ebe4, #46b3a7); box-shadow: 0 0 14px #46b3a7; transform-origin: left; animation: splash-fill .55s cubic-bezier(.45, 0, .25, 1) forwards, splash-glow .25s ease-out .55s forwards; }
+    #splash .line::after { content: ""; position: absolute; top: 0; bottom: 0; width: 30%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .9), transparent); animation: splash-sheen .55s cubic-bezier(.45, 0, .25, 1) forwards; }
+    @keyframes splash-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @keyframes splash-glow { 50% { box-shadow: 0 0 26px 4px #46b3a7; } 100% { box-shadow: 0 0 16px 1px #46b3a7; } }
+    @keyframes splash-sheen { from { transform: translateX(-120%); } to { transform: translateX(280%); } }
+    @media (prefers-reduced-motion: reduce) { #splash .line::before, #splash .line::after { animation: none; } }
+  </style>
+  <link rel="stylesheet" href="../css/trainer.css?v=7">
+  <link rel="stylesheet" href="css/app.css?v=7">
 </head>
 <body>
+  <div id="splash" aria-hidden="true"><div class="line"></div></div>
   <div id="app"></div>
-  <script src="js/data.js?v=6"></script>
-  <script src="js/app.js?v=6"></script>
-  <script type="module" src="js/cloud.js?v=6"></script>
+  <script src="js/data.js?v=7"></script>
+  <script src="js/app.js?v=7"></script>
+  <script type="module" src="js/cloud.js?v=7"></script>
 </body>
 </html>

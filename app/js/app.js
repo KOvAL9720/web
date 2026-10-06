@@ -300,7 +300,7 @@ function viewLogin() {
 const ROUTES = { '': viewHome, sessions: viewSessions, plan: viewPlan, progress: viewProgress };
 function route() { return location.hash.replace(/^#\/?/, '').split('/')[0]; }
 
-function render() {
+function render(animate = true) {
   const app = document.getElementById('app');
   const c = client();
   if (!c) {
@@ -326,7 +326,7 @@ function render() {
     <a href="#/" class="brand"><span class="avatar">${c.photo ? `<img src="${c.photo}" alt="" decoding="sync">` : initials(c.name)}</span><span>${esc(c.name)}<small>Tréner: ${esc(TRAINER.name)}</small></span></a>
     <button class="topbar-btn text" id="logout" type="button">Odhlásiť</button>
   </header>
-  <main id="main" class="enter">${view()}</main>
+  <main id="main">${view()}</main>
   <nav class="nav" aria-label="Hlavná navigácia">
     <a href="#/" class="${r === '' ? 'active' : ''}"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>Prehľad</span></a>
     <a href="#/sessions" class="${r === 'sessions' ? 'active' : ''}"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg><span>Tréningy</span></a>
@@ -335,6 +335,38 @@ function render() {
   </nav>`;
   document.getElementById('logout').addEventListener('click', () => logout());
   window.scrollTo(0, 0);
+  if (animate && !reduceMotion.matches) animateEnter();
+}
+
+/* ---------- Animácie (ako v appke Tréner) ---------- */
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+function animateEnter() {
+  const main = document.getElementById('main');
+  if (!main) return;
+  main.classList.remove('animate');
+  void main.offsetWidth;
+  main.classList.add('animate');
+  const els = main.querySelectorAll(':scope > *, .stats > .stat, .card .list > li, .plan-items > li, .records > .record');
+  let i = 0;
+  els.forEach((el) => { el.style.animationDelay = `${Math.min(i++, 14) * 45}ms`; });
+  clearTimeout(animateEnter.t);
+  animateEnter.t = setTimeout(() => main.classList.remove('animate'), 1400);
+  main.querySelectorAll('.stat b').forEach(countUp);
+}
+// Číslo „nabehne“ od nuly po svoju hodnotu
+function countUp(el) {
+  if (!/^\d+$/.test(el.textContent.trim())) return;
+  const target = parseInt(el.textContent, 10);
+  if (!Number.isFinite(target) || target === 0) return;
+  const start = performance.now();
+  const dur = 900;
+  const step = (now) => {
+    const t = Math.min((now - start) / dur, 1);
+    el.textContent = Math.round(target * (1 - Math.pow(1 - t, 3)));
+    if (t < 1) requestAnimationFrame(step);
+  };
+  el.textContent = '0';
+  requestAnimationFrame(step);
 }
 
 document.addEventListener('click', (e) => {
@@ -347,5 +379,21 @@ document.addEventListener('click', (e) => {
 });
 window.addEventListener('hashchange', render);
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refresh(); });
+// Štart: úvodná čiara, fotka pozadia sa roztmaví až po načítaní, potom nabehne obsah
+const bgReady = new Promise((resolve) => {
+  const img = new Image();
+  img.src = '../icons/bg-gym.jpg';
+  const done = () => resolve();
+  (img.decode ? img.decode() : Promise.resolve()).then(done, done);
+  setTimeout(done, 1500);
+}).then(() => document.body.classList.add('bg-ready'));
 boot();
-render();
+render(false);
+const splash = document.getElementById('splash');
+const wait = reduceMotion.matches ? 0 : Math.max(0, 750 - performance.now());
+Promise.all([bgReady, new Promise((r) => setTimeout(r, wait))]).then(() => {
+  if (splash) splash.classList.add('hide');
+  document.body.classList.add('ready');
+  if (!reduceMotion.matches) animateEnter();
+  setTimeout(() => splash?.remove(), 450);
+});

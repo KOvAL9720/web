@@ -4,7 +4,7 @@
    ========================================================= */
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
-import { getFirestore, doc, getDoc, collection, getDocs, addDoc, deleteDoc, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, deleteDoc, query, where, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyB3E6qCv4VFGeyHHvFClqjJXSkzyvnObjg',
@@ -48,6 +48,28 @@ window.clientCloud = {
   async cancelRequest(code, id) {
     await ready;
     await deleteDoc(doc(fs, 'shared', code, 'requests', id));
+  },
+  // Zablokované termíny trénera (žiadosti všetkých klientov) – len dátum, čas a dĺžka, bez mien a kódov
+  async listHolds(ownerUid) {
+    await ready;
+    const qs = await getDocs(query(collection(fs, 'holds'), where('ownerUid', '==', ownerUid)));
+    return qs.docs.map((d) => d.data()).filter((h) => typeof h.date === 'string' && typeof h.time === 'string');
+  },
+  // zablokuje termín; ak ho medzitým zablokoval iný klient, vráti false (dokument už existuje a cudzí sa prepísať nedá)
+  async holdSlot(ownerUid, date, time, duration) {
+    const user = await ready;
+    const ref = doc(fs, 'holds', `${ownerUid}_${date}_${time.replace(':', '')}`);
+    try {
+      await setDoc(ref, { ownerUid, date, time, duration, by: user.uid, createdAt: serverTimestamp() });
+      return true;
+    } catch (e) {
+      if (e?.code === 'permission-denied' && (await getDoc(ref).catch(() => null))?.exists()) return false;
+      throw e;
+    }
+  },
+  async releaseHold(ownerUid, date, time) {
+    await ready;
+    await deleteDoc(doc(fs, 'holds', `${ownerUid}_${date}_${time.replace(':', '')}`)).catch(() => {});
   }
 };
 window.dispatchEvent(new Event('client-cloud-ready'));

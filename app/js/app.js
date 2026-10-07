@@ -205,7 +205,7 @@ function viewSessions() {
   const chips = [['upcoming', 'Najbližšie'], ['done', 'Odtrénované'], ['all', 'Všetky']];
   return `
   <div class="page-head"><div><h1>Tréningy</h1><p class="muted">${cnt(lists.done.length, 'odtrénovaný tréning', 'odtrénované tréningy', 'odtrénovaných tréningov')}</p></div>
-    <button class="btn primary" id="book-open">${bookOpen ? 'Zavrieť' : '+ Naplánovať tréning'}</button></div>
+    ${bookOpen || lists.upcoming.length || sessionsFilter !== 'upcoming' ? `<button class="btn primary" id="book-open">${bookOpen ? 'Zavrieť' : '+ Naplánovať tréning'}</button>` : ''}</div>
   ${bookingCard()}
   <div class="chips chart-chips">${chips.map(([k, l]) => `<button class="chip${sessionsFilter === k ? ' active' : ''}" data-filter="${k}">${l}</button>`).join('')}</div>
   <section class="card">${lists[sessionsFilter].length ? sessionList(lists[sessionsFilter]) : `<p class="empty">${sessionsFilter === 'upcoming' ? 'Žiadny naplánovaný tréning.' : 'Zatiaľ žiadne tréningy.'}</p>${sessionsFilter === 'upcoming' && !bookOpen ? '<button class="btn primary" id="book-open" style="width:100%;margin-top:10px">+ Naplánovať tréning</button>' : ''}`}</section>`;

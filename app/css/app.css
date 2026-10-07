@@ -148,3 +148,18 @@ body.no-anim .brand .avatar { animation: none; }
 /* otvorené okno: posúva sa len jeho obsah, nie stránka pod ním */
 dialog, dialog .modal-body { overscroll-behavior: contain; }
 html:has(dialog[open]) { overflow: hidden; }
+
+/* ===== Redizajn – doplnky klientskej zóny ===== */
+.hero .hero-sub { margin: 8px 0 18px; }
+a.hero-tile { color: #fff; text-decoration: none; }
+a.hero-tile:hover { background: rgba(34, 34, 38, .7); }
+.hero-add { color: #fff; }
+.stat .i { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; width: 18px; height: 18px; }
+.login-box { background: var(--glass); border-color: var(--border); box-shadow: var(--shadow); }
+.login-box input::placeholder { color: var(--placeholder); }
+.login-wrap { background: var(--bg); }
+.ptr { box-shadow: var(--shadow); }
+@media (prefers-color-scheme: light) {
+  .badge.self { background: rgba(63, 120, 166, .12); color: #2f6690; }
+  .login-box { backdrop-filter: none; -webkit-backdrop-filter: none; }
+}

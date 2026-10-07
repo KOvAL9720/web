@@ -76,8 +76,8 @@ async function login(raw) {
     return { ok: true };
   }
   if (!navigator.onLine) return { ok: false, msg: 'Si offline – na prvé prihlásenie treba internet.' };
-  await Promise.race([cloudReady(), new Promise((r) => setTimeout(r, 6000))]);
-  if (!window.clientCloud) return { ok: false, msg: 'Nepodarilo sa pripojiť k serveru. Skús to o chvíľu.' };
+  await Promise.race([cloudReady(), new Promise((r) => setTimeout(r, 9000))]);
+  if (!window.clientCloud) return { ok: false, msg: 'Nepodarilo sa pripojiť k serveru – pravdepodobne slabý signál. Skontroluj internet a skús to znova (prípadne appku zavri a otvor).' };
   try {
     const snap = await Promise.race([window.clientCloud.fetch(code), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 15000))]);
     if (!snap) return { ok: false, msg: 'Tento kód nepoznáme. Skontroluj ho alebo sa ozvi trénerovi.' };

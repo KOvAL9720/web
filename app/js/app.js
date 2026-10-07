@@ -454,7 +454,6 @@ function viewLogin() {
       <button class="btn primary block" type="submit">Prihlásiť sa</button>
       <p class="error" id="login-error">${esc(logoutMsg)}</p>
     </form>
-    <p class="demo">Kód ti pošle tréner. Chceš si to len pozrieť? Skús <code>DEMO</code>.</p>
   </div></div>`;
 }
 

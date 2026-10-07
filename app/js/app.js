@@ -51,7 +51,7 @@ const intlPhone = (phone) => { const p = String(phone || '').replace(/[^\d+]/g, 
 function applySnapshot(snap) {
   const cid = snap.clientId;
   DB = {
-    clients: [{ id: cid, name: snap.client?.name || 'Klient', goal: snap.client?.goal || '', since: snap.client?.since || '', photo: snap.client?.photo || '' }],
+    clients: [{ id: cid, name: snap.client?.name || 'Klient', goal: snap.client?.goal || '', since: snap.client?.since || '', photo: /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(snap.client?.photo || '') ? snap.client.photo : '' }],
     sessions: (snap.sessions || []).map((x) => ({ ...x, clientId: cid })),
     plans: (snap.plans || []).map((p) => ({ ...p, clientId: cid })),
     exercises: snap.exercises || [],

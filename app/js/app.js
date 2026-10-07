@@ -213,6 +213,7 @@ function viewSessions() {
 
 /* ---------- Nahlásenie na tréning (žiadosť trénerovi) ---------- */
 let requests = [];           // moje žiadosti (z cloudu alebo ukážka)
+let holds = [];              // termíny, o ktoré už požiadal niekto (aj iný klient) – sú obsadené
 let requestsLoaded = false;
 let bookDate = '';
 let bookTime = '';
@@ -225,7 +226,11 @@ const isDemo = () => !!ACCESS_CODES[authCode];
 
 async function loadRequests() {
   if (isDemo() || !authCode) { requestsLoaded = true; return; }
-  try { await cloudReady(); requests = await window.clientCloud.listRequests(authCode); requestsLoaded = true; }
+  try {
+    await cloudReady();
+    const [rq, hd] = await Promise.all([window.clientCloud.listRequests(authCode), TRAINER.ownerUid && window.clientCloud.listHolds ? window.clientCloud.listHolds(TRAINER.ownerUid).catch(() => []) : []]);
+    requests = rq; holds = hd; requestsLoaded = true;
+  }
   catch (e) { requestsLoaded = true; }
 }
 
@@ -245,7 +250,7 @@ function freeSlots(d, av) {
   if (!av) return null;
   const ranges = av.hours[String(parseDate(d).getDay())] || [];
   const dur = Number(av.duration) || 60, step = Number(av.step) || 30;
-  const busy = (av.busy || []).filter((b) => b[0] === d).map((b) => [toMin(b[1]), toMin(b[1]) + (Number(b[2]) || dur)]);
+  const busy = [...(av.busy || []), ...holds.map((h) => [h.date, h.time, h.duration])].filter((b) => b[0] === d).map((b) => [toMin(b[1]), toMin(b[1]) + (Number(b[2]) || dur)]);
   const now = new Date();
   const minStart = d === today() ? now.getHours() * 60 + now.getMinutes() + 60 : 0; // dnes najskôr o hodinu
   const out = [];
@@ -297,7 +302,19 @@ async function sendRequest() {
     if (isDemo()) { requests.push({ id: 'r' + Date.now(), ...data, status: 'new', createdAt: Date.now() }); }
     else {
       await cloudReady();
-      const id = await window.clientCloud.addRequest(authCode, data);
+      const owner = TRAINER.ownerUid;
+      const dur = Number(availability()?.duration) || 60;
+      if (owner && window.clientCloud.holdSlot && !(await window.clientCloud.holdSlot(owner, bookDate, bookTime, dur))) {
+        await loadRequests();
+        bookTime = '';
+        render();
+        document.getElementById('book-msg').textContent = 'Tento termín si medzitým zabral niekto iný – vyber iný čas.';
+        return;
+      }
+      let id;
+      try { id = await window.clientCloud.addRequest(authCode, data); }
+      catch (e) { if (owner) window.clientCloud.releaseHold?.(owner, bookDate, bookTime); throw e; }
+      if (owner) holds.push({ ownerUid: owner, date: bookDate, time: bookTime, duration: dur });
       requests.push({ id, ...data, status: 'new', createdAt: Date.now() });
       notifyTrainer(data);
     }
@@ -320,8 +337,14 @@ function notifyTrainer(r) {
 
 async function cancelRequest(id) {
   try {
-    if (!isDemo()) { await cloudReady(); await window.clientCloud.cancelRequest(authCode, id); }
-    requests = requests.filter((r) => r.id !== id);
+    const r = requests.find((x) => x.id === id);
+    if (!isDemo()) {
+      await cloudReady();
+      await window.clientCloud.cancelRequest(authCode, id);
+      // termín je znova voľný aj pre ostatných klientov
+      if (r && TRAINER.ownerUid) { window.clientCloud.releaseHold?.(TRAINER.ownerUid, r.date, r.time); holds = holds.filter((h) => !(h.date === r.date && h.time === r.time)); }
+    }
+    requests = requests.filter((x) => x.id !== id);
     render();
   } catch (e) { document.getElementById('book-msg').textContent = 'Žiadosť sa nepodarilo zrušiť.'; }
 }

@@ -38,10 +38,10 @@
   <div id="splash" aria-hidden="true"><div class="line"></div></div>
   <div id="app"></div>
   <script src="js/data.js?v=8"></script>
-  <script src="js/app.js?v=18"></script>
+  <script src="js/app.js?v=19"></script>
   <script type="module">
     // Firebase sa načíta až po vykreslení obsahu, aby nebrzdil štart
-    const loadCloud = () => import('./js/cloud.js?v=8').catch(() => {});
+    const loadCloud = () => import('./js/cloud.js?v=9').catch(() => {});
     if (document.readyState === 'complete') loadCloud(); else window.addEventListener('load', loadCloud, { once: true });
   </script>
 </body>

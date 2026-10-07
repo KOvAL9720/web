@@ -180,27 +180,7 @@ function viewHome() {
     <div class="card-head"><h2>Tento týždeň</h2><span class="badge">${DAYS_SHORT[0]} ${fmtShort(weekStart)} – ${DAYS_SHORT[6]} ${fmtShort(addDays(weekStart, 6))}</span></div>
     ${sessionList(thisWeek, 'Tento týždeň nemáš žiadny tréning.')}
   </section>
-  ${trainerCard()}
   ${myPlans().length ? `<section class="card"><div class="card-head"><h2>Tvoj plán</h2><a class="btn small" href="#/plan">Otvoriť</a></div>${myPlans().map((p) => `<div class="session"><span class="when">${esc(p.name)}<small>${cnt(p.items.length, 'cvik', 'cviky', 'cvikov')}</small></span></div>`).join('')}</section>` : ''}`;
-}
-
-// Profil trénera – meno a kontakt (z nastavení appky Tréner)
-function trainerCard() {
-  const t = TRAINER;
-  if (!t?.name) return '';
-  const phone = (t.phone || '').replace(/\s/g, '');
-  return `<section class="card trainer-card">
-    <div class="card-head"><h2>Tvoj tréner</h2></div>
-    <div class="trainer-row">
-      <span class="avatar lg">${initials(t.name)}</span>
-      <div class="info"><strong>${esc(t.name)}</strong>${phone ? `<small>${esc(t.phone)}</small>` : '<small class="muted">Osobný tréner</small>'}</div>
-    </div>
-    ${phone ? `<div class="row" style="margin-top:12px">
-      <a class="btn primary" href="${t.whatsapp}" target="_blank" rel="noopener">WhatsApp</a>
-      <a class="btn" href="sms:${esc(phone)}">SMS</a>
-      <a class="btn" href="tel:${esc(phone)}">Zavolať</a>
-    </div>` : ''}
-  </section>`;
 }
 
 function sessionRow(s, open = false) {

@@ -58,7 +58,7 @@ function applySnapshot(snap) {
     measurements: (snap.measurements || []).map((m) => ({ ...m, clientId: cid }))
   };
   const phone = snap.trainer?.phone || '';
-  TRAINER = { name: snap.trainer?.name || 'Tréner', phone, whatsapp: phone ? `https://wa.me/${intlPhone(phone)}` : '' };
+  TRAINER = { name: snap.trainer?.name || 'Tréner', phone, whatsapp: phone ? `https://wa.me/${intlPhone(phone)}` : '', ownerUid: snap.ownerUid || '' };
   clientId = cid;
   lastUpdated = snap.updatedAt || null;
 }
@@ -91,6 +91,8 @@ async function login(raw) {
 // Pri ďalšom otvorení: hneď ukázať uložené dáta, na pozadí stiahnuť nové
 async function refresh() {
   if (!authCode || ACCESS_CODES[authCode] || !navigator.onLine) return;
+  requestsLoaded = false;
+  if (route() === 'sessions') loadRequests().then(() => render());
   try {
     await cloudReady();
     const snap = await window.clientCloud.fetch(authCode);
@@ -105,7 +107,7 @@ async function refresh() {
 
 let logoutMsg = '';
 function logout(msg = '') {
-  clientId = null; authCode = null; logoutMsg = msg;
+  clientId = null; authCode = null; logoutMsg = msg; requests = []; requestsLoaded = false;
   DB = DEMO_DB; TRAINER = DEMO_TRAINER;
   try { localStorage.removeItem(CODE_KEY); localStorage.removeItem(CACHE_KEY); } catch (e) { /* ok */ }
   location.hash = '';
@@ -203,8 +205,74 @@ function viewSessions() {
   const chips = [['upcoming', 'Najbližšie'], ['done', 'Odtrénované'], ['all', 'Všetky']];
   return `
   <div class="page-head"><div><h1>Tréningy</h1><p class="muted">${cnt(lists.done.length, 'odtrénovaný tréning', 'odtrénované tréningy', 'odtrénovaných tréningov')}</p></div></div>
+  ${bookingCard()}
   <div class="chips chart-chips">${chips.map(([k, l]) => `<button class="chip${sessionsFilter === k ? ' active' : ''}" data-filter="${k}">${l}</button>`).join('')}</div>
   <section class="card">${sessionList(lists[sessionsFilter], sessionsFilter === 'upcoming' ? 'Žiadny naplánovaný tréning.' : 'Zatiaľ žiadne tréningy.')}</section>`;
+}
+
+/* ---------- Nahlásenie na tréning (žiadosť trénerovi) ---------- */
+let requests = [];           // moje žiadosti (z cloudu alebo ukážka)
+let requestsLoaded = false;
+let bookDate = '';
+let bookTime = '';
+const REQ_STATUS = { new: ['Čaká na potvrdenie', 'planned'], accepted: ['Potvrdené', 'done'], declined: ['Odmietnuté', 'cancelled'] };
+const TIMES = Array.from({ length: 31 }, (_, i) => `${pad(6 + Math.floor(i / 2))}:${i % 2 ? '30' : '00'}`);
+const isDemo = () => !!ACCESS_CODES[authCode];
+
+async function loadRequests() {
+  if (isDemo() || !authCode) { requestsLoaded = true; return; }
+  try { await cloudReady(); requests = await window.clientCloud.listRequests(authCode); requestsLoaded = true; }
+  catch (e) { requestsLoaded = true; }
+}
+
+function bookingCard() {
+  const t = today();
+  const days = Array.from({ length: 14 }, (_, i) => addDays(t, i));
+  const busy = new Set(mySessions().filter((s) => s.status === 'planned').map((s) => s.date));
+  const pending = requests.filter((r) => r.date >= t).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+  const dayLabel = (d) => `${DAYS_SHORT[weekday(d)]} ${fmtShort(d)}`;
+  return `<section class="card" id="booking">
+    <div class="card-head"><h2>Nahlásiť sa na tréning</h2>${pending.length ? `<span class="badge planned">${cnt(pending.filter((r) => r.status === 'new').length, 'žiadosť', 'žiadosti', 'žiadostí')}</span>` : ''}</div>
+    <p class="muted" style="margin-top:-6px">Vyber deň a čas – tréner ti termín potvrdí.</p>
+    <div class="chips book-days">${days.map((d) => `<button class="chip${bookDate === d ? ' active' : ''}" data-book-date="${d}">${d === t ? 'Dnes' : d === addDays(t, 1) ? 'Zajtra' : dayLabel(d)}${busy.has(d) ? ' ·' : ''}</button>`).join('')}</div>
+    ${bookDate ? `<div class="chips book-times">${TIMES.map((x) => `<button class="chip${bookTime === x ? ' active' : ''}" data-book-time="${x}">${x}</button>`).join('')}</div>
+      <div class="field"><label for="book-note">Poznámka (nepovinné)</label><input id="book-note" placeholder="napr. môžem aj o hodinu neskôr"></div>
+      <button class="btn primary" id="book-send" ${bookTime ? '' : 'disabled'}>Poslať žiadosť${bookTime ? ` · ${fmtDay(bookDate)} ${bookTime}` : ''}</button>` : ''}
+    ${pending.length ? `<h3 class="section-title" style="margin-top:18px">Moje žiadosti</h3><ul class="list">${pending.map((r) => `<li class="session ${REQ_STATUS[r.status]?.[1] || 'planned'}">
+      <span class="when">${fmtDay(r.date)} o ${esc(r.time)}<small>${r.note ? esc(r.note) : DAYS[weekday(r.date)]}</small></span>
+      <span class="spacer"></span><span class="badge ${REQ_STATUS[r.status]?.[1] || 'planned'}">${REQ_STATUS[r.status]?.[0] || r.status}</span>
+      ${r.status === 'new' ? `<button class="icon-btn small" data-cancel-req="${esc(r.id)}" aria-label="Zrušiť žiadosť">✕</button>` : ''}
+    </li>`).join('')}</ul>` : ''}
+    <p class="hint" id="book-msg" style="margin:10px 0 0"></p>
+  </section>`;
+}
+
+async function sendRequest() {
+  const btn = document.getElementById('book-send');
+  const msg = document.getElementById('book-msg');
+  if (!bookDate || !bookTime) return;
+  const note = (document.getElementById('book-note')?.value || '').trim().slice(0, 200);
+  if (requests.some((r) => r.date === bookDate && r.time === bookTime && r.status !== 'declined')) { msg.textContent = 'Na tento termín už máš žiadosť.'; return; }
+  btn.disabled = true; btn.textContent = 'Posielam…';
+  const data = { date: bookDate, time: bookTime, note, clientName: client()?.name || '', ownerUid: TRAINER.ownerUid || '' };
+  try {
+    if (isDemo()) { requests.push({ id: 'r' + Date.now(), ...data, status: 'new', createdAt: Date.now() }); }
+    else { await cloudReady(); const id = await window.clientCloud.addRequest(authCode, data); requests.push({ id, ...data, status: 'new', createdAt: Date.now() }); }
+    bookDate = ''; bookTime = '';
+    render();
+    document.getElementById('book-msg').textContent = 'Žiadosť odoslaná – tréner ti termín potvrdí.';
+  } catch (e) {
+    btn.disabled = false; btn.textContent = 'Poslať žiadosť';
+    msg.textContent = e?.code === 'permission-denied' ? 'Odoslanie zamietnuté – ozvi sa trénerovi.' : 'Nepodarilo sa odoslať. Skontroluj internet.';
+  }
+}
+
+async function cancelRequest(id) {
+  try {
+    if (!isDemo()) { await cloudReady(); await window.clientCloud.cancelRequest(authCode, id); }
+    requests = requests.filter((r) => r.id !== id);
+    render();
+  } catch (e) { document.getElementById('book-msg').textContent = 'Žiadosť sa nepodarilo zrušiť.'; }
 }
 
 function viewPlan() {
@@ -323,6 +391,7 @@ function route() { return location.hash.replace(/^#\/?/, '').split('/')[0]; }
 function render(animate = false) {
   const app = document.getElementById('app');
   const c = client();
+  if (c && !requestsLoaded && route() === 'sessions') loadRequests().then(() => render());
   if (!c) {
     document.body.classList.add('login');
     app.innerHTML = viewLogin();
@@ -395,7 +464,14 @@ document.addEventListener('click', (e) => {
   const m = e.target.closest('[data-metric]');
   if (m) { metric = m.dataset.metric; render(); return; }
   const t = e.target.closest('[data-toggle]');
-  if (t) { const id = t.dataset.toggle; openLogs.has(id) ? openLogs.delete(id) : openLogs.add(id); render(); }
+  if (t) { const id = t.dataset.toggle; openLogs.has(id) ? openLogs.delete(id) : openLogs.add(id); render(); return; }
+  const bd = e.target.closest('[data-book-date]');
+  if (bd) { bookDate = bd.dataset.bookDate; bookTime = ''; render(); document.getElementById('booking')?.scrollIntoView({ block: 'start', behavior: 'smooth' }); return; }
+  const bt = e.target.closest('[data-book-time]');
+  if (bt) { const note = document.getElementById('book-note')?.value || ''; bookTime = bt.dataset.bookTime; render(); const n = document.getElementById('book-note'); if (n) n.value = note; return; }
+  if (e.target.closest('#book-send')) { sendRequest(); return; }
+  const cr = e.target.closest('[data-cancel-req]');
+  if (cr) { cancelRequest(cr.dataset.cancelReq); }
 });
 window.addEventListener('hashchange', () => render());
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refresh(); });

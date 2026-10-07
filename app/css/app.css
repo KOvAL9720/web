@@ -72,3 +72,11 @@ main.animate .records > .record, main.animate .plan-items > li { animation: rise
 /* Opakované otvorenie – bez prechodov (pozadie hneď, bez zatočenia avatara) */
 body.no-anim::before { transition: none; }
 body.no-anim .brand .avatar { animation: none; }
+
+/* Nahlásenie na tréning */
+.book-days, .book-times { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; margin-bottom: 10px; }
+.book-days::-webkit-scrollbar, .book-times::-webkit-scrollbar { display: none; }
+.book-days .chip, .book-times .chip { flex: 0 0 auto; }
+#booking .field { margin: 6px 0 12px; }
+#booking .field input { width: 100%; }
+#booking #book-send { width: 100%; }

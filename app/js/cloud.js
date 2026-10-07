@@ -4,7 +4,7 @@
    ========================================================= */
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
-import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc, collection, getDocs, addDoc, deleteDoc, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyB3E6qCv4VFGeyHHvFClqjJXSkzyvnObjg',
@@ -30,9 +30,24 @@ window.clientCloud = {
     await ready;
     const snap = await getDoc(doc(fs, 'shared', code));
     if (!snap.exists()) return null;
-    const { ownerUid, updatedAt, ...data } = snap.data();
+    const { updatedAt, ...data } = snap.data();
     data.updatedAt = updatedAt?.toMillis ? updatedAt.toMillis() : Date.now();
     return data;
+  },
+  // žiadosti o tréning – podkolekcia shared/{kód}/requests
+  async listRequests(code) {
+    await ready;
+    const qs = await getDocs(query(collection(fs, 'shared', code, 'requests'), orderBy('date')));
+    return qs.docs.map((d) => { const { createdAt, ...r } = d.data(); return { id: d.id, ...r, createdAt: createdAt?.toMillis ? createdAt.toMillis() : 0 }; });
+  },
+  async addRequest(code, data) {
+    await ready;
+    const ref = await addDoc(collection(fs, 'shared', code, 'requests'), { ...data, status: 'new', createdAt: serverTimestamp() });
+    return ref.id;
+  },
+  async cancelRequest(code, id) {
+    await ready;
+    await deleteDoc(doc(fs, 'shared', code, 'requests', id));
   }
 };
 window.dispatchEvent(new Event('client-cloud-ready'));

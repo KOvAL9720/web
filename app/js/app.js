@@ -693,7 +693,7 @@ function render(animate = false) {
       btn.disabled = true; btn.textContent = 'Overujem…';
       logoutMsg = '';
       const r = await login(document.getElementById('code').value);
-      if (r.ok) { location.hash = ''; render(true); refresh(); }
+      if (r.ok) { document.body.classList.remove('spun'); setTimeout(() => document.body.classList.add('spun'), 1400); location.hash = ''; render(true); refresh(); }
       else { btn.disabled = false; btn.textContent = 'Prihlásiť sa'; document.getElementById('login-error').textContent = r.msg; }
     });
     document.getElementById('code').focus();
@@ -724,6 +724,8 @@ function render(animate = false) {
   if (ver && 'caches' in window) caches.keys().then((k) => { const v = k.find((x) => x.startsWith('klient-v')); if (v) ver.textContent = v.replace('klient-v', ''); }).catch(() => {});
   window.scrollTo(0, 0);
   moveNavInd();
+  // ikonka v menu poskočí len pri prepnutí záložky (nie pri každom obnovení dát)
+  if (r !== lastRoute) document.querySelector('.nav')?.classList.add('pop');
   if (animate && !reduceMotion.matches) animateEnter();
   else if (r !== lastRoute && !reduceMotion.matches) tabIn();
   lastRoute = r;
@@ -981,13 +983,14 @@ const splash = document.getElementById('splash');
 // Opakované otvorenie (klient už prihlásený): obsah hneď, bez úvodnej čiary a bez animácií – iPhone inak
 // ukáže posledný stav appky, potom tmavú obrazovku a znova obsah, čo pôsobí ako blikanie
 if (clientId) {
-  document.body.classList.add('no-anim', 'bg-ready', 'ready');
+  document.body.classList.add('no-anim', 'bg-ready', 'ready', 'spun');
   splash?.remove();
 } else {
   const wait = reduceMotion.matches ? 0 : Math.max(0, 500 - performance.now());
   Promise.all([bgReady, new Promise((r) => setTimeout(r, wait))]).then(() => {
     if (splash) splash.classList.add('hide');
     document.body.classList.add('ready');
+    setTimeout(() => document.body.classList.add('spun'), 1400);
     if (!reduceMotion.matches) animateEnter();
     setTimeout(() => splash?.remove(), 450);
   });

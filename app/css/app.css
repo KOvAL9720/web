@@ -102,3 +102,6 @@ body.no-anim .brand .avatar { animation: none; }
   main { padding-top: 16px; }
   main > :first-child { margin-top: 0; }
 }
+@media (min-width: 900px) {
+  main { margin: 0; max-width: 1180px; padding-left: 16px; padding-right: 32px; }
+}

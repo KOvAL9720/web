@@ -678,6 +678,13 @@ document.addEventListener('click', (e) => {
   const cr = e.target.closest('[data-cancel-req]');
   if (cr) { cancelRequest(cr.dataset.cancelReq); }
 });
+// Otvorené okno: stránka pod ním sa pri ťahaní nehýbe (v iPhone by poskakovala a presvital biely okraj)
+document.addEventListener('touchmove', (e) => {
+  const d = document.querySelector('dialog[open]');
+  if (!d || e.touches.length !== 1) return;
+  const box = d.contains(e.target) ? e.target.closest('.modal-body, textarea') : null;
+  if (!box || box.scrollHeight <= box.clientHeight + 1) e.preventDefault();
+}, { passive: false });
 window.addEventListener('hashchange', () => render());
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refresh(); });
 // Štart: úvodná čiara, fotka pozadia sa roztmaví až po načítaní, potom nabehne obsah

@@ -144,3 +144,7 @@ body.no-anim .brand .avatar { animation: none; }
 #entry-dlg .error { color: var(--danger, #ff8a8a); font-size: .88rem; }
 #entry-dlg .error:empty { display: none; }
 @media (max-width: 380px) { .card-head .row .badge { display: none; } }
+
+/* otvorené okno: posúva sa len jeho obsah, nie stránka pod ním */
+dialog, dialog .modal-body { overscroll-behavior: contain; }
+html:has(dialog[open]) { overflow: hidden; }

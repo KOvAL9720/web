@@ -1,9 +1,10 @@
-const CACHE = 'klient-v16';
+const CACHE = 'klient-v17';
 const ASSETS = [
   './',
   'index.html',
   'manifest.webmanifest',
   'css/app.css',
+  'css/redesign.css',
   'js/data.js',
   'js/app.js',
   'js/cloud.js',
@@ -11,7 +12,8 @@ const ASSETS = [
   '../icons/icon.svg',
   '../icons/icon-192.png',
   '../icons/icon-512.png',
-  '../icons/bg-gym.jpg'
+  '../icons/bg-gym.jpg',
+  '../icons/hero.jpg'
 ];
 
 self.addEventListener('install', (e) => {

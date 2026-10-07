@@ -134,6 +134,15 @@ function boot() {
 }
 
 /* ---------- Obrazovky ---------- */
+// ikony v štýle redizajnu (tenké línie, ako v appke Tréner)
+const IC = {
+  clock: '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  arrow: '<svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  calendar: '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  check: '<svg class="i" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  scale: '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8.5 9a5 5 0 0 1 7 0l-2 2.5h-3z"/></svg>',
+  chat: '<svg class="i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-5A8 8 0 1 1 21 12z"/></svg>'
+};
 function viewHome() {
   const c = client();
   const all = mySessions();
@@ -146,16 +155,26 @@ function viewHome() {
   const weekStart = addDays(today(), -weekday(today()));
   const thisWeek = all.filter((s) => s.status !== 'cancelled' && s.date >= weekStart && s.date < addDays(weekStart, 7));
   return `
-  <div class="page-head"><div><h1>Ahoj, ${esc(c.name.split(' ')[0])} 👋</h1><p class="muted">${esc(c.goal)}</p></div></div>
-  <section class="hero">
-    <span class="eyebrow">Najbližší tréning</span>
-    ${next ? `<h2 class="hero-title">${whenHtml(next.date, next.time)}</h2><p class="hero-sub">${next.note ? esc(next.note) + ' · ' : ''}${DAYS[weekday(next.date)]} ${fmtShort(next.date)}</p>` : `<h2 class="hero-title">Zatiaľ nič naplánované</h2><p class="hero-sub">Dohodni si termín s trénerom.</p>`}
-    <div class="row">${TRAINER.whatsapp ? `<a class="btn primary" href="${TRAINER.whatsapp}" target="_blank" rel="noopener">Napísať trénerovi</a>` : ''}<a class="btn" href="#/sessions">Všetky tréningy</a></div>
+  <section class="hero hero-photo">
+    <div class="hero-top">
+      <span class="eyebrow">${DAYS[weekday(today())]} · ${fmtShort(today())} ${parseDate(today()).getFullYear()}</span>
+      ${TRAINER.whatsapp ? `<a class="hero-add" href="${TRAINER.whatsapp}" target="_blank" rel="noopener" aria-label="Napísať trénerovi">${IC.chat}</a>` : ''}
+    </div>
+    <h1 class="hero-title">Ahoj,<br>${esc(c.name.split(' ')[0])}</h1>
+    <p class="hero-sub">${c.goal ? esc(c.goal) : 'Drž sa plánu.'}</p>
+    <div class="hero-tiles">
+      <a class="hero-tile hero-next" href="#/sessions">
+        <span class="ti" aria-hidden="true">${IC.clock}</span>
+        <span class="tv"><strong>${next ? `${next.date === today() ? 'Dnes' : next.date === addDays(today(), 1) ? 'Zajtra' : `${DAYS_SHORT[weekday(next.date)]} ${fmtShort(next.date)}`}${next.time ? ` ${esc(next.time)}` : ''}` : '–'}</strong><span class="eyebrow">Najbližší tréning</span></span>
+      </a>
+      <div class="hero-tile hero-big"><span class="ti" aria-hidden="true">${IC.check}</span><span class="tv"><b>${done.length}</b><span class="eyebrow">odtrénované</span></span></div>
+    </div>
+    <button class="btn primary cta" id="cta-book" type="button">Naplánovať tréning <span aria-hidden="true">${IC.arrow}</span></button>
   </section>
   <div class="stats">
-    <div class="stat"><b>${done.length}</b><span>odtrénované</span></div>
-    <div class="stat"><b>${thisWeek.length}</b><span>tento týždeň</span></div>
-    <div class="stat"><b>${dw == null ? '–' : (dw > 0 ? '+' : '') + fmtNum(dw)}</b><span>kg od začiatku</span></div>
+    <div class="stat"><i>${IC.check}</i><b>${done.length}</b><span>odtrénované</span></div>
+    <div class="stat"><i>${IC.calendar}</i><b>${thisWeek.length}</b><span>tento týždeň</span></div>
+    <div class="stat"><i>${IC.scale}</i><b>${dw == null ? '–' : (dw > 0 ? '+' : '') + fmtNum(dw)}</b><span>kg od začiatku</span></div>
   </div>
   <section class="card">
     <div class="card-head"><h2>Tento týždeň</h2><span class="badge">${DAYS_SHORT[0]} ${fmtShort(weekStart)} – ${DAYS_SHORT[6]} ${fmtShort(addDays(weekStart, 6))}</span></div>
@@ -623,8 +642,13 @@ function render(animate = false) {
   </nav>`;
   document.getElementById('logout').addEventListener('click', () => logout());
   window.scrollTo(0, 0);
+  moveNavInd();
   if (animate && !reduceMotion.matches) animateEnter();
+  else if (r !== lastRoute && !reduceMotion.matches) tabIn();
+  lastRoute = r;
+  if (!reduceMotion.matches) revealOnScroll();
 }
+let lastRoute = null;
 
 /* ---------- Animácie (ako v appke Tréner) ---------- */
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -639,7 +663,7 @@ function animateEnter() {
   els.forEach((el) => { el.style.animationDelay = `${Math.min(i++, 14) * 45}ms`; });
   clearTimeout(animateEnter.t);
   animateEnter.t = setTimeout(() => main.classList.remove('animate'), 1400);
-  main.querySelectorAll('.stat b').forEach(countUp);
+  main.querySelectorAll('.stat b, .hero-big b').forEach(countUp);
 }
 // Číslo „nabehne“ od nuly po svoju hodnotu
 function countUp(el) {
@@ -657,6 +681,85 @@ function countUp(el) {
   requestAnimationFrame(step);
 }
 
+// Posuvný indikátor v menu – „preskočí“ z predchádzajúcej záložky pod vybranú
+let navIndPos = null;
+function moveNavInd() {
+  const nav = document.querySelector('.nav');
+  const a = nav?.querySelector('a.active');
+  if (!nav || !a || !a.offsetWidth) return;
+  const ind = document.createElement('span');
+  ind.className = 'nav-ind';
+  nav.prepend(ind);
+  const to = { w: a.offsetWidth, h: a.offsetHeight, x: a.offsetLeft, y: a.offsetTop };
+  const place = (p) => { ind.style.width = `${p.w}px`; ind.style.height = `${p.h}px`; ind.style.transform = `translate(${p.x}px, ${p.y}px)`; };
+  ind.style.transition = 'none';
+  place(navIndPos && !reduceMotion.matches ? navIndPos : to);
+  nav.classList.add('has-ind');
+  void ind.offsetWidth;
+  ind.style.transition = '';
+  place(to);
+  navIndPos = to;
+}
+window.addEventListener('resize', () => { clearTimeout(moveNavInd.t); moveNavInd.t = setTimeout(() => { navIndPos = null; document.querySelector('.nav-ind')?.remove(); moveNavInd(); }, 120); });
+
+// Prepnutie záložky: obsah sa jemne posunie na miesto (bez blikania – len posun)
+function tabIn() {
+  const main = document.getElementById('main');
+  if (!main) return;
+  main.classList.add('tab-in');
+  clearTimeout(tabIn.t);
+  tabIn.t = setTimeout(() => main.classList.remove('tab-in'), 700);
+}
+
+// Karty pod okrajom obrazovky sa jemne vysunú až pri posunutí k nim
+const revealIO = 'IntersectionObserver' in window ? new IntersectionObserver((entries) => {
+  let n = 0;
+  entries.forEach((e) => {
+    if (!e.isIntersecting) return;
+    e.target.style.setProperty('--rd', `${Math.min(n++, 6) * 60}ms`);
+    e.target.classList.add('in');
+    revealIO.unobserve(e.target);
+    setTimeout(() => e.target.classList.remove('rv', 'in'), 1600);
+  });
+}, { rootMargin: '0px 0px -6% 0px' }) : null;
+function revealOnScroll() {
+  const main = document.getElementById('main');
+  if (!revealIO || !main) return;
+  main.querySelectorAll(':scope > .card, :scope > section, .stats > .stat, .records > .record').forEach((el) => {
+    if (el.closest('.rv')) return;
+    if (el.getBoundingClientRect().top > innerHeight) { el.classList.add('rv'); revealIO.observe(el); }
+  });
+}
+
+// Úvodná fotka sa pri posúvaní hýbe pomalšie ako obsah (paralaxa)
+let parallaxRaf = 0;
+window.addEventListener('scroll', () => {
+  if (parallaxRaf || reduceMotion.matches) return;
+  parallaxRaf = requestAnimationFrame(() => {
+    parallaxRaf = 0;
+    const hero = document.querySelector('#main .hero');
+    if (!hero) return;
+    const r = hero.getBoundingClientRect();
+    if (r.bottom < 0) return;
+    hero.style.setProperty('--py', `${Math.round(Math.max(0, -r.top) * 0.28)}px`);
+  });
+}, { passive: true });
+
+// Na PC svetelný kužeľ na karte sleduje myš
+if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  let spotEl = null;
+  document.addEventListener('pointermove', (e) => {
+    const el = e.target.closest?.('#main .card, #main .stat');
+    if (spotEl && spotEl !== el) spotEl.classList.remove('spot');
+    spotEl = el;
+    if (!el || el.classList.contains('hero')) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', `${e.clientX - r.left}px`);
+    el.style.setProperty('--my', `${e.clientY - r.top}px`);
+    el.classList.add('spot');
+  }, { passive: true });
+}
+
 document.addEventListener('click', (e) => {
   const f = e.target.closest('[data-filter]');
   if (f) { sessionsFilter = f.dataset.filter; render(); return; }
@@ -664,6 +767,7 @@ document.addEventListener('click', (e) => {
   if (m) { metric = m.dataset.metric; render(); return; }
   const t = e.target.closest('[data-toggle]');
   if (t) { const id = t.dataset.toggle; openLogs.has(id) ? openLogs.delete(id) : openLogs.add(id); render(); return; }
+  if (e.target.closest('#cta-book')) { bookOpen = true; location.hash = '#/sessions'; setTimeout(() => document.getElementById('booking')?.scrollIntoView({ block: 'start', behavior: 'smooth' }), 80); return; }
   if (e.target.closest('#book-open')) { bookOpen = !bookOpen; if (!bookOpen) { bookDate = ''; bookTime = ''; } render(); if (bookOpen) document.getElementById('booking')?.scrollIntoView({ block: 'start', behavior: 'smooth' }); return; }
   const bd = e.target.closest('[data-book-date]');
   if (bd) { bookDate = bd.dataset.bookDate; bookTime = ''; render(); document.getElementById('booking')?.scrollIntoView({ block: 'start', behavior: 'smooth' }); return; }

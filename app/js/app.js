@@ -376,7 +376,8 @@ function viewPlan() {
   return `
   <div class="page-head"><div><h1>Tréningový plán</h1><p class="muted">Na dni, keď trénuješ sám/sama.</p></div></div>
   ${plans.map((p) => `<section class="card">
-    <div class="card-head"><h2>${esc(p.name)}</h2><span class="row"><span class="badge">${cnt(p.items.length, 'cvik', 'cviky', 'cvikov')}</span><button class="btn small primary" data-log-workout="${esc(p.id)}">Zapísať tréning</button></span></div>
+    <div class="card-head"><h2>${esc(p.name)}</h2><span class="row"><span class="badge">${cnt(p.items.length, 'cvik', 'cviky', 'cvikov')}</span><button class="btn small" data-log-workout="${esc(p.id)}">Zapísať</button></span></div>
+    <button class="btn primary live-go${window.liveActive?.('plan:' + p.id) ? ' on' : ''}" data-action="live-start" data-id="plan:${esc(p.id)}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>${window.liveActive?.('plan:' + p.id) ? 'Pokračovať v tréningu' : 'Začať tréning'}</button>
     <ul class="plan-items">${p.items.map((it, i) => {
       const dose = [it.sets && it.reps ? `${it.sets} × ${it.reps}` : it.sets ? `${it.sets} sérií` : it.reps || '', it.weight || '', it.rest ? `pauza ${it.rest}` : ''].filter(Boolean).join(' · ');
       return `<li><span class="n">${i + 1}</span><div class="info"><strong>${esc(exName(it.exerciseId))}</strong><div class="dose">${esc(dose)}</div>${it.note ? `<div class="note">${esc(it.note)}</div>` : ''}</div></li>`;
@@ -490,6 +491,14 @@ function myEntriesCard() {
   </section>`;
 }
 
+// uloženie vlastného zápisu (meranie / tréning) – do cloudu, tréner ho uvidí
+async function saveEntry(data) {
+  if (isDemo()) { entries.push({ id: 'd' + Date.now(), ...data, createdAt: Date.now() }); return; }
+  await cloudReady();
+  const id = await window.clientCloud.addEntry(authCode, TRAINER.ownerUid, data);
+  entries.push({ id, ...data, createdAt: Date.now() });
+}
+
 function entryDialog(title, body, onSave) {
   document.getElementById('entry-dlg')?.remove();
   document.body.insertAdjacentHTML('beforeend', `<dialog id="entry-dlg"><form method="dialog">
@@ -508,8 +517,7 @@ function entryDialog(title, body, onSave) {
     try { data = onSave(dlg); } catch (x) { err.textContent = x.message; return; }
     btn.disabled = true; btn.textContent = 'Ukladám…';
     try {
-      if (isDemo()) entries.push({ id: 'd' + Date.now(), ...data, createdAt: Date.now() });
-      else { await cloudReady(); const id = await window.clientCloud.addEntry(authCode, TRAINER.ownerUid, data); entries.push({ id, ...data, createdAt: Date.now() }); }
+      await saveEntry(data);
       dlg.close(); render(); toast('Uložené – tréner to uvidí');
     } catch (x) {
       btn.disabled = false; btn.textContent = 'Uložiť';

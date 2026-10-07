@@ -167,3 +167,9 @@ a.hero-tile:hover { background: rgba(34, 34, 38, .7); }
 body.spun .brand .avatar { animation: none; }
 /* ikonka v menu poskočí len pri prepnutí záložky */
 .nav:not(.pop) a.active svg { animation: none; }
+
+/* Plán – štart živého tréningu */
+.live-go { width: 100%; min-height: 52px; margin: 4px 0 12px; font-size: 1rem; gap: 8px; }
+.live-go .i { width: 18px; height: 18px; fill: currentColor; stroke: none; }
+.live-go.on { background: var(--accent); color: #062522; animation: play-pulse 1.8s ease-out infinite; }
+.live-go svg { width: 18px; height: 18px; fill: currentColor !important; stroke: none !important; }

@@ -107,7 +107,7 @@ async function refresh() {
 
 let logoutMsg = '';
 function logout(msg = '') {
-  clientId = null; authCode = null; logoutMsg = msg; requests = []; requestsLoaded = false;
+  clientId = null; authCode = null; logoutMsg = msg; requests = []; requestsLoaded = false; bookOpen = false; bookDate = ''; bookTime = '';
   DB = DEMO_DB; TRAINER = DEMO_TRAINER;
   try { localStorage.removeItem(CODE_KEY); localStorage.removeItem(CACHE_KEY); } catch (e) { /* ok */ }
   location.hash = '';
@@ -204,10 +204,11 @@ function viewSessions() {
   };
   const chips = [['upcoming', 'Najbližšie'], ['done', 'Odtrénované'], ['all', 'Všetky']];
   return `
-  <div class="page-head"><div><h1>Tréningy</h1><p class="muted">${cnt(lists.done.length, 'odtrénovaný tréning', 'odtrénované tréningy', 'odtrénovaných tréningov')}</p></div></div>
+  <div class="page-head"><div><h1>Tréningy</h1><p class="muted">${cnt(lists.done.length, 'odtrénovaný tréning', 'odtrénované tréningy', 'odtrénovaných tréningov')}</p></div>
+    <button class="btn primary" id="book-open">${bookOpen ? 'Zavrieť' : '+ Naplánovať tréning'}</button></div>
   ${bookingCard()}
   <div class="chips chart-chips">${chips.map(([k, l]) => `<button class="chip${sessionsFilter === k ? ' active' : ''}" data-filter="${k}">${l}</button>`).join('')}</div>
-  <section class="card">${sessionList(lists[sessionsFilter], sessionsFilter === 'upcoming' ? 'Žiadny naplánovaný tréning.' : 'Zatiaľ žiadne tréningy.')}</section>`;
+  <section class="card">${lists[sessionsFilter].length ? sessionList(lists[sessionsFilter]) : `<p class="empty">${sessionsFilter === 'upcoming' ? 'Žiadny naplánovaný tréning.' : 'Zatiaľ žiadne tréningy.'}</p>${sessionsFilter === 'upcoming' && !bookOpen ? '<button class="btn primary" id="book-open" style="width:100%;margin-top:10px">+ Naplánovať tréning</button>' : ''}`}</section>`;
 }
 
 /* ---------- Nahlásenie na tréning (žiadosť trénerovi) ---------- */
@@ -215,6 +216,7 @@ let requests = [];           // moje žiadosti (z cloudu alebo ukážka)
 let requestsLoaded = false;
 let bookDate = '';
 let bookTime = '';
+let bookOpen = false;
 const REQ_STATUS = { new: ['Čaká na potvrdenie', 'planned'], accepted: ['Potvrdené', 'done'], declined: ['Odmietnuté', 'cancelled'] };
 const TIMES = Array.from({ length: 31 }, (_, i) => `${pad(6 + Math.floor(i / 2))}:${i % 2 ? '30' : '00'}`);
 const isDemo = () => !!ACCESS_CODES[authCode];
@@ -231,13 +233,14 @@ function bookingCard() {
   const busy = new Set(mySessions().filter((s) => s.status === 'planned').map((s) => s.date));
   const pending = requests.filter((r) => r.date >= t).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
   const dayLabel = (d) => `${DAYS_SHORT[weekday(d)]} ${fmtShort(d)}`;
+  if (!bookOpen && !pending.length) return '';
   return `<section class="card" id="booking">
-    <div class="card-head"><h2>Nahlásiť sa na tréning</h2>${pending.length ? `<span class="badge planned">${cnt(pending.filter((r) => r.status === 'new').length, 'žiadosť', 'žiadosti', 'žiadostí')}</span>` : ''}</div>
-    <p class="muted" style="margin-top:-6px">Vyber deň a čas – tréner ti termín potvrdí.</p>
+    <div class="card-head"><h2>Naplánovať tréning</h2>${pending.length ? `<span class="badge planned">${cnt(pending.filter((r) => r.status === 'new').length, 'žiadosť', 'žiadosti', 'žiadostí')}</span>` : ''}</div>
+    ${bookOpen ? `<p class="muted" style="margin-top:-6px">Vyber deň a čas – tréner ti termín potvrdí.</p>
     <div class="chips book-days">${days.map((d) => `<button class="chip${bookDate === d ? ' active' : ''}" data-book-date="${d}">${d === t ? 'Dnes' : d === addDays(t, 1) ? 'Zajtra' : dayLabel(d)}${busy.has(d) ? ' ·' : ''}</button>`).join('')}</div>
     ${bookDate ? `<div class="chips book-times">${TIMES.map((x) => `<button class="chip${bookTime === x ? ' active' : ''}" data-book-time="${x}">${x}</button>`).join('')}</div>
       <div class="field"><label for="book-note">Poznámka (nepovinné)</label><input id="book-note" placeholder="napr. môžem aj o hodinu neskôr"></div>
-      <button class="btn primary" id="book-send" ${bookTime ? '' : 'disabled'}>Poslať žiadosť${bookTime ? ` · ${fmtDay(bookDate)} ${bookTime}` : ''}</button>` : ''}
+      <button class="btn primary" id="book-send" ${bookTime ? '' : 'disabled'}>Poslať žiadosť${bookTime ? ` · ${fmtDay(bookDate)} ${bookTime}` : ''}</button>` : ''}` : ''}
     ${pending.length ? `<h3 class="section-title" style="margin-top:18px">Moje žiadosti</h3><ul class="list">${pending.map((r) => `<li class="session ${REQ_STATUS[r.status]?.[1] || 'planned'}">
       <span class="when">${fmtDay(r.date)} o ${esc(r.time)}<small>${r.note ? esc(r.note) : DAYS[weekday(r.date)]}</small></span>
       <span class="spacer"></span><span class="badge ${REQ_STATUS[r.status]?.[1] || 'planned'}">${REQ_STATUS[r.status]?.[0] || r.status}</span>
@@ -258,7 +261,7 @@ async function sendRequest() {
   try {
     if (isDemo()) { requests.push({ id: 'r' + Date.now(), ...data, status: 'new', createdAt: Date.now() }); }
     else { await cloudReady(); const id = await window.clientCloud.addRequest(authCode, data); requests.push({ id, ...data, status: 'new', createdAt: Date.now() }); }
-    bookDate = ''; bookTime = '';
+    bookDate = ''; bookTime = ''; bookOpen = false;
     render();
     document.getElementById('book-msg').textContent = 'Žiadosť odoslaná – tréner ti termín potvrdí.';
   } catch (e) {
@@ -465,6 +468,7 @@ document.addEventListener('click', (e) => {
   if (m) { metric = m.dataset.metric; render(); return; }
   const t = e.target.closest('[data-toggle]');
   if (t) { const id = t.dataset.toggle; openLogs.has(id) ? openLogs.delete(id) : openLogs.add(id); render(); return; }
+  if (e.target.closest('#book-open')) { bookOpen = !bookOpen; if (!bookOpen) { bookDate = ''; bookTime = ''; } render(); if (bookOpen) document.getElementById('booking')?.scrollIntoView({ block: 'start', behavior: 'smooth' }); return; }
   const bd = e.target.closest('[data-book-date]');
   if (bd) { bookDate = bd.dataset.bookDate; bookTime = ''; render(); document.getElementById('booking')?.scrollIntoView({ block: 'start', behavior: 'smooth' }); return; }
   const bt = e.target.closest('[data-book-time]');

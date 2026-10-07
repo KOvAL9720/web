@@ -40,9 +40,10 @@ let authCode = null;
 try { authCode = localStorage.getItem(CODE_KEY); } catch (e) { /* úložisko nedostupné */ }
 
 const client = () => DB.clients.find((c) => c.id === clientId);
-const mySessions = () => DB.sessions.filter((s) => s.clientId === clientId).sort(bySessionTime);
+// tréningy od trénera + tréningy, ktoré si klient zapísal sám
+const mySessions = () => [...DB.sessions.filter((s) => s.clientId === clientId), ...entries.filter((e) => e.type === 'workout').map((e) => ({ id: 'k' + e.id, entryId: e.id, clientId, date: e.date, time: '', status: 'done', self: true, note: e.note || '', log: e.log && e.log.length ? e.log : undefined }))].sort(bySessionTime);
 const myPlans = () => DB.plans.filter((p) => p.clientId === clientId);
-const myMeasurements = () => DB.measurements.filter((m) => m.clientId === clientId).sort((a, b) => a.date.localeCompare(b.date));
+const myMeasurements = () => [...DB.measurements.filter((m) => m.clientId === clientId), ...entries.filter((e) => e.type === 'measure').map((e) => ({ id: 'k' + e.id, entryId: e.id, clientId, date: e.date, weight: e.weight ?? null, bodyFat: e.bodyFat ?? null, waist: e.waist ?? null, hips: e.hips ?? null, self: true }))].sort((a, b) => a.date.localeCompare(b.date));
 
 const normCode = (raw) => String(raw || '').replace(/[^a-z0-9]/gi, '').toUpperCase();
 const intlPhone = (phone) => { const p = String(phone || '').replace(/[^\d+]/g, ''); return p.startsWith('+') ? p.slice(1) : p.startsWith('00') ? p.slice(2) : p.startsWith('0') ? '421' + p.slice(1) : p; };
@@ -92,7 +93,7 @@ async function login(raw) {
 async function refresh() {
   if (!authCode || ACCESS_CODES[authCode] || !navigator.onLine) return;
   requestsLoaded = false;
-  if (route() === 'sessions') loadRequests().then(() => render());
+  loadRequests().then(() => render());
   try {
     await cloudReady();
     const snap = await window.clientCloud.fetch(authCode);
@@ -107,7 +108,7 @@ async function refresh() {
 
 let logoutMsg = '';
 function logout(msg = '') {
-  clientId = null; authCode = null; logoutMsg = msg; requests = []; requestsLoaded = false; bookOpen = false; bookDate = ''; bookTime = '';
+  clientId = null; authCode = null; logoutMsg = msg; requests = []; entries = []; holds = []; requestsLoaded = false; bookOpen = false; bookDate = ''; bookTime = '';
   DB = DEMO_DB; TRAINER = DEMO_TRAINER;
   try { localStorage.removeItem(CODE_KEY); localStorage.removeItem(CACHE_KEY); } catch (e) { /* ok */ }
   location.hash = '';
@@ -184,7 +185,7 @@ function trainerCard() {
 }
 
 function sessionRow(s, open = false) {
-  const tag = s.status === 'done' ? '<span class="badge done">Odtrénovaný</span>' : s.status === 'cancelled' ? '<span class="badge cancelled">Zrušený</span>' : '<span class="badge planned">Naplánovaný</span>';
+  const tag = s.self ? '<span class="badge self">Sám/sama</span>' : s.status === 'done' ? '<span class="badge done">Odtrénovaný</span>' : s.status === 'cancelled' ? '<span class="badge cancelled">Zrušený</span>' : '<span class="badge planned">Naplánovaný</span>';
   const log = open && s.log ? `<div class="log">${s.log.map((e) => `<div><span>${esc(exName(e.exerciseId))}</span><span>${e.sets.map(fmtSet).join(' · ')}</span></div>`).join('')}</div>` : '';
   return `<div class="session ${s.status}${s.log ? ' open' : ''}" ${s.log ? `data-toggle="${s.id}"` : ''}>
     <span class="when">${whenHtml(s.date, s.time)}<small>${s.note ? esc(s.note) : s.log ? `${cnt(s.log.length, 'cvik', 'cviky', 'cvikov')} · ťukni pre výkony` : DAYS[weekday(s.date)]}</small></span>
@@ -205,7 +206,7 @@ function viewSessions() {
   const chips = [['upcoming', 'Najbližšie'], ['done', 'Odtrénované'], ['all', 'Všetky']];
   return `
   <div class="page-head"><div><h1>Tréningy</h1><p class="muted">${cnt(lists.done.length, 'odtrénovaný tréning', 'odtrénované tréningy', 'odtrénovaných tréningov')}</p></div>
-    ${bookOpen || lists.upcoming.length || sessionsFilter !== 'upcoming' ? `<button class="btn primary" id="book-open">${bookOpen ? 'Zavrieť' : '+ Naplánovať tréning'}</button>` : ''}</div>
+    <div class="row">${myPlans().length ? '<button class="btn" data-log-workout="">+ Zapísať tréning</button>' : ''}${bookOpen || lists.upcoming.length || sessionsFilter !== 'upcoming' ? `<button class="btn primary" id="book-open">${bookOpen ? 'Zavrieť' : '+ Naplánovať tréning'}</button>` : ''}</div></div>
   ${bookingCard()}
   <div class="chips chart-chips">${chips.map(([k, l]) => `<button class="chip${sessionsFilter === k ? ' active' : ''}" data-filter="${k}">${l}</button>`).join('')}</div>
   <section class="card">${lists[sessionsFilter].length ? sessionList(lists[sessionsFilter]) : `<p class="empty">${sessionsFilter === 'upcoming' ? 'Žiadny naplánovaný tréning.' : 'Zatiaľ žiadne tréningy.'}</p>${sessionsFilter === 'upcoming' && !bookOpen ? '<button class="btn primary" id="book-open" style="width:100%;margin-top:10px">+ Naplánovať tréning</button>' : ''}`}</section>`;
@@ -213,7 +214,8 @@ function viewSessions() {
 
 /* ---------- Nahlásenie na tréning (žiadosť trénerovi) ---------- */
 let requests = [];           // moje žiadosti (z cloudu alebo ukážka)
-let holds = [];              // termíny, o ktoré už požiadal niekto (aj iný klient) – sú obsadené
+let holds = [];
+let entries = [];             // moje vlastné zápisy (meranie, tréning sám)              // termíny, o ktoré už požiadal niekto (aj iný klient) – sú obsadené
 let requestsLoaded = false;
 let bookDate = '';
 let bookTime = '';
@@ -228,8 +230,8 @@ async function loadRequests() {
   if (isDemo() || !authCode) { requestsLoaded = true; return; }
   try {
     await cloudReady();
-    const [rq, hd] = await Promise.all([window.clientCloud.listRequests(authCode), TRAINER.ownerUid && window.clientCloud.listHolds ? window.clientCloud.listHolds(TRAINER.ownerUid).catch(() => []) : []]);
-    requests = rq; holds = hd; requestsLoaded = true;
+    const [rq, hd, en] = await Promise.all([window.clientCloud.listRequests(authCode), TRAINER.ownerUid && window.clientCloud.listHolds ? window.clientCloud.listHolds(TRAINER.ownerUid).catch(() => []) : [], window.clientCloud.listEntries ? window.clientCloud.listEntries(authCode).catch(() => entries) : entries]);
+    requests = rq; holds = hd; entries = en; requestsLoaded = true;
   }
   catch (e) { requestsLoaded = true; }
 }
@@ -355,7 +357,7 @@ function viewPlan() {
   return `
   <div class="page-head"><div><h1>Tréningový plán</h1><p class="muted">Na dni, keď trénuješ sám/sama.</p></div></div>
   ${plans.map((p) => `<section class="card">
-    <div class="card-head"><h2>${esc(p.name)}</h2><span class="badge">${cnt(p.items.length, 'cvik', 'cviky', 'cvikov')}</span></div>
+    <div class="card-head"><h2>${esc(p.name)}</h2><span class="row"><span class="badge">${cnt(p.items.length, 'cvik', 'cviky', 'cvikov')}</span><button class="btn small primary" data-log-workout="${esc(p.id)}">Zapísať tréning</button></span></div>
     <ul class="plan-items">${p.items.map((it, i) => {
       const dose = [it.sets && it.reps ? `${it.sets} × ${it.reps}` : it.sets ? `${it.sets} sérií` : it.reps || '', it.weight || '', it.rest ? `pauza ${it.rest}` : ''].filter(Boolean).join(' · ');
       return `<li><span class="n">${i + 1}</span><div class="info"><strong>${esc(exName(it.exerciseId))}</strong><div class="dose">${esc(dose)}</div>${it.note ? `<div class="note">${esc(it.note)}</div>` : ''}</div></li>`;
@@ -427,19 +429,133 @@ function viewProgress() {
   const delta = (v, p) => (v == null || p == null ? '' : `<span class="d ${v < p ? 'delta-down' : v > p ? 'delta-up' : ''}">${v > p ? '+' : ''}${fmtNum(v - p)}</span>`);
   const recs = records();
   return `
-  <div class="page-head"><div><h1>Progres</h1><p class="muted">Merania od trénera a tvoje osobné rekordy.</p></div></div>
+  <div class="page-head"><div><h1>Progres</h1><p class="muted">Merania, tvoje zápisy a osobné rekordy.</p></div></div>
   <section class="card">
-    <div class="card-head"><h2>Merania</h2><span class="badge">${cnt(ms.length, 'meranie', 'merania', 'meraní')}</span></div>
+    <div class="card-head"><h2>Merania</h2><span class="row"><span class="badge">${cnt(ms.length, 'meranie', 'merania', 'meraní')}</span><button class="btn small primary" data-log-measure>+ Zapísať</button></span></div>
     ${ms.length ? `<div class="chips chart-chips">${avail.map(([k, l]) => `<button class="chip${k === metric ? ' active' : ''}" data-metric="${k}">${l}</button>`).join('')}</div>
       ${points.length ? chartSummary(points, unit, label) + chartHtml(points, unit) : ''}
       <table style="margin-top:14px"><thead><tr><th>Dátum</th><th class="num">kg</th><th class="num">% tuk</th><th class="num">pás</th><th class="num">boky</th></tr></thead><tbody>
-      ${[...ms].reverse().map((m, i, arr) => { const p = arr[i + 1] || {}; return `<tr><td>${fmtShort(m.date)}</td><td class="num">${fmtNum(m.weight)}${delta(m.weight, p.weight)}</td><td class="num">${fmtNum(m.bodyFat)}${delta(m.bodyFat, p.bodyFat)}</td><td class="num">${fmtNum(m.waist)}${delta(m.waist, p.waist)}</td><td class="num">${fmtNum(m.hips)}${delta(m.hips, p.hips)}</td></tr>`; }).join('')}
+      ${[...ms].reverse().map((m, i, arr) => { const p = arr[i + 1] || {}; return `<tr><td>${fmtShort(m.date)}${m.self ? ' <small class="muted">(ja)</small>' : ''}</td><td class="num">${fmtNum(m.weight)}${delta(m.weight, p.weight)}</td><td class="num">${fmtNum(m.bodyFat)}${delta(m.bodyFat, p.bodyFat)}</td><td class="num">${fmtNum(m.waist)}${delta(m.waist, p.waist)}</td><td class="num">${fmtNum(m.hips)}${delta(m.hips, p.hips)}</td></tr>`; }).join('')}
       </tbody></table>` : '<p class="empty">Zatiaľ žiadne merania.</p>'}
   </section>
   <section class="card">
     <div class="card-head"><h2>Osobné rekordy</h2><span class="badge">${recs.length}</span></div>
     ${recs.length ? `<div class="records">${recs.map((r, i) => `<div class="record"><span class="medal">${i === 0 ? '🏆' : '💪'}</span><div><b>${esc(r.name)}</b><small>${fmtShort(r.date)} ${parseDate(r.date).getFullYear()}</small></div><span class="val">${fmtSet(r.set)}</span></div>`).join('')}</div>` : '<p class="empty">Rekordy sa objavia po prvom tréningu so zapísanými výkonmi.</p>'}
+  </section>
+  ${myEntriesCard()}`;
+}
+
+/* ---------- Vlastné zápisy klienta: meranie a tréning, ktorý odcvičil sám ---------- */
+const numVal = (v) => { const t = String(v ?? '').trim().replace(/\s/g, '').replace(',', '.'); if (!t) return null; const n = Number(t); return Number.isFinite(n) ? n : NaN; };
+let toastT = 0;
+function toast(msg) {
+  let el = document.getElementById('toast');
+  if (!el) { el = document.createElement('div'); el.id = 'toast'; el.setAttribute('role', 'status'); document.body.append(el); }
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+function myEntriesCard() {
+  const list = [...entries].sort((a, b) => b.date.localeCompare(a.date) || (b.createdAt || 0) - (a.createdAt || 0));
+  if (!list.length) return '';
+  const what = (e) => e.type === 'measure'
+    ? ['Meranie', [e.weight != null ? `${fmtNum(e.weight)} kg` : '', e.bodyFat != null ? `${fmtNum(e.bodyFat)} % tuk` : '', e.waist != null ? `pás ${fmtNum(e.waist)}` : '', e.hips != null ? `boky ${fmtNum(e.hips)}` : ''].filter(Boolean).join(' · ')]
+    : ['Tréning sám/sama', e.log?.length ? cnt(e.log.length, 'cvik', 'cviky', 'cvikov') : (e.note || '')];
+  return `<section class="card">
+    <div class="card-head"><h2>Moje zápisy</h2><span class="badge">${list.length}</span></div>
+    <p class="muted" style="margin-top:-6px">Tréner ich vidí vo svojej appke.</p>
+    <ul class="list">${list.map((e) => { const [t, d] = what(e); return `<li class="session">
+      <span class="when">${esc(t)} · ${whenHtml(e.date)}<small>${esc(d)}</small></span><span class="spacer"></span>
+      <button class="icon-btn small" data-del-entry="${esc(e.id)}" aria-label="Zmazať zápis">✕</button>
+    </li>`; }).join('')}</ul>
   </section>`;
+}
+
+function entryDialog(title, body, onSave) {
+  document.getElementById('entry-dlg')?.remove();
+  document.body.insertAdjacentHTML('beforeend', `<dialog id="entry-dlg"><form method="dialog">
+    <header class="modal-head"><h2>${esc(title)}</h2><button type="button" class="icon-btn" data-close aria-label="Zavrieť">✕</button></header>
+    <div class="modal-body">${body}<p class="error" id="entry-err" style="flex-basis:100%;margin:0"></p></div>
+    <footer class="modal-foot"><span class="spacer"></span><button type="button" class="btn" data-close>Zrušiť</button><button type="submit" class="btn primary">Uložiť</button></footer>
+  </form></dialog>`);
+  const dlg = document.getElementById('entry-dlg');
+  dlg.querySelectorAll('[data-close]').forEach((b) => { b.onclick = () => dlg.close(); });
+  dlg.addEventListener('close', () => setTimeout(() => dlg.remove(), 50));
+  dlg.querySelector('form').onsubmit = async (e) => {
+    e.preventDefault();
+    const err = dlg.querySelector('#entry-err');
+    const btn = dlg.querySelector('button[type=submit]');
+    let data;
+    try { data = onSave(dlg); } catch (x) { err.textContent = x.message; return; }
+    btn.disabled = true; btn.textContent = 'Ukladám…';
+    try {
+      if (isDemo()) entries.push({ id: 'd' + Date.now(), ...data, createdAt: Date.now() });
+      else { await cloudReady(); const id = await window.clientCloud.addEntry(authCode, TRAINER.ownerUid, data); entries.push({ id, ...data, createdAt: Date.now() }); }
+      dlg.close(); render(); toast('Uložené – tréner to uvidí');
+    } catch (x) {
+      btn.disabled = false; btn.textContent = 'Uložiť';
+      err.textContent = x?.code === 'permission-denied' ? 'Uloženie zamietnuté – skontroluj hodnoty alebo sa ozvi trénerovi.' : 'Nepodarilo sa uložiť. Skontroluj internet.';
+    }
+  };
+  dlg.showModal();
+}
+const dateField = () => `<div class="field half"><label for="e-date">Dátum</label><input id="e-date" type="date" value="${today()}" max="${today()}" required></div>`;
+const numField = (id, label, half = true) => `<div class="field${half ? ' half' : ''}"><label for="${id}">${label}</label><input id="${id}" type="text" inputmode="decimal" autocomplete="off"></div>`;
+const checkDate = (dlg) => { const d = dlg.querySelector('#e-date').value; if (!/^\d{4}-\d{2}-\d{2}$/.test(d) || d > today()) throw new Error('Vyber dátum (nie v budúcnosti).'); return d; };
+
+function openMeasureForm() {
+  entryDialog('Zapísať meranie', `${dateField()}${numField('e-weight', 'Váha (kg)')}${numField('e-fat', 'Tuk (%)')}${numField('e-waist', 'Pás (cm)')}${numField('e-hips', 'Boky (cm)')}`, (dlg) => {
+    const date = checkDate(dlg);
+    const out = { type: 'measure', date };
+    for (const [id, key, lo, hi, name] of [['e-weight', 'weight', 20, 400, 'Váha'], ['e-fat', 'bodyFat', 1, 80, 'Tuk'], ['e-waist', 'waist', 30, 250, 'Pás'], ['e-hips', 'hips', 30, 250, 'Boky']]) {
+      const v = numVal(dlg.querySelector('#' + id).value);
+      if (v == null) continue;
+      if (Number.isNaN(v) || v < lo || v > hi) throw new Error(`${name}: zadaj číslo od ${lo} do ${hi}.`);
+      out[key] = Math.round(v * 10) / 10;
+    }
+    if (Object.keys(out).length < 3) throw new Error('Vyplň aspoň jednu hodnotu.');
+    return out;
+  });
+}
+
+function openWorkoutForm(planId) {
+  const plans = myPlans();
+  const plan = plans.find((p) => p.id === planId) || plans[0];
+  if (!plan) return;
+  const rows = plan.items.map((it, i) => {
+    const n = Math.min(Math.max(parseInt(it.sets, 10) || 3, 1), 8);
+    return `<div class="field log-ex" data-ex="${esc(it.exerciseId)}"><label>${i + 1}. ${esc(exName(it.exerciseId))}${it.reps ? ` <span class="muted" style="text-transform:none;letter-spacing:0">· plán ${esc(String(it.sets || ''))}${it.sets ? ' × ' : ''}${esc(String(it.reps))}</span>` : ''}</label>
+      ${Array.from({ length: n }, (_, k) => `<div class="log-set"><span class="muted">${k + 1}.</span><input type="text" inputmode="decimal" placeholder="kg" data-w aria-label="Séria ${k + 1} – kg"><input type="text" inputmode="numeric" placeholder="opak." data-r aria-label="Séria ${k + 1} – opakovania"></div>`).join('')}</div>`;
+  }).join('');
+  const planPick = plans.length > 1 ? `<div class="field half"><label for="e-plan">Plán</label><select id="e-plan">${plans.map((p) => `<option value="${esc(p.id)}" ${p === plan ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select></div>` : '';
+  entryDialog(`Tréning sám/sama – ${plan.name}`, `${dateField()}${planPick}<p class="hint" style="flex-basis:100%;margin:0">Vyplň, čo si odcvičil/a – prázdne série sa neuložia. Pri cvikoch bez záťaže stačia opakovania (alebo sekundy).</p>${rows}<div class="field"><label for="e-note">Poznámka (nepovinné)</label><input id="e-note" maxlength="300" placeholder="napr. ako si sa cítil/a"></div>`, (dlg) => {
+    const date = checkDate(dlg);
+    const log = [];
+    for (const ex of dlg.querySelectorAll('.log-ex')) {
+      const sets = [];
+      for (const row of ex.querySelectorAll('.log-set')) {
+        const w = numVal(row.querySelector('[data-w]').value), r = numVal(row.querySelector('[data-r]').value);
+        if (w == null && r == null) continue;
+        if (Number.isNaN(w) || Number.isNaN(r) || (w != null && (w < 0 || w > 500)) || (r != null && (r < 0 || r > 1000))) throw new Error(`${exName(ex.dataset.ex)}: skontroluj čísla.`);
+        sets.push({ w: w == null ? null : Math.round(w * 4) / 4, r: r == null ? null : Math.round(r) });
+      }
+      if (sets.length) log.push({ exerciseId: ex.dataset.ex, sets });
+    }
+    const note = (dlg.querySelector('#e-note').value || '').trim().slice(0, 300);
+    if (!log.length && !note) throw new Error('Vyplň aspoň jednu sériu alebo poznámku.');
+    return { type: 'workout', date, ...(log.length ? { log } : {}), ...(note ? { note } : {}) };
+  });
+  const sel = document.getElementById('e-plan');
+  if (sel) sel.onchange = () => { document.getElementById('entry-dlg').close(); openWorkoutForm(sel.value); };
+}
+
+async function deleteEntry(id) {
+  if (!confirm('Zmazať tento zápis?')) return;
+  try {
+    if (!isDemo()) { await cloudReady(); await window.clientCloud.deleteEntry(authCode, id); }
+    entries = entries.filter((e) => e.id !== id);
+    render(); toast('Zápis zmazaný');
+  } catch (e) { toast('Zápis sa nepodarilo zmazať'); }
 }
 
 function viewLogin() {
@@ -464,7 +580,7 @@ function route() { return location.hash.replace(/^#\/?/, '').split('/')[0]; }
 function render(animate = false) {
   const app = document.getElementById('app');
   const c = client();
-  if (c && !requestsLoaded && route() === 'sessions') loadRequests().then(() => render());
+  if (c && !requestsLoaded && ['sessions', 'progress', '', 'plan'].includes(route())) loadRequests().then(() => render());
   if (!c) {
     document.body.classList.add('login');
     app.innerHTML = viewLogin();
@@ -544,6 +660,11 @@ document.addEventListener('click', (e) => {
   const bt = e.target.closest('[data-book-time]');
   if (bt) { const note = document.getElementById('book-note')?.value || ''; bookTime = bt.dataset.bookTime; render(); const n = document.getElementById('book-note'); if (n) n.value = note; return; }
   if (e.target.closest('#book-send')) { sendRequest(); return; }
+  const lw = e.target.closest('[data-log-workout]');
+  if (lw) { openWorkoutForm(lw.dataset.logWorkout); return; }
+  if (e.target.closest('[data-log-measure]')) { openMeasureForm(); return; }
+  const de = e.target.closest('[data-del-entry]');
+  if (de) { deleteEntry(de.dataset.delEntry); return; }
   const cr = e.target.closest('[data-cancel-req]');
   if (cr) { cancelRequest(cr.dataset.cancelReq); }
 });

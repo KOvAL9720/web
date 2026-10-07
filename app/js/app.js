@@ -78,7 +78,7 @@ async function login(raw) {
   await Promise.race([cloudReady(), new Promise((r) => setTimeout(r, 6000))]);
   if (!window.clientCloud) return { ok: false, msg: 'Nepodarilo sa pripojiť k serveru. Skús to o chvíľu.' };
   try {
-    const snap = await window.clientCloud.fetch(code);
+    const snap = await Promise.race([window.clientCloud.fetch(code), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 15000))]);
     if (!snap) return { ok: false, msg: 'Tento kód nepoznáme. Skontroluj ho alebo sa ozvi trénerovi.' };
     applySnapshot(snap); authCode = code;
     try { localStorage.setItem(CODE_KEY, code); localStorage.setItem(CACHE_KEY, JSON.stringify(snap)); } catch (e) { /* ok */ }
@@ -148,7 +148,7 @@ function viewHome() {
   <div class="page-head"><div><h1>Ahoj, ${esc(c.name.split(' ')[0])} 👋</h1><p class="muted">${esc(c.goal)}</p></div></div>
   <section class="hero">
     <span class="eyebrow">Najbližší tréning</span>
-    ${next ? `<h2 class="hero-title">${fmtDay(next.date)} o ${esc(next.time)}</h2><p class="hero-sub">${next.note ? esc(next.note) + ' · ' : ''}${DAYS[weekday(next.date)]} ${fmtShort(next.date)}</p>` : `<h2 class="hero-title">Zatiaľ nič naplánované</h2><p class="hero-sub">Dohodni si termín s trénerom.</p>`}
+    ${next ? `<h2 class="hero-title">${whenHtml(next.date, next.time)}</h2><p class="hero-sub">${next.note ? esc(next.note) + ' · ' : ''}${DAYS[weekday(next.date)]} ${fmtShort(next.date)}</p>` : `<h2 class="hero-title">Zatiaľ nič naplánované</h2><p class="hero-sub">Dohodni si termín s trénerom.</p>`}
     <div class="row">${TRAINER.whatsapp ? `<a class="btn primary" href="${TRAINER.whatsapp}" target="_blank" rel="noopener">Napísať trénerovi</a>` : ''}<a class="btn" href="#/sessions">Všetky tréningy</a></div>
   </section>
   <div class="stats">
@@ -187,7 +187,7 @@ function sessionRow(s, open = false) {
   const tag = s.status === 'done' ? '<span class="badge done">Odtrénovaný</span>' : s.status === 'cancelled' ? '<span class="badge cancelled">Zrušený</span>' : '<span class="badge planned">Naplánovaný</span>';
   const log = open && s.log ? `<div class="log">${s.log.map((e) => `<div><span>${esc(exName(e.exerciseId))}</span><span>${e.sets.map(fmtSet).join(' · ')}</span></div>`).join('')}</div>` : '';
   return `<div class="session ${s.status}${s.log ? ' open' : ''}" ${s.log ? `data-toggle="${s.id}"` : ''}>
-    <span class="when">${fmtDay(s.date)}${s.time ? ` o ${esc(s.time)}` : ''}<small>${s.note ? esc(s.note) : s.log ? `${cnt(s.log.length, 'cvik', 'cviky', 'cvikov')} · ťukni pre výkony` : DAYS[weekday(s.date)]}</small></span>
+    <span class="when">${whenHtml(s.date, s.time)}<small>${s.note ? esc(s.note) : s.log ? `${cnt(s.log.length, 'cvik', 'cviky', 'cvikov')} · ťukni pre výkony` : DAYS[weekday(s.date)]}</small></span>
     <span class="spacer"></span>${tag}${log}
   </div>`;
 }
@@ -219,6 +219,8 @@ let bookTime = '';
 let bookOpen = false;
 const REQ_STATUS = { new: ['Čaká na potvrdenie', 'planned'], accepted: ['Potvrdené', 'done'], declined: ['Odmietnuté', 'cancelled'] };
 const TIMES = Array.from({ length: 31 }, (_, i) => `${pad(6 + Math.floor(i / 2))}:${i % 2 ? '30' : '00'}`);
+// „Piatok 9. 10. o 07:00“ – zlom riadku len za názvom dňa, nie medzi dátumom a časom
+const whenHtml = (d, t) => `${esc(fmtDay(d)).replace(/(\d\.) (?=\d)/g, '$1\u00a0')}${t ? `\u00a0o\u00a0${esc(t)}` : ''}`;
 const isDemo = () => !!ACCESS_CODES[authCode];
 
 async function loadRequests() {
@@ -275,8 +277,8 @@ function bookingCard() {
       <div class="field"><label for="book-note">Poznámka (nepovinné)</label><input id="book-note" placeholder="napr. môžem aj o hodinu neskôr"></div>
       <button class="btn primary" id="book-send" ${bookTime ? '' : 'disabled'}>Poslať žiadosť${bookTime ? ` · ${fmtDay(bookDate)} ${bookTime}` : ''}</button>` : ''}` : ''}
     ${pending.length ? `<h3 class="section-title" style="margin-top:18px">Moje žiadosti</h3><ul class="list">${pending.map((r) => `<li class="session ${REQ_STATUS[r.status]?.[1] || 'planned'}">
-      <span class="when">${fmtDay(r.date)} o ${esc(r.time)}<small>${r.note ? esc(r.note) : DAYS[weekday(r.date)]}</small></span>
-      <span class="spacer"></span><span class="badge ${REQ_STATUS[r.status]?.[1] || 'planned'}">${REQ_STATUS[r.status]?.[0] || r.status}</span>
+      <span class="when">${whenHtml(r.date, r.time)}<small>${r.note ? esc(r.note) : DAYS[weekday(r.date)]}</small></span>
+      <span class="spacer"></span><span class="badge ${REQ_STATUS[r.status]?.[1] || 'planned'}">${r.status === 'new' ? '<span class="long">Čaká na potvrdenie</span><span class="short">Čaká</span>' : esc(REQ_STATUS[r.status]?.[0] || r.status)}</span>
       ${r.status === 'new' ? `<button class="icon-btn small" data-cancel-req="${esc(r.id)}" aria-label="Zrušiť žiadosť">✕</button>` : ''}
     </li>`).join('')}</ul>` : ''}
     <p class="hint" id="book-msg" style="margin:10px 0 0"></p>

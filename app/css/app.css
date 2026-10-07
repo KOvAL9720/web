@@ -119,3 +119,17 @@ body.no-anim .brand .avatar { animation: none; }
 .ptr.spin svg { animation: ptr-spin .8s linear infinite; }
 @keyframes ptr-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .ptr.spin svg { animation-duration: 2s; } }
+
+/* stav žiadosti („Čaká na potvrdenie“) je dôležitý aj na úzkom displeji – štýly appky Tréner ho tam inak schovajú */
+#booking .session .badge.planned { display: inline-flex; }
+@media (min-width: 900px) {
+  /* celé meno klienta – radšej na dva riadky ako „Lucia Nová…“ */
+  .brand > span:last-child { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.15; font-size: .95rem; }
+  .brand small { white-space: nowrap; }
+}
+#booking .session { gap: 10px; }
+#booking .session .badge, #booking .session .icon-btn { flex: none; }
+#booking .badge .short { display: none; }
+@media (max-width: 440px) { #booking .badge .long { display: none; } #booking .badge .short { display: inline; } }
+/* dátum tréningu má celú šírku riadku (výplň za ním si inak zobrala polovicu a dátum sa zbytočne zalamoval) */
+.session .when + .spacer { flex: 0 0 0; }

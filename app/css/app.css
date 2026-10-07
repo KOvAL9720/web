@@ -89,7 +89,6 @@ body.no-anim .brand .avatar { animation: none; }
   .brand { min-width: 0; flex: 1; gap: 10px; }
   .brand > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .brand small { overflow: hidden; text-overflow: ellipsis; }
-  #logout { position: fixed; left: 28px; bottom: 28px; width: 184px; z-index: 22; justify-content: center; }
 }
 @media (min-width: 900px) {
   .topbar {
@@ -97,7 +96,7 @@ body.no-anim .brand .avatar { animation: none; }
     padding: 0 12px 0 14px; background: transparent !important; border: 0 !important; box-shadow: none !important;
     backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
   }
-  .nav { top: 16px; bottom: 16px; padding-top: 76px; padding-bottom: 64px; }
+  .nav { top: 16px; bottom: 16px; padding-top: 76px; }
   .nav::before { content: ""; position: absolute; left: 16px; right: 16px; top: 68px; height: 1px; background: var(--border); }
   main { padding-top: 16px; }
   main > :first-child { margin-top: 0; }

@@ -602,8 +602,82 @@ function viewLogin() {
   </div></div>`;
 }
 
+/* ---------- Nastavenia (ako v appke Tréner) ---------- */
+const SI = {
+  sync: '<svg class="i" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4"/></svg>',
+  out: '<svg class="i" viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg>',
+  chat: '<svg class="i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-5A8 8 0 1 1 21 12z"/></svg>',
+  sms: '<svg class="i" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 10h8"/></svg>',
+  call: '<svg class="i" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>',
+  key: '<svg class="i" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M15 8l2 2"/></svg>',
+  globe: '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',
+  phone: '<svg class="i" viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M11 18.5h2"/></svg>',
+  info: '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.5"/></svg>',
+  user: '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+  shield: '<svg class="i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>',
+  chev: '<svg class="i set-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>'
+};
+function setRow({ icon, title, sub = '', val = '', href = '', action = '', danger = false, chev = true, ext = false }) {
+  const inner = `<span class="set-ic" aria-hidden="true">${SI[icon] || ''}</span>
+    <span class="set-main"><b>${title}</b>${sub ? `<small>${sub}</small>` : ''}</span>
+    ${val ? `<span class="set-val">${val}</span>` : ''}${chev ? SI.chev : ''}`;
+  const cls = `set-row${danger ? ' danger' : ''}`;
+  if (!href && !action) return `<div class="${cls} static">${inner}</div>`;
+  return href ? `<a class="${cls}" href="${href}"${ext ? ' target="_blank" rel="noopener"' : ''}>${inner}</a>`
+    : `<button type="button" class="${cls}" data-set="${action}">${inner}</button>`;
+}
+const setGroup = (title, rows, foot = '') => `<section class="set-group">${title ? `<h2 class="set-title">${title}</h2>` : ''}<div class="set-list">${rows.filter(Boolean).join('')}</div>${foot ? `<p class="set-foot">${foot}</p>` : ''}</section>`;
+const updatedText = () => {
+  if (isDemo()) return 'Ukážkové dáta';
+  if (!lastUpdated) return 'Zatiaľ bez údajov';
+  const d = new Date(lastUpdated);
+  const day = d.toDateString() === new Date().toDateString() ? 'dnes' : `${d.getDate()}. ${d.getMonth() + 1}.`;
+  return `Tréner aktualizoval ${day} o ${d.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' })}`;
+};
+
+function viewSettings(forceSub) {
+  const sub = forceSub ?? location.hash.replace(/^#\/?settings\/?/, '');
+  const back = '<a class="back-link" href="#/settings">‹ Nastavenia</a>';
+  if (sub === 'install') return `${back}<div class="page-head"><div><h1>Inštalácia</h1></div></div>
+    <section class="card"><div class="card-head"><h2>iPhone</h2></div><p class="muted" style="margin:0">V Safari ťukni na tlačidlo <b>Zdieľať</b> → <b>Pridať na plochu</b>.</p></section>
+    <section class="card"><div class="card-head"><h2>Android</h2></div><p class="muted" style="margin:0">V Chrome otvor menu <b>⋮</b> → <b>Inštalovať aplikáciu</b>.</p></section>
+    <section class="card"><div class="card-head"><h2>Počítač</h2></div><p class="muted" style="margin:0">V Chrome alebo Edge ťukni na ikonku inštalácie v paneli s adresou (vpravo).</p></section>
+    <p class="set-foot">Nainštalovaná appka sa otvára ako bežná aplikácia, funguje aj bez internetu a sama sa aktualizuje.</p>`;
+  if (sub === 'privacy') return `${back}<div class="page-head"><div><h1>Súkromie</h1></div></div>
+    <section class="card"><div class="card-head"><h2>Čo tu vidíš</h2></div><p class="muted" style="margin:0">Len svoje tréningy, plán, merania a rekordy, ktoré ti zdieľa tréner. Financie ani poznámky trénera sa sem neposielajú.</p></section>
+    <section class="card"><div class="card-head"><h2>Čo vidí tréner</h2></div><p class="muted" style="margin:0">Tvoje žiadosti o tréning a vlastné zápisy (merania a tréningy, ktoré si zapíšeš sám/sama).</p></section>
+    <section class="card"><div class="card-head"><h2>Prístupový kód</h2></div><p class="muted" style="margin:0">Kód nikomu neposielaj – kto ho má, vidí tvoje dáta. Ak ho chceš zmeniť alebo zrušiť, napíš trénerovi.</p></section>`;
+  if (sub) { location.hash = '#/settings'; return ''; }
+  const c = client();
+  const t = TRAINER || {};
+  const phone = (t.phone || '').replace(/\s/g, '');
+  return `
+  <div class="page-head"><div><h1>Nastavenia</h1></div></div>
+  <section class="set-profile">
+    <span class="avatar lg">${c.photo ? `<img src="${c.photo}" alt="">` : esc(initials(c.name))}</span>
+    <div class="set-who"><h2>${esc(c.name)}</h2><p>${c.goal ? esc(c.goal) : 'Klient'}</p></div>
+  </section>
+  ${t.name ? setGroup('Môj tréner', [
+    setRow({ icon: 'user', title: esc(t.name), sub: phone ? esc(t.phone) : 'Osobný tréner', chev: false }),
+    t.whatsapp ? setRow({ icon: 'chat', title: 'Napísať na WhatsApp', href: t.whatsapp, ext: true }) : '',
+    phone ? setRow({ icon: 'sms', title: 'Poslať SMS', href: `sms:${esc(phone)}` }) : '',
+    phone ? setRow({ icon: 'call', title: 'Zavolať', href: `tel:${esc(phone)}` }) : ''
+  ]) : ''}
+  ${setGroup('Účet', [
+    setRow({ icon: 'sync', title: 'Obnoviť údaje', sub: updatedText(), action: 'refresh', chev: false }),
+    setRow({ icon: 'key', title: 'Prístupový kód', val: isDemo() ? 'DEMO' : '••••' + esc(String(authCode || '').slice(-2)), chev: false }),
+    setRow({ icon: 'shield', title: 'Súkromie', sub: 'Čo vidíš ty a čo vidí tréner', href: '#/settings/privacy' }),
+    setRow({ icon: 'out', title: 'Odhlásiť sa', action: 'logout', danger: true, chev: false })
+  ], 'Po odhlásení sa znova prihlásiš kódom od trénera.')}
+  ${setGroup('Aplikácia', [
+    setRow({ icon: 'phone', title: 'Inštalácia appky', sub: 'iPhone, Android a počítač', href: '#/settings/install' }),
+    setRow({ icon: 'globe', title: 'Webová stránka', href: '../', ext: false }),
+    setRow({ icon: 'info', title: 'Verzia', val: '<b id="app-version">–</b>', chev: false })
+  ])}`;
+}
+
 /* ---------- Vykreslenie ---------- */
-const ROUTES = { '': viewHome, sessions: viewSessions, plan: viewPlan, progress: viewProgress };
+const ROUTES = { '': viewHome, sessions: viewSessions, plan: viewPlan, progress: viewProgress, settings: viewSettings };
 function route() { return location.hash.replace(/^#\/?/, '').split('/')[0]; }
 
 function render(animate = false) {
@@ -631,7 +705,7 @@ function render(animate = false) {
   app.innerHTML = `
   <header class="topbar">
     <a href="#/" class="brand"><span class="avatar">${c.photo ? `<img src="${c.photo}" alt="" decoding="sync">` : initials(c.name)}</span><span>${esc(c.name)}<small>Tréner: ${esc(TRAINER.name)}</small></span></a>
-    <button class="topbar-btn text" id="logout" type="button">Odhlásiť</button>
+    <a href="#/settings" class="topbar-btn${r === 'settings' ? ' active' : ''}" id="gear" data-nav="settings" aria-label="Nastavenia"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></a>
   </header>
   <main id="main">${view()}</main>
   <nav class="nav" aria-label="Hlavná navigácia">
@@ -640,7 +714,14 @@ function render(animate = false) {
     <a href="#/plan" class="${r === 'plan' ? 'active' : ''}"><svg viewBox="0 0 24 24"><path d="M9 5h10M9 12h10M9 19h10M5 5h.01M5 12h.01M5 19h.01"/></svg><span>Plán</span></a>
     <a href="#/progress" class="${r === 'progress' ? 'active' : ''}"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8M14 7h7v7"/></svg><span>Progres</span></a>
   </nav>`;
-  document.getElementById('logout').addEventListener('click', () => logout());
+  // koliesko je prepínač: v Nastaveniach ich zavrie a vráti na predchádzajúcu obrazovku
+  document.getElementById('gear').addEventListener('click', (e) => {
+    if (route() !== 'settings') return;
+    e.preventDefault();
+    location.hash = beforeSettings;
+  });
+  const ver = document.getElementById('app-version');
+  if (ver && 'caches' in window) caches.keys().then((k) => { const v = k.find((x) => x.startsWith('klient-v')); if (v) ver.textContent = v.replace('klient-v', ''); }).catch(() => {});
   window.scrollTo(0, 0);
   moveNavInd();
   if (animate && !reduceMotion.matches) animateEnter();
@@ -761,6 +842,11 @@ if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
 }
 
 document.addEventListener('click', (e) => {
+  const st = e.target.closest('[data-set]');
+  if (st) {
+    if (st.dataset.set === 'logout') { if (confirm('Naozaj sa chceš odhlásiť? Znova sa prihlásiš kódom od trénera.')) logout(); return; }
+    if (st.dataset.set === 'refresh') { if (isDemo()) { toast('Ukážkové dáta sa neobnovujú'); return; } if (!navigator.onLine) { toast('Si offline – skús to s internetom'); return; } refresh().then(() => { render(); toast('Údaje sú aktuálne'); }); return; }
+  }
   const f = e.target.closest('[data-filter]');
   if (f) { sessionsFilter = f.dataset.filter; render(); return; }
   const m = e.target.closest('[data-metric]');
@@ -789,7 +875,97 @@ document.addEventListener('touchmove', (e) => {
   const box = d.contains(e.target) ? e.target.closest('.modal-body, textarea') : null;
   if (!box || box.scrollHeight <= box.clientHeight + 1) e.preventDefault();
 }, { passive: false });
-window.addEventListener('hashchange', () => render());
+// Prepínanie obrazoviek – Nastavenia sa otvárajú a zatvárajú ako okno (ako v appke Tréner)
+let prevHash = location.hash || '#/';
+let beforeSettings = '#/';
+let swipedBack = false;
+function settingsDir(from, to) {
+  const lvl = (h) => (/^#\/settings\//.test(h) ? 2 : /^#\/settings/.test(h) ? 1 : 0);
+  const a = lvl(from), b = lvl(to);
+  if (a === b) return '';
+  if (b > a) return a === 0 ? 'up' : 'fwd';
+  return b === 0 ? 'down' : 'back';
+}
+window.addEventListener('hashchange', () => {
+  const hash = location.hash || '#/';
+  if (!/^#\/settings/.test(prevHash)) beforeSettings = prevHash;
+  const dir = client() ? settingsDir(prevHash, hash) : '';
+  prevHash = hash;
+  document.querySelectorAll('dialog[open]').forEach((d) => d.close());
+  if (swipedBack) {
+    const under = swipedBack;
+    swipedBack = false;
+    render();
+    under.remove?.();
+    return;
+  }
+  if (dir && !reduceMotion.matches) {
+    if (document.startViewTransition) {
+      document.documentElement.dataset.vt = dir;
+      const t = document.startViewTransition(() => render());
+      t.finished.finally(() => { if (document.documentElement.dataset.vt === dir) delete document.documentElement.dataset.vt; });
+    } else {
+      render();
+      const main = document.getElementById('main');
+      main?.classList.add(`vt-${dir}`);
+      setTimeout(() => main?.classList.remove(`vt-${dir}`), 500);
+    }
+    return;
+  }
+  render();
+});
+
+// Podstránka nastavení: potiahnutím prstom doprava späť do Nastavení (obrazovka ide za prstom)
+(() => {
+  let g = null;
+  const isSub = () => /^#\/settings\/[a-z]+$/.test(location.hash);
+  document.addEventListener('touchstart', (e) => {
+    g = null;
+    if (e.touches.length !== 1 || !isSub() || reduceMotion.matches || document.querySelector('dialog[open]') || e.target.closest?.('input, textarea, select, .chips, .nav, .topbar')) return;
+    g = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now(), on: false, dx: 0 };
+  }, { passive: true });
+  document.addEventListener('touchmove', (e) => {
+    if (!g) return;
+    const main = document.getElementById('main');
+    const dx = e.touches[0].clientX - g.x, dy = e.touches[0].clientY - g.y;
+    if (!g.on) {
+      if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) { g = null; return; }
+      if (dx < 12) return;
+      g.on = true; g.x += 12; g.t = Date.now();
+      main.classList.add('swiping');
+      const r = main.getBoundingClientRect(), cs = getComputedStyle(main);
+      const under = document.createElement('div');
+      under.className = 'swipe-under';
+      under.innerHTML = viewSettings('');
+      under.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
+      Object.assign(under.style, { left: `${r.left}px`, width: `${r.width}px`, top: `${main.offsetTop}px`, padding: cs.padding });
+      main.before(under);
+      g.under = under; g.main = main;
+    }
+    if (e.cancelable) e.preventDefault();
+    g.dx = Math.max(0, e.touches[0].clientX - g.x);
+    g.main.style.transform = `translate3d(${g.dx}px, 0, 0)`;
+    g.under.style.setProperty('--p', String(Math.min(1, g.dx / innerWidth)));
+  }, { passive: false });
+  const end = () => {
+    if (!g?.on) { g = null; return; }
+    const speed = g.dx / Math.max(1, Date.now() - g.t);
+    const go = g.dx > innerWidth * 0.33 || (speed > 0.3 && g.dx > 50);
+    const { under, main } = g;
+    g = null;
+    main.classList.remove('swiping');
+    main.classList.add('swipe-settle');
+    under.classList.add('settle');
+    main.style.transform = go ? `translate3d(${innerWidth}px, 0, 0)` : '';
+    under.style.setProperty('--p', go ? '1' : '0');
+    setTimeout(() => {
+      main.classList.remove('swipe-settle');
+      if (go) { swipedBack = under; navigator.vibrate?.(8); location.hash = '#/settings'; } else under.remove();
+    }, 230);
+  };
+  document.addEventListener('touchend', end, { passive: true });
+  document.addEventListener('touchcancel', end, { passive: true });
+})();
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refresh(); });
 // Štart: úvodná čiara, fotka pozadia sa roztmaví až po načítaní, potom nabehne obsah
 const bgReady = new Promise((resolve) => {

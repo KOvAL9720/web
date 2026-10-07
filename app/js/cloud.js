@@ -67,6 +67,21 @@ window.clientCloud = {
       throw e;
     }
   },
+  // vlastné zápisy klienta (meranie / tréning sám) – shared/{kód}/entries, tréner ich vidí vo svojej appke
+  async listEntries(code) {
+    await ready;
+    const qs = await getDocs(collection(fs, 'shared', code, 'entries'));
+    return qs.docs.map((d) => { const { createdAt, ...e } = d.data(); return { id: d.id, ...e, createdAt: createdAt?.toMillis ? createdAt.toMillis() : 0 }; });
+  },
+  async addEntry(code, ownerUid, data) {
+    const user = await ready;
+    const ref = await addDoc(collection(fs, 'shared', code, 'entries'), { ...data, ownerUid, by: user.uid, createdAt: serverTimestamp() });
+    return ref.id;
+  },
+  async deleteEntry(code, id) {
+    await ready;
+    await deleteDoc(doc(fs, 'shared', code, 'entries', id));
+  },
   async releaseHold(ownerUid, date, time) {
     await ready;
     await deleteDoc(doc(fs, 'holds', `${ownerUid}_${date}_${time.replace(':', '')}`)).catch(() => {});

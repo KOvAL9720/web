@@ -133,3 +133,14 @@ body.no-anim .brand .avatar { animation: none; }
 @media (max-width: 440px) { #booking .badge .long { display: none; } #booking .badge .short { display: inline; } }
 /* dátum tréningu má celú šírku riadku (výplň za ním si inak zobrala polovicu a dátum sa zbytočne zalamoval) */
 .session .when + .spacer { flex: 0 0 0; }
+
+/* Vlastné zápisy klienta */
+.badge.self { background: rgba(127, 179, 213, .16); color: #9cc8e6; }
+.card-head .row { gap: 8px; flex-wrap: nowrap; }
+.log-ex { gap: 8px; padding-top: 6px; border-top: 1px solid var(--border); }
+.log-set { display: grid; grid-template-columns: 22px 1fr 1fr; gap: 8px; align-items: center; }
+.log-set input { min-width: 0; }
+#entry-dlg .modal-body { max-height: calc(100dvh - 170px); }
+#entry-dlg .error { color: var(--danger, #ff8a8a); font-size: .88rem; }
+#entry-dlg .error:empty { display: none; }
+@media (max-width: 380px) { .card-head .row .badge { display: none; } }

@@ -58,7 +58,7 @@ function applySnapshot(snap) {
     measurements: (snap.measurements || []).map((m) => ({ ...m, clientId: cid }))
   };
   const phone = snap.trainer?.phone || '';
-  TRAINER = { name: snap.trainer?.name || 'Tréner', phone, whatsapp: phone ? `https://wa.me/${intlPhone(phone)}` : '', ownerUid: snap.ownerUid || '' };
+  TRAINER = { name: snap.trainer?.name || 'Tréner', phone, whatsapp: phone ? `https://wa.me/${intlPhone(phone)}` : '', ownerUid: snap.ownerUid || '', availability: snap.availability || null, ntfy: typeof snap.notify?.ntfy === 'string' ? snap.notify.ntfy : '' };
   clientId = cid;
   lastUpdated = snap.updatedAt || null;
 }
@@ -227,9 +227,41 @@ async function loadRequests() {
   catch (e) { requestsLoaded = true; }
 }
 
+/* Voľné termíny: pracovné hodiny trénera mínus obsadené tréningy (posiela ich appka Tréner) */
+const toMin = (x) => { const [h, m] = String(x).split(':').map(Number); return h * 60 + (m || 0); };
+const fromMin = (m) => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+function availability() {
+  if (isDemo()) {
+    return { hours: { 1: [['07:00', '20:00']], 2: [['07:00', '20:00']], 3: [['07:00', '20:00']], 4: [['07:00', '20:00']], 5: [['07:00', '18:00']], 6: [['08:00', '12:00']] },
+      duration: 60, step: 30, days: 14, busy: DB.sessions.filter((x) => x.status === 'planned' && x.time).map((x) => [x.date, x.time, x.duration || 60]) };
+  }
+  const a = TRAINER.availability;
+  return a && a.hours && typeof a.hours === 'object' && Object.values(a.hours).some((r) => Array.isArray(r) && r.length) ? a : null;
+}
+// null = tréner nemá nastavené hodiny (ponúknu sa všetky časy), [] = v ten deň nič voľné
+function freeSlots(d, av) {
+  if (!av) return null;
+  const ranges = av.hours[String(parseDate(d).getDay())] || [];
+  const dur = Number(av.duration) || 60, step = Number(av.step) || 30;
+  const busy = (av.busy || []).filter((b) => b[0] === d).map((b) => [toMin(b[1]), toMin(b[1]) + (Number(b[2]) || dur)]);
+  const now = new Date();
+  const minStart = d === today() ? now.getHours() * 60 + now.getMinutes() + 60 : 0; // dnes najskôr o hodinu
+  const out = [];
+  for (const [a, b] of ranges) {
+    for (let m = toMin(a); m + dur <= toMin(b); m += step) {
+      if (m < minStart) continue;
+      if (busy.some(([x, y]) => m < y && m + dur > x)) continue;
+      out.push(fromMin(m));
+    }
+  }
+  return out;
+}
+
 function bookingCard() {
   const t = today();
-  const days = Array.from({ length: 14 }, (_, i) => addDays(t, i));
+  const av = availability();
+  const days = Array.from({ length: Math.min(Number(av?.days) || 14, 21) }, (_, i) => addDays(t, i));
+  const slotsOf = (d) => freeSlots(d, av);
   const busy = new Set(mySessions().filter((s) => s.status === 'planned').map((s) => s.date));
   const pending = requests.filter((r) => r.date >= t).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
   const dayLabel = (d) => `${DAYS_SHORT[weekday(d)]} ${fmtShort(d)}`;
@@ -237,8 +269,9 @@ function bookingCard() {
   return `<section class="card" id="booking">
     <div class="card-head"><h2>Naplánovať tréning</h2>${pending.length ? `<span class="badge planned">${cnt(pending.filter((r) => r.status === 'new').length, 'žiadosť', 'žiadosti', 'žiadostí')}</span>` : ''}</div>
     ${bookOpen ? `<p class="muted" style="margin-top:-6px">Vyber deň a čas – tréner ti termín potvrdí.</p>
-    <div class="chips book-days">${days.map((d) => `<button class="chip${bookDate === d ? ' active' : ''}" data-book-date="${d}">${d === t ? 'Dnes' : d === addDays(t, 1) ? 'Zajtra' : dayLabel(d)}${busy.has(d) ? ' ·' : ''}</button>`).join('')}</div>
-    ${bookDate ? `<div class="chips book-times">${TIMES.map((x) => `<button class="chip${bookTime === x ? ' active' : ''}" data-book-time="${x}">${x}</button>`).join('')}</div>
+    <div class="chips book-days">${days.map((d) => { const fr = slotsOf(d); const none = fr && !fr.length; return `<button class="chip${bookDate === d ? ' active' : ''}${none ? ' off' : ''}" data-book-date="${d}" ${none ? 'disabled aria-disabled="true"' : ''}>${d === t ? 'Dnes' : d === addDays(t, 1) ? 'Zajtra' : dayLabel(d)}${busy.has(d) ? ' ·' : ''}</button>`; }).join('')}</div>
+    ${av ? '<p class="hint" style="margin:-4px 0 10px">Ponúkajú sa len voľné termíny trénera.</p>' : ''}
+    ${bookDate ? `<div class="chips book-times">${(slotsOf(bookDate) || TIMES).map((x) => `<button class="chip${bookTime === x ? ' active' : ''}" data-book-time="${x}">${x}</button>`).join('') || '<span class="muted">V tento deň už nie je voľný termín.</span>'}</div>
       <div class="field"><label for="book-note">Poznámka (nepovinné)</label><input id="book-note" placeholder="napr. môžem aj o hodinu neskôr"></div>
       <button class="btn primary" id="book-send" ${bookTime ? '' : 'disabled'}>Poslať žiadosť${bookTime ? ` · ${fmtDay(bookDate)} ${bookTime}` : ''}</button>` : ''}` : ''}
     ${pending.length ? `<h3 class="section-title" style="margin-top:18px">Moje žiadosti</h3><ul class="list">${pending.map((r) => `<li class="session ${REQ_STATUS[r.status]?.[1] || 'planned'}">
@@ -260,7 +293,12 @@ async function sendRequest() {
   const data = { date: bookDate, time: bookTime, note, clientName: client()?.name || '', ownerUid: TRAINER.ownerUid || '' };
   try {
     if (isDemo()) { requests.push({ id: 'r' + Date.now(), ...data, status: 'new', createdAt: Date.now() }); }
-    else { await cloudReady(); const id = await window.clientCloud.addRequest(authCode, data); requests.push({ id, ...data, status: 'new', createdAt: Date.now() }); }
+    else {
+      await cloudReady();
+      const id = await window.clientCloud.addRequest(authCode, data);
+      requests.push({ id, ...data, status: 'new', createdAt: Date.now() });
+      notifyTrainer(data);
+    }
     bookDate = ''; bookTime = ''; bookOpen = false;
     render();
     document.getElementById('book-msg').textContent = 'Žiadosť odoslaná – tréner ti termín potvrdí.';
@@ -268,6 +306,14 @@ async function sendRequest() {
     btn.disabled = false; btn.textContent = 'Poslať žiadosť';
     msg.textContent = e?.code === 'permission-denied' ? 'Odoslanie zamietnuté – ozvi sa trénerovi.' : 'Nepodarilo sa odoslať. Skontroluj internet.';
   }
+}
+
+// upozornenie trénerovi do appky ntfy (ak si ho zapol) – jednoduchá požiadavka bez CORS predletu, chyba sa ignoruje
+function notifyTrainer(r) {
+  const topic = TRAINER.ntfy;
+  if (!topic || !/^[\w-]{1,64}$/.test(topic)) return;
+  const q = new URLSearchParams({ title: `Žiadosť o tréning – ${r.clientName || 'klient'}`, tags: 'calendar', click: 'https://koval9720.github.io/trainer-app/' });
+  fetch(`https://ntfy.sh/${topic}?${q}`, { method: 'POST', body: `${fmtDay(r.date)} o ${r.time}${r.note ? `\n${r.note}` : ''}` }).catch(() => {});
 }
 
 async function cancelRequest(id) {

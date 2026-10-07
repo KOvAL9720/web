@@ -206,7 +206,7 @@ function viewSessions() {
   const chips = [['upcoming', 'Najbližšie'], ['done', 'Odtrénované'], ['all', 'Všetky']];
   return `
   <div class="page-head"><div><h1>Tréningy</h1><p class="muted">${cnt(lists.done.length, 'odtrénovaný tréning', 'odtrénované tréningy', 'odtrénovaných tréningov')}</p></div>
-    <div class="row">${myPlans().length ? '<button class="btn" data-log-workout="">+ Zapísať tréning</button>' : ''}${bookOpen || lists.upcoming.length || sessionsFilter !== 'upcoming' ? `<button class="btn primary" id="book-open">${bookOpen ? 'Zavrieť' : '+ Naplánovať tréning'}</button>` : ''}</div></div>
+    <div class="row"><button class="btn" data-log-workout="">+ Zapísať tréning</button>${bookOpen || lists.upcoming.length || sessionsFilter !== 'upcoming' ? `<button class="btn primary" id="book-open">${bookOpen ? 'Zavrieť' : '+ Naplánovať tréning'}</button>` : ''}</div></div>
   ${bookingCard()}
   <div class="chips chart-chips">${chips.map(([k, l]) => `<button class="chip${sessionsFilter === k ? ' active' : ''}" data-filter="${k}">${l}</button>`).join('')}</div>
   <section class="card">${lists[sessionsFilter].length ? sessionList(lists[sessionsFilter]) : `<p class="empty">${sessionsFilter === 'upcoming' ? 'Žiadny naplánovaný tréning.' : 'Zatiaľ žiadne tréningy.'}</p>${sessionsFilter === 'upcoming' && !bookOpen ? '<button class="btn primary" id="book-open" style="width:100%;margin-top:10px">+ Naplánovať tréning</button>' : ''}`}</section>`;
@@ -353,7 +353,7 @@ async function cancelRequest(id) {
 
 function viewPlan() {
   const plans = myPlans();
-  if (!plans.length) return `<div class="page-head"><div><h1>Tréningový plán</h1></div></div><section class="card"><p class="empty">Tréner ti zatiaľ nepripravil plán.</p></section>`;
+  if (!plans.length) return `<div class="page-head"><div><h1>Tréningový plán</h1></div></div><section class="card"><p class="empty">Tréner ti zatiaľ nepripravil plán.</p><p class="muted" style="margin:0 0 12px">Ak si cvičil/a sám/sama, zapíš si to – tréner to uvidí.</p><button class="btn primary" data-log-workout="" style="width:100%">+ Zapísať tréning</button></section>`;
   return `
   <div class="page-head"><div><h1>Tréningový plán</h1><p class="muted">Na dni, keď trénuješ sám/sama.</p></div></div>
   ${plans.map((p) => `<section class="card">
@@ -521,7 +521,7 @@ function openMeasureForm() {
 function openWorkoutForm(planId) {
   const plans = myPlans();
   const plan = plans.find((p) => p.id === planId) || plans[0];
-  if (!plan) return;
+  if (!plan) { openFreeWorkoutForm(); return; }
   const rows = plan.items.map((it, i) => {
     const n = Math.min(Math.max(parseInt(it.sets, 10) || 3, 1), 8);
     return `<div class="field log-ex" data-ex="${esc(it.exerciseId)}"><label>${i + 1}. ${esc(exName(it.exerciseId))}${it.reps ? ` <span class="muted" style="text-transform:none;letter-spacing:0">· plán ${esc(String(it.sets || ''))}${it.sets ? ' × ' : ''}${esc(String(it.reps))}</span>` : ''}</label>
@@ -547,6 +547,16 @@ function openWorkoutForm(planId) {
   });
   const sel = document.getElementById('e-plan');
   if (sel) sel.onchange = () => { document.getElementById('entry-dlg').close(); openWorkoutForm(sel.value); };
+}
+
+// klient bez plánu: tréning popíše vlastnými slovami
+function openFreeWorkoutForm() {
+  entryDialog('Zapísať tréning', `${dateField()}<div class="field"><label for="e-note">Čo si cvičil/a</label><textarea id="e-note" rows="4" maxlength="300" placeholder="napr. beh 5 km za 28 min, kliky 3 × 20, plank 3 × 1 min"></textarea><span class="hint">Tréner to uvidí vo svojej appke.</span></div>`, (dlg) => {
+    const date = checkDate(dlg);
+    const note = (dlg.querySelector('#e-note').value || '').trim().slice(0, 300);
+    if (!note) throw new Error('Napíš, čo si cvičil/a.');
+    return { type: 'workout', date, note };
+  });
 }
 
 async function deleteEntry(id) {

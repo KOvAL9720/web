@@ -4,7 +4,7 @@
    ========================================================= */
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, deleteDoc, query, where, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, deleteDoc, query, where, orderBy, limit, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyB3E6qCv4VFGeyHHvFClqjJXSkzyvnObjg',
@@ -81,6 +81,22 @@ window.clientCloud = {
   async deleteEntry(code, id) {
     await ready;
     await deleteDoc(doc(fs, 'shared', code, 'entries', id));
+  },
+  // správy a check-iny s trénerom – shared/{kód}/messages (posledných 150, od najstaršej)
+  watchMessages(code, cb, onError) {
+    let un = () => {};
+    let stopped = false;
+    ready.then(() => {
+      if (stopped) return;
+      un = onSnapshot(query(collection(fs, 'shared', code, 'messages'), orderBy('createdAt', 'desc'), limit(150)), (snap) => {
+        cb(snap.docs.map((d) => { const { createdAt, ...m } = d.data(); return { id: d.id, ...m, at: createdAt?.toMillis ? createdAt.toMillis() : Date.now() }; }).reverse());
+      }, onError);
+    }, onError);
+    return () => { stopped = true; un(); };
+  },
+  async sendMessage(code, ownerUid, data) {
+    const user = await ready;
+    await addDoc(collection(fs, 'shared', code, 'messages'), { ...data, from: 'client', by: user.uid, ownerUid, createdAt: serverTimestamp() });
   },
   async releaseHold(ownerUid, date, time) {
     await ready;

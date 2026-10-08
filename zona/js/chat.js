@@ -162,7 +162,7 @@ function chatNotifyTrainer(data) {
   const topic = TRAINER.ntfy;
   if (!topic || !/^[\w-]{1,64}$/.test(topic)) return;
   const name = client()?.name || 'klient';
-  const q = new URLSearchParams({ title: data.kind === 'checkin' ? `Check-in – ${name}` : `Správa – ${name}`, tags: data.kind === 'checkin' ? 'clipboard' : 'speech_balloon', click: 'https://koval9720.github.io/trainer-app/' });
+  const q = new URLSearchParams({ title: data.kind === 'checkin' ? `Check-in – ${name}` : `Správa – ${name}`, tags: data.kind === 'checkin' ? 'clipboard' : 'speech_balloon', click: 'https://koval9720.github.io/trener/' });
   const body = data.kind === 'checkin' ? (data.checkin?.note || 'Týždenný check-in vyplnený') : data.text;
   fetch(`https://ntfy.sh/${topic}?${q}`, { method: 'POST', body: String(body).slice(0, 300) }).catch(() => {});
 }

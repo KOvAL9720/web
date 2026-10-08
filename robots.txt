@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /app/
+Disallow: /web/zona/
 
-Sitemap: https://koval9720.github.io/Novy-web/sitemap.xml
+Sitemap: https://koval9720.github.io/web/sitemap.xml

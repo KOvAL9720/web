@@ -65,7 +65,7 @@ function applySnapshot(snap) {
     measurements: (snap.measurements || []).map((m) => ({ ...m, clientId: cid }))
   };
   const phone = snap.trainer?.phone || '';
-  TRAINER = { name: snap.trainer?.name || 'Tréner', phone, whatsapp: phone ? `https://wa.me/${intlPhone(phone)}` : '', ownerUid: snap.ownerUid || '', availability: snap.availability || null, ntfy: typeof snap.notify?.ntfy === 'string' ? snap.notify.ntfy : '' };
+  TRAINER = { name: snap.trainer?.name || 'Tréner', phone, whatsapp: phone ? `https://wa.me/${intlPhone(phone)}` : '', ownerUid: snap.ownerUid || '', availability: snap.availability || null, ntfy: typeof snap.notify?.ntfy === 'string' ? snap.notify.ntfy : '', checkinDay: Number.isInteger(snap.checkin?.day) && snap.checkin.day >= 0 && snap.checkin.day <= 6 ? snap.checkin.day : -1 };
   clientId = cid;
   lastUpdated = snap.updatedAt || null;
 }
@@ -164,7 +164,7 @@ function viewHome() {
   <section class="hero hero-photo">
     <div class="hero-top">
       <span class="eyebrow">${DAYS[weekday(today())]} · ${fmtShort(today())} ${parseDate(today()).getFullYear()}</span>
-      ${TRAINER.whatsapp ? `<a class="hero-add" href="${TRAINER.whatsapp}" target="_blank" rel="noopener" aria-label="Napísať trénerovi">${IC.chat}</a>` : ''}
+      <a class="hero-add" href="#/chat" aria-label="Správy trénerovi">${IC.chat}</a>
     </div>
     <h1 class="hero-title">Ahoj,<br>${esc(c.name.split(' ')[0])}</h1>
     <p class="hero-sub">${c.goal ? esc(c.goal) : 'Drž sa plánu.'}</p>
@@ -727,6 +727,7 @@ function render(animate = false) {
     <a href="#/sessions" class="${r === 'sessions' ? 'active' : ''}"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg><span>Tréningy</span></a>
     <a href="#/plan" class="${r === 'plan' ? 'active' : ''}"><svg viewBox="0 0 24 24"><path d="M9 5h10M9 12h10M9 19h10M5 5h.01M5 12h.01M5 19h.01"/></svg><span>Plán</span></a>
     <a href="#/progress" class="${r === 'progress' ? 'active' : ''}"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8M14 7h7v7"/></svg><span>Progres</span></a>
+    <a href="#/chat" class="${r === 'chat' ? 'active' : ''}"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-5A8 8 0 1 1 21 12z"/></svg><span>Správy</span><span class="chat-count" data-chat-badge hidden></span></a>
   </nav>`;
   // koliesko je prepínač: v Nastaveniach ich zavrie a vráti na predchádzajúcu obrazovku
   document.getElementById('gear').addEventListener('click', (e) => {

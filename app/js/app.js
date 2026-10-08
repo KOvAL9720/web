@@ -646,6 +646,20 @@ const SI = {
   shield: '<svg class="i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>',
   chev: '<svg class="i set-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>'
 };
+const codeMask = () => '••••' + esc(String(authCode || '').slice(-2));
+function codeShow(on) {
+  const el = document.querySelector('[data-code-val]');
+  if (!el) return;
+  el.innerHTML = on ? esc(String(authCode || '')) : codeMask();
+  el.closest('[data-code-hold]')?.classList.toggle('shown', on);
+}
+document.addEventListener('pointerdown', (e) => { if (e.target.closest('[data-code-hold]')) codeShow(true); });
+['pointerup', 'pointercancel'].forEach((t) => document.addEventListener(t, () => codeShow(false)));
+document.addEventListener('pointerout', (e) => { if (e.target.closest?.('[data-code-hold]') && !e.relatedTarget?.closest?.('[data-code-hold]')) codeShow(false); });
+document.addEventListener('contextmenu', (e) => { if (e.target.closest?.('[data-code-hold]')) e.preventDefault(); });
+document.addEventListener('keydown', (e) => { if ((e.key === ' ' || e.key === 'Enter') && e.target.closest?.('[data-code-hold]')) { e.preventDefault(); codeShow(true); } });
+document.addEventListener('keyup', (e) => { if (e.target.closest?.('[data-code-hold]')) codeShow(false); });
+document.addEventListener('visibilitychange', () => codeShow(false));
 function setRow({ icon, title, sub = '', val = '', href = '', action = '', danger = false, chev = true, ext = false }) {
   const inner = `<span class="set-ic" aria-hidden="true">${SI[icon] || ''}</span>
     <span class="set-main"><b>${title}</b>${sub ? `<small>${sub}</small>` : ''}</span>
@@ -694,7 +708,11 @@ function viewSettings(forceSub) {
   ]) : ''}
   ${setGroup('Účet', [
     setRow({ icon: 'sync', title: 'Obnoviť údaje', sub: updatedText(), action: 'refresh', chev: false }),
-    setRow({ icon: 'key', title: 'Prístupový kód', val: isDemo() ? 'DEMO' : '••••' + esc(String(authCode || '').slice(-2)), chev: false }),
+    isDemo() ? setRow({ icon: 'key', title: 'Prístupový kód', val: 'DEMO', chev: false })
+      : `<div class="set-row code-hold" tabindex="0" role="button" data-code-hold aria-label="Prístupový kód – podrž pre zobrazenie">
+        <span class="set-ic" aria-hidden="true">${SI.key}</span>
+        <span class="set-main"><b>Prístupový kód</b><small>Podrž pre zobrazenie</small></span>
+        <span class="set-val code-val" data-code-val>${codeMask()}</span></div>`,
     setRow({ icon: 'shield', title: 'Súkromie', sub: 'Čo vidíš ty a čo vidí tréner', href: '#/settings/privacy' }),
     setRow({ icon: 'out', title: 'Odhlásiť sa', action: 'logout', danger: true, chev: false })
   ], 'Po odhlásení sa znova prihlásiš kódom od trénera.')}

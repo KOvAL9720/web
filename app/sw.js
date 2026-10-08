@@ -1,4 +1,4 @@
-const CACHE = 'klient-v32';
+const CACHE = 'klient-v33';
 const ASSETS = [
   './',
   'index.html',

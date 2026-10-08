@@ -342,7 +342,7 @@ async function sendRequest() {
       try { id = await window.clientCloud.addRequest(authCode, data); }
       catch (e) { if (owner) window.clientCloud.releaseHold?.(owner, bookDate, bookTime); throw e; }
       if (owner) holds.push({ ownerUid: owner, date: bookDate, time: bookTime, duration: dur });
-      requests.push({ id, ...data, status: 'new', createdAt: Date.now() });
+      if (!requests.some((x) => x.id === id)) requests.push({ id, ...data, status: 'new', createdAt: Date.now() }); // živé prepojenie ju mohlo pridať skôr
       notifyTrainer(data);
     }
     bookDate = ''; bookTime = ''; bookOpen = false;

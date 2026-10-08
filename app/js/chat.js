@@ -50,6 +50,19 @@ function chatBadges() {
   document.querySelectorAll('[data-chat-badge]').forEach((el) => { el.textContent = n > 9 ? '9+' : String(n); el.hidden = !n; });
 }
 
+// ikonky check-inu a správ (čiarové, tyrkysové – namiesto emoji)
+const CI_SVG = {
+  weight: '<rect x="4" y="4" width="16" height="16" rx="4.5"/><path d="M8.3 11a3.7 3.7 0 0 1 7.4 0"/><path d="M12 11l1.6-2.2"/>',
+  sleep: '<path d="M19.5 14.6A7.8 7.8 0 1 1 9.4 4.5a6.3 6.3 0 0 0 10.1 10.1z"/>',
+  energy: '<path d="M13 3L5.5 13.5H11l-1 7.5 7.5-10.5H12z"/>',
+  diet: '<path d="M12 7.5c-1.6-1.5-5.2-1.5-6.6 1.3-1.5 3 .2 8.6 3.2 10.8 1.2.9 2.2.5 3.4.1 1.2.4 2.2.8 3.4-.1 3-2.2 4.7-7.8 3.2-10.8-1.4-2.8-5-2.8-6.6-1.3z"/><path d="M12 7.5c0-2 .9-3.6 3-4.5"/>',
+  stress: '<circle cx="12" cy="12" r="8.5"/><path d="M8.6 13.8a4 4 0 0 0 6.8 0"/><path d="M9.3 9.6h.01M14.7 9.6h.01" stroke-width="2.6"/>',
+  checkin: '<rect x="5.5" y="4.5" width="13" height="16" rx="2.5"/><path d="M9.5 3.5h5v3h-5z"/><path d="M9 11.5l1.8 1.8L15 9.5M9 16.5h6"/>',
+  note: '<path d="M4.5 19.5h4l10-10-4-4-10 10z"/><path d="M12.8 7.2l4 4"/>',
+  chat: '<path d="M20.5 12a8.5 8.5 0 0 1-12.3 7.6L3.5 21l1.4-4.6A8.5 8.5 0 1 1 20.5 12z"/>'
+};
+const ciIc = (k) => `<span class="ci-ic" aria-hidden="true"><svg viewBox="0 0 24 24">${CI_SVG[k]}</svg></span>`;
+
 /* ---------- Check-in ---------- */
 const lastCheckin = () => chatState.msgs.filter((m) => m.from === 'client' && m.kind === 'checkin').pop();
 // výzva: v deň check-inu (ak ešte nebol posledné 2 dni) alebo keď od posledného prešlo viac než 8 dní
@@ -60,24 +73,24 @@ function checkinDue() {
   const since = last ? (Date.now() - last.at) / 86400000 : Infinity;
   return (weekday(today()) === day && since > 2) || (last && since > 8);
 }
-const CHECKIN_ROWS = [['sleep', '😴 Spánok', 'Ako si spal/a?'], ['energy', '⚡ Energia', 'Koľko si mal/a energie?'], ['diet', '🥗 Strava', 'Ako sa ti darilo so stravou?'], ['stress', '🧠 Pohoda', 'Ako sa cítiš psychicky?']];
+const CHECKIN_ROWS = [['sleep', 'Spánok', 'Ako si spal/a?'], ['energy', 'Energia', 'Koľko si mal/a energie?'], ['diet', 'Strava', 'Ako sa ti darilo so stravou?'], ['stress', 'Pohoda', 'Ako sa cítiš psychicky?']];
 const ciDots = (v) => (Number.isInteger(v) && v >= 1 && v <= 5 ? `<span class="ci-dots" aria-label="${v} z 5">${'●'.repeat(v)}<i>${'●'.repeat(5 - v)}</i></span>` : '–');
 function checkinCardHtml(ci = {}) {
-  return `<b class="ci-title">📋 Týždenný check-in</b>
+  return `<b class="ci-title">${ciIc('checkin')} Týždenný check-in</b>
     <div class="ci-grid">
-      ${typeof ci.weight === 'number' ? `<span>⚖️ Váha</span><b>${fmtNum(ci.weight)} kg</b>` : ''}
-      ${CHECKIN_ROWS.map(([k, label]) => `<span>${label}</span>${ciDots(ci[k])}`).join('')}
+      ${typeof ci.weight === 'number' ? `<span class="ci-lbl">${ciIc('weight')} Váha</span><b>${fmtNum(ci.weight)} kg</b>` : ''}
+      ${CHECKIN_ROWS.map(([k, label]) => `<span class="ci-lbl">${ciIc(k)} ${label}</span>${ciDots(ci[k])}`).join('')}
     </div>
     ${ci.note ? `<p class="ci-note">${esc(ci.note)}</p>` : ''}`;
 }
 function checkinFormHtml() {
   const v = chatState.ciVals;
   return `<section class="card checkin-form" id="checkin-form">
-    <div class="card-head"><h2>📋 Týždenný check-in</h2><button type="button" class="icon-btn" data-ci="close" aria-label="Zavrieť">✕</button></div>
-    <label class="field ci-weight"><span>⚖️ Váha (kg) – nepovinné</span><input id="ci-weight" type="text" inputmode="decimal" placeholder="napr. 72,5" value="${esc(v.weight ?? '')}"></label>
-    ${CHECKIN_ROWS.map(([k, label, q]) => `<div class="ci-row"><span>${label}<small>${q}</small></span>
+    <div class="card-head"><h2>${ciIc('checkin')} Týždenný check-in</h2><button type="button" class="icon-btn" data-ci="close" aria-label="Zavrieť">✕</button></div>
+    <label class="field ci-weight"><span>${ciIc('weight')} Váha (kg) – nepovinné</span><input id="ci-weight" type="text" inputmode="decimal" placeholder="napr. 72,5" value="${esc(v.weight ?? '')}"></label>
+    ${CHECKIN_ROWS.map(([k, label, q]) => `<div class="ci-row"><span>${ciIc(k)} ${label}<small>${q}</small></span>
       <div class="ci-scale" role="radiogroup" aria-label="${esc(label)}">${[1, 2, 3, 4, 5].map((n) => `<button type="button" class="ci-pick${v[k] === n ? ' on' : ''}" role="radio" aria-checked="${v[k] === n}" data-ci="pick" data-k="${k}" data-n="${n}">${n}</button>`).join('')}</div></div>`).join('')}
-    <label class="field"><span>📝 Ako sa ti darilo tento týždeň?</span><textarea id="ci-note" rows="3" maxlength="600" placeholder="Čo išlo dobre, čo nie, otázky na trénera…">${esc(v.note || '')}</textarea></label>
+    <label class="field"><span>${ciIc('note')} Ako sa ti darilo tento týždeň?</span><textarea id="ci-note" rows="3" maxlength="600" placeholder="Čo išlo dobre, čo nie, otázky na trénera…">${esc(v.note || '')}</textarea></label>
     <p class="hint">1 = zle, 5 = výborne</p>
     <button type="button" class="btn primary" data-ci="send" style="width:100%">Odoslať trénerovi</button>
     <p class="muted" id="ci-msg" style="margin:8px 0 0"></p>
@@ -103,7 +116,7 @@ function chatThreadHtml() {
 function viewChat() {
   chatMarkSeen();
   return `<div class="page-head chat-head"><div><h1>Správy</h1><p class="muted" style="margin:0">${TRAINER.name && TRAINER.name !== 'Tréner' ? `Tvoj tréner ${esc(TRAINER.name)}` : 'Tvoj tréner'}</p></div>
-    ${TRAINER.checkinDay >= 0 ? '<button type="button" class="btn small" data-ci="open">📋 Check-in</button>' : ''}</div>
+    ${TRAINER.checkinDay >= 0 ? `<button type="button" class="btn small" data-ci="open">${ciIc('checkin')} Check-in</button>` : ''}</div>
   ${chatState.ci ? checkinFormHtml() : ''}
   <section class="card chat-card"><div class="chat-thread" id="chat-thread">${chatThreadHtml()}</div></section>
   <form class="chat-compose" id="chat-compose">
@@ -191,10 +204,10 @@ document.addEventListener('click', async (e) => {
     const w = Number(String(v.weight || '').replace(',', '.'));
     if (v.weight && !(w >= 20 && w <= 400)) { msg.textContent = 'Skontroluj váhu (20–400 kg).'; return; }
     const missing = CHECKIN_ROWS.filter(([k]) => !v[k]);
-    if (missing.length) { msg.textContent = `Vyber ešte: ${missing.map(([, l]) => l.replace(/^\S+\s/, '')).join(', ')}.`; return; }
+    if (missing.length) { msg.textContent = `Vyber ešte: ${missing.map(([, l]) => l).join(', ')}.`; return; }
     const checkin = { sleep: v.sleep, energy: v.energy, diet: v.diet, stress: v.stress, ...(v.weight ? { weight: Math.round(w * 10) / 10 } : {}), ...(v.note?.trim() ? { note: v.note.trim().slice(0, 600) } : {}) };
     b.disabled = true; b.textContent = 'Odosielam…';
-    if (await chatSend({ kind: 'checkin', checkin }, 'Check-in odoslaný trénerovi 👍')) {
+    if (await chatSend({ kind: 'checkin', checkin }, 'Check-in odoslaný trénerovi')) {
       chatState.ci = false; chatState.ciVals = {};
       render(); chatScrollEnd();
     } else { b.disabled = false; b.textContent = 'Odoslať trénerovi'; }
@@ -209,7 +222,7 @@ function chatDecorate() {
   if (!client()) return;
   if (route() === '' && checkinDue() && !document.getElementById('checkin-due')) {
     const hero = document.querySelector('#main .hero');
-    hero?.insertAdjacentHTML('afterend', `<button type="button" class="notice notice-chat" id="checkin-due" data-ci="open"><span>📋 <b>Týždenný check-in</b> – daj trénerovi vedieť, ako sa ti darilo</span><span class="chev" aria-hidden="true">›</span></button>`);
+    hero?.insertAdjacentHTML('afterend', `<button type="button" class="notice notice-chat" id="checkin-due" data-ci="open"><span>${ciIc('checkin')} <b>Týždenný check-in</b> – daj trénerovi vedieť, ako sa ti darilo</span><span class="chev" aria-hidden="true">›</span></button>`);
   }
   if (route() === 'chat') chatScrollEnd();
 }

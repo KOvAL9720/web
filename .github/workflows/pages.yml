@@ -25,7 +25,7 @@ jobs:
       - name: Collect site files
         run: |
           mkdir _site
-          cp -r index.html css icons app _site/
+          cp -r index.html robots.txt sitemap.xml css icons app _site/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

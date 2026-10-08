@@ -34,6 +34,40 @@ window.clientCloud = {
     data.updatedAt = updatedAt?.toMillis ? updatedAt.toMillis() : Date.now();
     return data;
   },
+  // Živé prepojenie s appkou Tréner: zmeny tréningov, žiadostí a obsadených termínov prídu hneď
+  watchShared(code, cb, onError) {
+    let un = () => {}, stopped = false;
+    ready.then(() => {
+      if (stopped) return;
+      un = onSnapshot(doc(fs, 'shared', code), (snap) => {
+        if (!snap.exists()) { cb(null); return; }
+        const { updatedAt, ...data } = snap.data({ serverTimestamps: 'estimate' });
+        data.updatedAt = updatedAt?.toMillis ? updatedAt.toMillis() : Date.now();
+        cb(data);
+      }, onError);
+    }, onError);
+    return () => { stopped = true; un(); };
+  },
+  watchRequests(code, cb, onError) {
+    let un = () => {}, stopped = false;
+    ready.then(() => {
+      if (stopped) return;
+      un = onSnapshot(query(collection(fs, 'shared', code, 'requests'), orderBy('date')), (qs) => {
+        cb(qs.docs.map((d) => { const { createdAt, ...r } = d.data(); return { id: d.id, ...r, createdAt: createdAt?.toMillis ? createdAt.toMillis() : 0 }; }));
+      }, onError);
+    }, onError);
+    return () => { stopped = true; un(); };
+  },
+  watchHolds(ownerUid, cb, onError) {
+    let un = () => {}, stopped = false;
+    ready.then(() => {
+      if (stopped) return;
+      un = onSnapshot(query(collection(fs, 'holds'), where('ownerUid', '==', ownerUid)), (qs) => {
+        cb(qs.docs.map((d) => d.data()).filter((h) => typeof h.date === 'string' && typeof h.time === 'string'));
+      }, onError);
+    }, onError);
+    return () => { stopped = true; un(); };
+  },
   // žiadosti o tréning – podkolekcia shared/{kód}/requests
   async listRequests(code) {
     await ready;

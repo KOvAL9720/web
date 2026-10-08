@@ -68,6 +68,16 @@ window.clientCloud = {
     }, onError);
     return () => { stopped = true; un(); };
   },
+  // denné návyky (kroky, voda, spánok) – shared/{kód}/habits/{dátum}
+  async listHabits(code, from) {
+    await ready;
+    const qs = await getDocs(query(collection(fs, 'shared', code, 'habits'), where('date', '>=', from)));
+    return qs.docs.map((d) => { const { updatedAt, ...h } = d.data(); return h; });
+  },
+  async saveHabit(code, ownerUid, date, data) {
+    const user = await ready;
+    await setDoc(doc(fs, 'shared', code, 'habits', date), { ...data, date, by: user.uid, ownerUid, updatedAt: serverTimestamp() });
+  },
   // žiadosti o tréning – podkolekcia shared/{kód}/requests
   async listRequests(code) {
     await ready;

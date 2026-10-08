@@ -426,3 +426,56 @@ dialog::backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; }
 .cal-page-head .cal-add { margin-left: auto; }
 #booking { margin-bottom: 14px; }
 .cal-wrap { padding: 0 !important; }
+
+/* =========================================================
+   TECHNIKA CVIKU (Plán) a DENNÉ NÁVYKY (Prehľad, Progres)
+   ========================================================= */
+.tech-btn { margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border)); background: color-mix(in srgb, var(--accent) 10%, transparent); color: var(--text); font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer; }
+.tech-btn::before { content: ""; width: 7px; height: 7px; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); transition: transform .2s; }
+.tech-btn.on::before { transform: rotate(45deg) translate(-2px, -2px); }
+.tech { margin-top: 10px; padding: 12px 14px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--border); display: grid; gap: 10px; }
+.tech-tips { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: .9rem; }
+.tech-tips li::marker { color: var(--accent); }
+.tech-note { margin: 0; font-size: .9rem; }
+.tech-video { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #000; }
+.tech-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.tech .btn { justify-self: start; }
+
+.hb-card { display: grid; gap: 14px; }
+.hb-card .card-head { margin-bottom: 0; }
+.hb-state { font-size: .76rem; }
+.hb-row { display: flex; align-items: center; gap: 12px; }
+.hb-ic { width: 38px; height: 38px; flex: none; display: grid; place-items: center; border-radius: 12px; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+.hb-ic svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.hb-main { flex: 1; min-width: 0; display: grid; gap: 6px; }
+.hb-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.hb-val { font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hb-val small { color: var(--muted); font-weight: 600; }
+.hb-input { width: 82px; text-align: right; font: inherit; font-weight: 800; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 4px 8px; }
+.hb-bar { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.hb-bar i { display: block; height: 100%; border-radius: inherit; background: var(--accent); transition: width .3s ease; }
+.hb-row.done .hb-val { color: var(--accent); }
+.hb-step { display: flex; gap: 6px; flex: none; }
+.hb-step button { width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font: inherit; font-size: 1.2rem; font-weight: 700; cursor: pointer; }
+.hb-step button:active { transform: scale(.94); }
+.hb-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; padding-top: 4px; border-top: 1px solid var(--border); }
+.hb-day { display: grid; justify-items: center; gap: 3px; padding-top: 8px; }
+.hb-day small { font-size: .64rem; color: var(--muted); font-weight: 700; }
+.hb-day.today small { color: var(--accent); }
+.hb-day i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border); }
+.hb-day i.s1 { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 25%, transparent); }
+.hb-day i.s2 { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 60%, transparent); }
+.hb-day i.s3 { border-color: var(--accent); background: var(--accent); }
+.hb-chart { display: grid; gap: 8px; margin-bottom: 14px; }
+.hb-chart-head { display: flex; align-items: center; gap: 10px; }
+.hb-chart-head .hb-ic { width: 30px; height: 30px; border-radius: 9px; }
+.hb-chart-head .hb-ic svg { width: 16px; height: 16px; }
+.hb-chart-head .muted { margin-left: auto; font-size: .8rem; }
+.hb-bars { position: relative; height: 70px; display: grid; grid-template-columns: repeat(14, 1fr); gap: 3px; align-items: end; }
+.hb-bars::after { content: ""; position: absolute; left: 0; right: 0; bottom: var(--goal); border-top: 1.5px dashed color-mix(in srgb, var(--accent) 70%, transparent); pointer-events: none; }
+.hb-bars span { border-radius: 4px 4px 2px 2px; background: var(--surface-3); min-height: 0; }
+.hb-bars span.ok { background: var(--accent); }
+.hb-bars span.today { outline: 1.5px solid var(--accent); outline-offset: 1px; }
+/* rady na techniku sú v zozname cvikov – nepreberať štýl riadkov plánu */
+.plan-items .tech-tips li { display: list-item; padding: 0; margin: 0; border: 0; background: none; box-shadow: none; min-height: 0; grid-template-columns: none; }
+.plan-items .tech-tips li::before, .plan-items .tech-tips li::after { content: none; }

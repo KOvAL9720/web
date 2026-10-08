@@ -65,7 +65,8 @@ function applySnapshot(snap) {
     measurements: (snap.measurements || []).map((m) => ({ ...m, clientId: cid }))
   };
   const phone = snap.trainer?.phone || '';
-  TRAINER = { name: snap.trainer?.name || 'Tréner', phone, whatsapp: phone ? `https://wa.me/${intlPhone(phone)}` : '', ownerUid: snap.ownerUid || '', availability: snap.availability || null, ntfy: typeof snap.notify?.ntfy === 'string' ? snap.notify.ntfy : '', checkinDay: Number.isInteger(snap.checkin?.day) && snap.checkin.day >= 0 && snap.checkin.day <= 6 ? snap.checkin.day : -1 };
+  TRAINER = { name: snap.trainer?.name || 'Tréner', phone, whatsapp: phone ? `https://wa.me/${intlPhone(phone)}` : '', ownerUid: snap.ownerUid || '', availability: snap.availability || null, ntfy: typeof snap.notify?.ntfy === 'string' ? snap.notify.ntfy : '', checkinDay: Number.isInteger(snap.checkin?.day) && snap.checkin.day >= 0 && snap.checkin.day <= 6 ? snap.checkin.day : -1,
+    habits: snap.habits && snap.habits.on !== false && Number(snap.habits.steps) > 0 ? { steps: Number(snap.habits.steps), water: Number(snap.habits.water) || 2, sleep: Number(snap.habits.sleep) || 7 } : null };
   clientId = cid;
   lastUpdated = snap.updatedAt || null;
 }
@@ -376,6 +377,17 @@ async function cancelRequest(id) {
   } catch (e) { document.getElementById('book-msg').textContent = 'Žiadosť sa nepodarilo zrušiť.'; }
 }
 
+// Technika cviku: popis od trénera (alebo základné rady) + video
+const openTech = new Set();
+function techHtml(ex) {
+  const tips = exerciseTips(ex);
+  const v = exerciseVideo(ex.video);
+  const text = ex.note ? `<p class="tech-note">${esc(ex.note).replace(/\n/g, '<br>')}</p>` : tips ? `<ul class="tech-tips">${tips.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>` : '<p class="muted">Tréner k tomuto cviku zatiaľ nenapísal popis.</p>';
+  const video = v?.embed ? `<div class="tech-video"><iframe src="${esc(v.embed)}" title="Video: ${esc(ex.name)}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`
+    : v ? `<a class="btn small" href="${esc(v.url)}" target="_blank" rel="noopener">Pozrieť video</a>`
+    : `<a class="btn small" href="https://www.youtube.com/results?search_query=${encodeURIComponent(`${ex.name} technika cviku`)}" target="_blank" rel="noopener">Nájsť video na YouTube</a>`;
+  return `<div class="tech">${text}${video}</div>`;
+}
 function viewPlan() {
   const plans = myPlans();
   if (!plans.length) return `<div class="page-head"><div><h1>Tréningový plán</h1></div></div><section class="card"><p class="empty">Tréner ti zatiaľ nepripravil plán.</p><p class="muted" style="margin:0 0 12px">Ak si cvičil/a sám/sama, zapíš si to – tréner to uvidí.</p><button class="btn primary" data-log-workout="" style="width:100%">+ Zapísať tréning</button></section>`;
@@ -386,7 +398,10 @@ function viewPlan() {
     <button class="btn primary live-go${window.liveActive?.('plan:' + p.id) ? ' on' : ''}" data-action="live-start" data-id="plan:${esc(p.id)}"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>${window.liveActive?.('plan:' + p.id) ? 'Pokračovať v tréningu' : 'Začať tréning'}</button>
     <ul class="plan-items">${p.items.map((it, i) => {
       const dose = [it.sets && it.reps ? `${it.sets} × ${it.reps}` : it.sets ? `${it.sets} sérií` : it.reps || '', it.weight || '', it.rest ? `pauza ${it.rest}` : ''].filter(Boolean).join(' · ');
-      return `<li><span class="n">${i + 1}</span><div class="info"><strong>${esc(exName(it.exerciseId))}</strong><div class="dose">${esc(dose)}</div>${it.note ? `<div class="note">${esc(it.note)}</div>` : ''}</div></li>`;
+      const key = `${p.id}:${i}`;
+      return `<li><span class="n">${i + 1}</span><div class="info"><strong>${esc(exName(it.exerciseId))}</strong><div class="dose">${esc(dose)}</div>${it.note ? `<div class="note">${esc(it.note)}</div>` : ''}
+        <button type="button" class="tech-btn${openTech.has(key) ? ' on' : ''}" data-tech="${esc(key)}" aria-expanded="${openTech.has(key)}">${openTech.has(key) ? 'Skryť techniku' : 'Technika'}</button>
+        ${openTech.has(key) ? techHtml(DB.exercises.find((e) => e.id === it.exerciseId) || { name: exName(it.exerciseId) }) : ''}</div></li>`;
     }).join('')}</ul>
   </section>`).join('')}`;
 }
@@ -868,6 +883,8 @@ document.addEventListener('click', (e) => {
   if (f) { sessionsFilter = f.dataset.filter; render(); return; }
   const m = e.target.closest('[data-metric]');
   if (m) { metric = m.dataset.metric; render(); return; }
+  const tb = e.target.closest('[data-tech]');
+  if (tb) { const k = tb.dataset.tech; openTech.has(k) ? openTech.delete(k) : openTech.add(k); const y = window.scrollY; render(); window.scrollTo(0, y); return; }
   const t = e.target.closest('[data-toggle]');
   if (t) { const id = t.dataset.toggle; openLogs.has(id) ? openLogs.delete(id) : openLogs.add(id); render(); return; }
   if (e.target.closest('#cta-book')) { bookOpen = true; location.hash = '#/sessions'; setTimeout(() => document.getElementById('booking')?.scrollIntoView({ block: 'start', behavior: 'smooth' }), 80); return; }

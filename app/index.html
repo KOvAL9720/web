@@ -36,22 +36,23 @@
   </style>
   <link rel="stylesheet" href="../css/trainer.css?v=7">
   <link rel="stylesheet" href="css/redesign.css?v=5">
-  <link rel="stylesheet" href="css/app.css?v=28">
+  <link rel="stylesheet" href="css/app.css?v=29">
 </head>
 <body>
   <div id="splash" aria-hidden="true"><div class="line"></div></div>
   <div id="app"></div>
   <script src="js/data.js?v=8"></script>
-  <script src="js/app.js?v=31"></script>
-  <script src="js/exercise-icons.js?v=5"></script>
+  <script src="js/app.js?v=32"></script>
+  <script src="js/exercise-icons.js?v=6"></script>
   <script src="js/live.js?v=3"></script>
   <script src="js/calendar.js?v=2"></script>
+  <script src="js/habits.js?v=1"></script>
   <script src="js/chat.js?v=2"></script>
   <script type="module">
     // Firebase sa načíta až po vykreslení obsahu, aby nebrzdil štart
     // Safari pri slabom signáli niekedy modul nestiahne – skúsi sa ešte 2× s pauzou
     let cloudTry = 0;
-    const loadCloud = () => import(`./js/cloud.js?v=13${cloudTry ? `&pokus=${cloudTry}` : ''}`).catch(() => { cloudTry++; if (cloudTry < 3) setTimeout(loadCloud, cloudTry * 2500); });
+    const loadCloud = () => import(`./js/cloud.js?v=14${cloudTry ? `&pokus=${cloudTry}` : ''}`).catch(() => { cloudTry++; if (cloudTry < 3) setTimeout(loadCloud, cloudTry * 2500); });
     if (document.readyState === 'complete') loadCloud(); else window.addEventListener('load', loadCloud, { once: true });
   </script>
 </body>

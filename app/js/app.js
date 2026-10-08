@@ -14,7 +14,13 @@ const METRICS = [['weight', 'Váha', 'kg'], ['bodyFat', 'Tuk', '%'], ['waist', '
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const weekday = (s) => (parseDate(s).getDay() + 6) % 7;
 const fmtShort = (s) => { const d = parseDate(s); return `${d.getDate()}. ${d.getMonth() + 1}.`; };
-const fmtNum = (n, digits = 1) => (n == null || n === '' ? '–' : Number(n).toLocaleString('sk-SK', { maximumFractionDigits: digits }));
+// formátovače sa vytvoria raz (toLocaleString s nastaveniami ich vytvára pri každom volaní – pomalé)
+const NUM_FMT = new Map();
+const fmtNum = (n, digits = 1) => {
+  if (n == null || n === '') return '–';
+  if (!NUM_FMT.has(digits)) NUM_FMT.set(digits, new Intl.NumberFormat('sk-SK', { maximumFractionDigits: digits }));
+  return NUM_FMT.get(digits).format(Number(n));
+};
 const daysBetween = (a, b) => Math.round((parseDate(b) - parseDate(a)) / 86400000);
 const pl = (n, one, few, many) => (n === 1 ? one : n >= 2 && n <= 4 ? few : many);
 const cnt = (n, one, few, many) => `${n} ${pl(n, one, few, many)}`;
@@ -909,21 +915,36 @@ window.addEventListener('hashchange', () => {
     under.remove?.();
     return;
   }
-  if (dir && !reduceMotion.matches) {
-    if (document.startViewTransition) {
-      document.documentElement.dataset.vt = dir;
-      const t = document.startViewTransition(() => render());
-      t.finished.finally(() => { if (document.documentElement.dataset.vt === dir) delete document.documentElement.dataset.vt; });
-    } else {
-      render();
-      const main = document.getElementById('main');
-      main?.classList.add(`vt-${dir}`);
-      setTimeout(() => main?.classList.remove(`vt-${dir}`), 500);
-    }
-    return;
-  }
+  // Nastavenia ako okno: odchádzajúca obrazovka sa presunie do pevnej vrstvy, animuje sa len
+  // transform/opacity dvoch vrstiev (bez snímky celej stránky – plynulé aj na mobile)
+  if (dir && !reduceMotion.matches) { pageSlide(dir); return; }
   render();
 });
+
+function pageSlide(dir) {
+  const root = document.documentElement;
+  const old = document.getElementById('main');
+  document.querySelector('.vt-ghost')?.remove();
+  clearTimeout(pageSlide.t);
+  if (!old) { render(); return; }
+  const r = old.getBoundingClientRect(), cs = getComputedStyle(old);
+  const ghost = document.createElement('div');
+  ghost.className = 'vt-ghost';
+  ghost.setAttribute('aria-hidden', 'true');
+  ghost.inert = true;
+  const inner = document.createElement('div');
+  inner.style.cssText = `position:absolute;left:0;right:0;top:${r.top}px;padding:${cs.padding}`;
+  inner.append(...old.childNodes);
+  inner.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
+  ghost.append(inner);
+  Object.assign(ghost.style, { left: `${r.left}px`, width: `${r.width}px` });
+  document.body.append(ghost);
+  delete root.dataset.vt;
+  void ghost.offsetWidth;
+  root.dataset.vt = dir;
+  render();
+  pageSlide.t = setTimeout(() => { ghost.remove(); if (root.dataset.vt === dir) delete root.dataset.vt; }, 460);
+}
 
 // Podstránka nastavení: potiahnutím prstom doprava späť do Nastavení (obrazovka ide za prstom)
 (() => {

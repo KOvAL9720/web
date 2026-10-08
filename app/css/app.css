@@ -208,6 +208,8 @@ dialog::backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; }
 .ex-thumb .t { stroke-width: 5.4; }
 .ex-thumb .far { opacity: .5; }
 .ex-thumb .eq { stroke-width: 2.4; }
+
+/* =========================================================
    SPRÁVY – chat s trénerom a týždenný check-in
    ========================================================= */
 .chat-count { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--accent); color: #062b27; font-size: .68rem; font-weight: 800; line-height: 1; letter-spacing: 0; font-variant-numeric: tabular-nums; }
@@ -266,7 +268,6 @@ dialog::backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; }
 .ex-thumb .sil { fill: var(--text); }
 .ex-thumb .sil .sk { stroke: var(--text); }
 
-/* ==================================================
 /* ikonky check-inu a správ – čiarové tyrkysové v jemnom krúžku (namiesto emoji) */
 .ci-ic { display: inline-grid; place-items: center; width: 24px; height: 24px; flex: none; border-radius: 8px; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); vertical-align: -6px; }
 .ci-ic svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -282,3 +283,63 @@ dialog::backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; }
 .btn-chat .ci-ic svg, .chat-head .btn .ci-ic svg { width: 18px; height: 18px; }
 
 @media (prefers-color-scheme: light) { .msg.checkin .bubble { color: var(--text); } }
+
+/* =========================================================
+   KALENDÁR v záložke Tréningy (Zoznam / Týždeň / Mesiac)
+   ========================================================= */
+.kc-modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; margin: 4px 0 14px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--border); }
+.kc-modes .seg-btn { height: 36px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font: inherit; font-weight: 700; cursor: pointer; }
+.kc-modes .seg-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 2px 8px -4px rgba(0, 0, 0, .4); }
+.kc-card { padding: 14px 12px; }
+.kc-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.kc-nav .kc-title { flex: 1; text-align: center; font-weight: 750; }
+.kc-nav .icon-btn { width: 38px; height: 38px; font-size: 1.3rem; }
+/* týždeň – časová os */
+.kc-week { position: relative; max-height: 62vh; overflow-y: auto; overscroll-behavior: contain; border-radius: 14px; border: 1px solid var(--border); }
+.kc-head { position: sticky; top: 0; z-index: 3; display: grid; grid-template-columns: 36px repeat(7, 1fr); background: var(--surface); border-bottom: 1px solid var(--border); }
+.kc-dh { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 6px 0; border: 0; background: none; color: var(--muted); font: inherit; cursor: pointer; }
+.kc-dh small { font-size: .66rem; font-weight: 700; text-transform: uppercase; }
+.kc-dh b { font-size: .95rem; color: var(--text); width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; }
+.kc-dh.today b { background: var(--accent); color: #062b27; }
+.kc-body { position: relative; display: grid; grid-template-columns: 36px repeat(7, 1fr); }
+.kc-hours { position: relative; }
+.kc-hours span { position: absolute; left: 0; right: 4px; transform: translateY(-50%); text-align: right; font-size: .62rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.kc-hours span:first-child { transform: none; }
+.kc-col { position: relative; border-left: 1px solid var(--border); background-image: repeating-linear-gradient(to bottom, var(--border) 0 1px, transparent 1px 46px); }
+.kc-col.today { background-color: color-mix(in srgb, var(--accent) 5%, transparent); }
+.kc-free { position: absolute; left: 2px; right: 2px; border: 0; padding: 0; border-radius: 8px; cursor: pointer; background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--accent) 16%, transparent) 0 6px, color-mix(in srgb, var(--accent) 8%, transparent) 6px 12px); }
+.kc-free:active { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+.kc-ev { position: absolute; left: 2px; right: 2px; z-index: 2; overflow: hidden; padding: 3px 4px; border-radius: 8px; font-size: .68rem; line-height: 1.15; pointer-events: none; }
+.kc-ev b { display: block; font-variant-numeric: tabular-nums; }
+.kc-ev small { display: block; opacity: .85; font-size: .62rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kc-ev.planned { background: var(--accent); color: #062b27; }
+.kc-ev.done { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+.kc-ev.req { background: var(--surface); color: var(--text); border: 1.5px dashed var(--accent); }
+.kc-now { position: absolute; left: -1px; right: 0; z-index: 2; height: 2px; background: #e5484d; }
+.kc-now::before { content: ""; position: absolute; left: -4px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: #e5484d; }
+.kc-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; font-size: .75rem; color: var(--muted); }
+.kc-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.kc-legend .lg { width: 14px; height: 10px; border-radius: 3px; display: inline-block; }
+.lg.planned { background: var(--accent); }
+.lg.req { border: 1.5px dashed var(--accent); }
+.lg.free { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--accent) 30%, transparent) 0 3px, transparent 3px 6px); }
+/* mesiac */
+.kc-month { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.kc-wd { text-align: center; font-size: .66rem; font-weight: 700; color: var(--muted); text-transform: uppercase; padding-bottom: 4px; }
+.kc-day { aspect-ratio: 1 / 1.05; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 3px; padding: 6px 0 0; border-radius: 12px; border: 1px solid transparent; background: var(--surface-2); color: var(--text); font: inherit; cursor: pointer; min-width: 0; }
+.kc-day b { font-size: .9rem; font-weight: 700; }
+.kc-day.out { opacity: .35; }
+.kc-day.has-free { box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--accent) 40%, transparent); }
+.kc-day.today b { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: var(--accent); color: #062b27; }
+.kc-day.sel { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface-2)); }
+.kc-day .dots { display: flex; gap: 3px; }
+.kc-day .dot { width: 6px; height: 6px; border-radius: 50%; }
+.dot.planned { background: var(--accent); }
+.dot.done { background: var(--muted); }
+.dot.req { border: 1.5px solid var(--accent); width: 5px; height: 5px; }
+.kc-daycard { margin-top: 14px; }
+.kc-slots { flex-wrap: wrap; }
+@media (prefers-color-scheme: light) {
+  .kc-dh.today b, .kc-day.today b, .kc-ev.planned { color: #fff; }
+}
+@media (min-width: 900px) { .kc-week { max-height: 70vh; } .kc-day { aspect-ratio: auto; min-height: 64px; } }

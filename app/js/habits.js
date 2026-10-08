@@ -2,7 +2,7 @@
 
 /* =========================================================
    Klientska zóna – denné návyky (kroky, voda, spánok)
-   Karta „Dnešné návyky“ na Prehľade a 14-dňový prehľad v Progrese.
+   Karta „Dnešné návyky“ na Prehľade aj v Progrese (nad 14-dňovým prehľadom).
    Ciele nastavuje tréner (posielajú sa v zdieľaných dátach), zápis sa ukladá
    do cloudu (shared/{kód}/habits/{dátum}) – tréner ho vidí v detaile klienta.
    V ukážke (DEMO) sa ukladá len v zariadení.
@@ -132,10 +132,11 @@ function hbProgressHtml() {
       const filled = vals.filter((x) => typeof x === 'number');
       const avg = filled.length ? filled.reduce((a, b) => a + b, 0) / filled.length : null;
       const max = Math.max(g[k] * 1.3, ...filled);
+      if (!filled.length) return `<div class="hb-chart"><div class="hb-chart-head">${hbIc(k)}<b>${label}</b><span class="muted">zatiaľ nič</span></div></div>`;
       return `<div class="hb-chart"><div class="hb-chart-head">${hbIc(k)}<b>${label}</b><span class="muted">${avg == null ? 'zatiaľ nič' : `priemer ${hbFmt(k, Math.round(avg * 10) / 10)}${unit ? ' ' + unit : ''}`}</span></div>
         <div class="hb-bars" style="--goal:${(g[k] / max) * 100}%">${vals.map((x, i) => `<span class="${typeof x === 'number' && x >= g[k] ? 'ok' : ''}${days[i] === today() ? ' today' : ''}" style="height:${typeof x === 'number' ? Math.max(4, (x / max) * 100) : 0}%" title="${fmtShort(days[i])}: ${hbFmt(k, x)}"></span>`).join('')}</div></div>`;
     }).join('')}
-    <p class="hint" style="margin:6px 0 0">Čiara = cieľ od trénera</p>
+    <p class="hint" style="margin:6px 0 0">${HB_ROWS.some(([k]) => days.some((d) => typeof hbDay(d)[k] === 'number')) ? 'Čiara = cieľ od trénera' : 'Graf sa ukáže, keď vyššie zapíšeš prvé hodnoty.'}</p>
   </section>`;
 }
 
@@ -157,6 +158,8 @@ document.addEventListener('focusout', (e) => { if (e.target.dataset?.hbInput) se
 
 const renderWithoutHabits = render;
 render = function (...args) {
+  // ak klient práve píše kroky, po prekreslení (napr. živá aktualizácia od trénera) mu vrátime kurzor
+  const typing = document.activeElement?.dataset?.hbInput;
   const r = renderWithoutHabits.apply(this, args);
   if (client() && hbGoals()) {
     hbLoad();
@@ -165,7 +168,11 @@ render = function (...args) {
       const anchor = main?.querySelector('.stats') || main?.querySelector('.hero');
       anchor?.insertAdjacentHTML('afterend', hbCardHtml());
     }
-    if (route() === 'progress' && !document.getElementById('hb-progress')) main?.insertAdjacentHTML('beforeend', hbProgressHtml());
+    if (route() === 'progress' && !document.getElementById('hb-progress')) main?.insertAdjacentHTML('beforeend', hbCardHtml() + hbProgressHtml());
+    if (typing) {
+      const inp = document.querySelector(`[data-hb-input="${typing}"]`);
+      if (inp && document.activeElement !== inp) { inp.focus({ preventScroll: true }); inp.setSelectionRange(inp.value.length, inp.value.length); }
+    }
   }
   return r;
 };

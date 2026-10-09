@@ -1,4 +1,4 @@
-const CACHE = 'klient-v38';
+const CACHE = 'klient-v39';
 const ASSETS = [
   './',
   'index.html',
@@ -6,6 +6,8 @@ const ASSETS = [
   'css/app.css',
   'css/redesign.css',
   'js/data.js',
+  'js/i18n-en.js',
+  'js/i18n.js',
   'js/app.js',
   'js/exercise-icons.js',
   'js/live.js',

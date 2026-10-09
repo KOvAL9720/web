@@ -271,3 +271,9 @@ p { margin: 0 0 1em; }
 @media (min-width: 1001px) { .feat-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 /* dlhšie texty v dlaždiciach úvodu – na mobile pod sebou */
 @media (max-width: 640px) { .tiles { grid-template-columns: 1fr; gap: 8px; margin-top: 32px; } .tiles .tile:last-child { grid-column: auto; } .tile b { white-space: normal; font-size: 1.15rem; } .tile { padding: 10px 14px; } }
+/* prepínač jazyka SK / EN */
+.menu .btn.lang { min-width: 44px; padding: 0 12px; letter-spacing: .04em; }
+@media (max-width: 760px) { .menu .btn.lang { padding: 0 10px; min-width: 40px; } }
+@media (max-width: 380px) { .brand { font-size: .98rem; } .menu .btn.small { padding: 0 11px; } }
+.brand { white-space: nowrap; }
+@media (max-width: 420px) { .site-top .wrap { gap: 8px; } .menu { gap: 6px; } .menu .btn.small { padding: 0 10px; font-size: .82rem; min-height: 36px; } .menu .btn.lang { min-width: 36px; padding: 0 8px; } .brand { gap: 8px; } .brand img { width: 26px; height: 26px; } }

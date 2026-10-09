@@ -10,9 +10,9 @@
    ========================================================= */
 const KCAL_KEY = 'klient-cal-mode';
 const KC_HOUR = 56;
-const KC_DAYS = ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
-const KC_DAYS_LONG = ['Pondelok', 'Utorok', 'Streda', 'Štvrtok', 'Piatok', 'Sobota', 'Nedeľa'];
-const KC_MONTHS = ['Január', 'Február', 'Marec', 'Apríl', 'Máj', 'Jún', 'Júl', 'August', 'September', 'Október', 'November', 'December'];
+const KC_DAYS = trArr(['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne']);
+const KC_DAYS_LONG = trArr(['Pondelok', 'Utorok', 'Streda', 'Štvrtok', 'Piatok', 'Sobota', 'Nedeľa']);
+const KC_MONTHS = trArr(['Január', 'Február', 'Marec', 'Apríl', 'Máj', 'Jún', 'Júl', 'August', 'September', 'Október', 'November', 'December']);
 let kcalMode = 'grid';
 try { kcalMode = localStorage.getItem(KCAL_KEY) || 'grid'; } catch (e) { /* ok */ }
 if (!['day', 'grid', 'month', 'list'].includes(kcalMode)) kcalMode = 'grid';

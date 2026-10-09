@@ -7,8 +7,8 @@
 
 const CODE_KEY = 'klient-zona-code';
 const CACHE_KEY = 'klient-zona-data';
-const DAYS = ['pondelok', 'utorok', 'streda', 'štvrtok', 'piatok', 'sobota', 'nedeľa'];
-const DAYS_SHORT = ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
+const DAYS = trArr(['pondelok', 'utorok', 'streda', 'štvrtok', 'piatok', 'sobota', 'nedeľa']);
+const DAYS_SHORT = trArr(['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne']);
 const METRICS = [['weight', 'Váha', 'kg'], ['bodyFat', 'Tuk', '%'], ['waist', 'Pás', 'cm'], ['hips', 'Boky', 'cm']];
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -22,7 +22,7 @@ const fmtNum = (n, digits = 1) => {
   return NUM_FMT.get(digits).format(Number(n));
 };
 const daysBetween = (a, b) => Math.round((parseDate(b) - parseDate(a)) / 86400000);
-const pl = (n, one, few, many) => (n === 1 ? one : n >= 2 && n <= 4 ? few : many);
+const pl = (n, one, few, many) => (window.LANG === 'en' ? tr(n === 1 ? one : many) : n === 1 ? one : n >= 2 && n <= 4 ? few : many);
 const cnt = (n, one, few, many) => `${n} ${pl(n, one, few, many)}`;
 const initials = (name) => name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
 const fmtDay = (s) => {
@@ -618,7 +618,7 @@ async function deleteEntry(id) {
 
 function viewLogin() {
   return `<div class="login-wrap"><div class="login-box">
-    <a class="back" href="../">← Späť na web</a>
+    <a class="back" href="${window.LANG === 'en' ? '../en/' : '../'}">← Späť na web</a>
     <img class="logo" src="../icons/icon.svg" alt="" style="display:block">
     <h1>Klientska zóna</h1>
     <p>Zadaj prístupový kód, ktorý si dostal/a od trénera.</p>
@@ -718,7 +718,8 @@ function viewSettings(forceSub) {
   ], 'Po odhlásení sa znova prihlásiš kódom od trénera.')}
   ${setGroup('Aplikácia', [
     setRow({ icon: 'phone', title: 'Inštalácia appky', sub: 'iPhone, Android a počítač', href: '#/settings/install' }),
-    setRow({ icon: 'globe', title: 'Webová stránka', href: '../', ext: false }),
+    setRow({ icon: 'globe', title: 'Jazyk', sub: 'Language', val: window.LANG === 'en' ? 'English' : 'Slovenčina', action: 'lang', chev: false }),
+    setRow({ icon: 'globe', title: 'Webová stránka', href: window.LANG === 'en' ? '../en/' : '../', ext: false }),
     setRow({ icon: 'info', title: 'Verzia', val: '<b id="app-version">–</b>', chev: false })
   ])}`;
 }
@@ -894,6 +895,7 @@ if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
 document.addEventListener('click', (e) => {
   const st = e.target.closest('[data-set]');
   if (st) {
+    if (st.dataset.set === 'lang') { window.setLang(window.LANG === 'en' ? 'sk' : 'en'); return; }
     if (st.dataset.set === 'logout') { if (confirm('Naozaj sa chceš odhlásiť? Znova sa prihlásiš kódom od trénera.')) logout(); return; }
     if (st.dataset.set === 'refresh') { if (isDemo()) { toast('Ukážkové dáta sa neobnovujú'); return; } if (!navigator.onLine) { toast('Si offline – skús to s internetom'); return; } refresh().then(() => { render(); toast('Údaje sú aktuálne'); }); return; }
   }

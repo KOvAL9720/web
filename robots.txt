@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /web/zona/
+Disallow: /lift-tara/zona/
 
-Sitemap: https://koval9720.github.io/web/sitemap.xml
+Sitemap: https://koval9720.github.io/lift-tara/sitemap.xml

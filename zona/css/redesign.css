@@ -11,10 +11,10 @@
   --border: rgba(255, 255, 255, .08);
   --text: #f5f5f6;
   --muted: #9d9da6;
-  --primary: #6fd0c4;
-  --primary-strong: #3fb2a5;
-  --primary-ink: #04201d;
-  --primary-soft: rgba(111, 208, 196, .14);
+  --primary: #e0b25a;
+  --primary-strong: #c62a3c;
+  --primary-ink: #1d1714;
+  --primary-soft: rgba(224, 178, 90, .14);
   --cta: #ffffff;
   --cta-ink: #0b0b0c;
   --sel: #ffffff;
@@ -35,10 +35,10 @@
     --border: rgba(15, 17, 20, .07);
     --text: #0e0f11;
     --muted: #686d75;
-    --primary: #1f9a8e;
-    --primary-strong: #167c72;
+    --primary: #c62a3c;
+    --primary-strong: #a81f30;
     --primary-ink: #ffffff;
-    --primary-soft: rgba(31, 154, 142, .12);
+    --primary-soft: rgba(198, 42, 60, .12);
     --cta: #0e0f11;
     --cta-ink: #ffffff;
     --sel: #0e0f11;
@@ -139,7 +139,7 @@ dialog::backdrop { background: rgba(0, 0, 0, .45); }
   .badge.cancelled { background: var(--danger-soft); color: var(--danger); }
   .badge.self { background: rgba(63, 120, 166, .12); color: #2f6690; }
   .notice-money { background: #fff7e6; border-color: rgba(214, 150, 20, .25); color: #7a4d00; }
-  .avatar { color: #04201d; }
+  .avatar { color: #1d1714; }
   dialog::backdrop { background: rgba(15, 17, 20, .3); }
   .modal-head::before { background: rgba(0, 0, 0, .18); }
   table th, table td { border-color: var(--border); }
@@ -217,7 +217,7 @@ button.hero-tile:hover { background: rgba(34, 34, 38, .7); }
 
 /* ===== Menej tyrkysovej: hlavná farba čiernobiela, tyrkysová len ako drobný akcent ===== */
 :root {
-  --accent: #6fd0c4;
+  --accent: #e0b25a;
   --primary: #f5f5f6;
   --primary-strong: #ffffff;
   --primary-ink: #0b0b0c;
@@ -228,7 +228,7 @@ button.hero-tile:hover { background: rgba(34, 34, 38, .7); }
 }
 @media (prefers-color-scheme: light) {
   :root {
-    --accent: #1f9a8e;
+    --accent: #c62a3c;
     --primary: #0e0f11;
     --primary-strong: #000000;
     --primary-ink: #ffffff;
@@ -355,7 +355,7 @@ main.tab-in > :nth-child(n+4) { animation-delay: 120ms; }
 @media (prefers-color-scheme: light) {
   :root {
     --muted: #5c6168;
-    --accent: #157268;
+    --accent: #a81f30;
     --ok: #16703d;
     --warn: #865300;
     --danger: #b02f2f;
@@ -443,7 +443,7 @@ main.swiping * { pointer-events: none; }
 .swipe-under.settle { transition: transform .23s cubic-bezier(.2, .8, .2, 1), opacity .23s; }
 
 /* ===== Biele tlačidlá – decentný tyrkysový lem ===== */
-:root { --cta-ring: inset 0 0 0 1.5px rgba(111, 208, 196, .75), 0 0 14px -4px rgba(111, 208, 196, .45); }
+:root { --cta-ring: inset 0 0 0 1.5px rgba(224, 178, 90, .75), 0 0 14px -4px rgba(224, 178, 90, .45); }
 @media (prefers-color-scheme: dark) {
   .btn.primary, .icon-btn.ok, .topbar-btn.active { box-shadow: var(--cta-ring), 0 10px 24px -14px rgba(0, 0, 0, .55); }
 }
@@ -646,7 +646,7 @@ html.live-on, html.live-on body { overflow: hidden; }
 @keyframes ring-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .live-rest.idle .fg.spin { animation: none; } }
 /* rozbehnutý (zbalený) živý tréning – tlačidlo ▶ svieti */
-.icon-btn.play.on { background: var(--accent); border-color: var(--accent); color: #062522; animation: play-pulse 1.8s ease-out infinite; }
+.icon-btn.play.on { background: var(--accent); border-color: var(--accent); color: #1d1714; animation: play-pulse 1.8s ease-out infinite; }
 @keyframes play-pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent); } 70%, 100% { box-shadow: 0 0 0 10px transparent; } }
 @media (prefers-reduced-motion: reduce) { .icon-btn.play.on { animation: none; } }
 /* bez tlačidiel Späť / Ďalší cvik – lišta s časom je úplne dole */

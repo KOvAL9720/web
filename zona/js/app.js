@@ -427,8 +427,8 @@ function chartHtml(points, unit) {
   return `<div class="chart" role="img" aria-label="Graf: ${points.map((p) => `${fmtShort(p.date)} ${fmtNum(p.value)} ${unit}`).join(', ')}">
     <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
       <defs>
-        <linearGradient id="${id}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#46b3a7" stop-opacity=".32"/><stop offset="1" stop-color="#46b3a7" stop-opacity="0"/></linearGradient>
-        <linearGradient id="${id}l" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="0"><stop offset="0" stop-color="#8fdcd2"/><stop offset="1" stop-color="#7fb3d5"/></linearGradient>
+        <linearGradient id="${id}a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c62a3c" stop-opacity=".32"/><stop offset="1" stop-color="#c62a3c" stop-opacity="0"/></linearGradient>
+        <linearGradient id="${id}l" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="0"><stop offset="0" stop-color="#e0b25a"/><stop offset="1" stop-color="#e08a5a"/></linearGradient>
       </defs>
       <path d="${area}" fill="url(#${id}a)"/>
       <path d="${line}" fill="none" stroke="url(#${id}l)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>

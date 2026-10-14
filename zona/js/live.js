@@ -37,7 +37,7 @@ function bestBefore(s, exerciseId) {
 // konfety pri rekorde
 function burst(x, y) {
   if (reduceMotion.matches || !document.body.animate) return;
-  const colors = ['#ffffff', '#6fd0c4', '#d4d5d9', '#f5b301'];
+  const colors = ['#ffffff', '#e0b25a', '#d4d5d9', '#f5b301'];
   for (let i = 0; i < 18; i++) {
     const dot = document.createElement('span');
     const size = 5 + Math.random() * 6;

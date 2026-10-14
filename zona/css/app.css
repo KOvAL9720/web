@@ -1,3 +1,14 @@
+/* Písmo Poppins – uložené v appke (funguje offline, nič sa neposiela na Google) */
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 400; font-display: swap; src: url(../../fonts/poppins-400-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 400; font-display: swap; src: url(../../fonts/poppins-400-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 500; font-display: swap; src: url(../../fonts/poppins-500-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 500; font-display: swap; src: url(../../fonts/poppins-500-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 600; font-display: swap; src: url(../../fonts/poppins-600-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 600; font-display: swap; src: url(../../fonts/poppins-600-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 700; font-display: swap; src: url(../../fonts/poppins-700-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 700; font-display: swap; src: url(../../fonts/poppins-700-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 800; font-display: swap; src: url(../../fonts/poppins-800-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 800; font-display: swap; src: url(../../fonts/poppins-800-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 /* Klientska zóna – doplnky k trainer.css (štýly appky Tréner, použité 1:1).
    Tu sú len prvky, ktoré appka Tréner nemá: prihlásenie, zoznam výkonov, rekordy. */
 
@@ -171,7 +182,7 @@ body.spun .brand .avatar { animation: none; }
 /* Plán – štart živého tréningu */
 .live-go { width: 100%; min-height: 52px; margin: 4px 0 12px; font-size: 1rem; gap: 8px; }
 .live-go .i { width: 18px; height: 18px; fill: currentColor; stroke: none; }
-.live-go.on { background: var(--accent); color: #062522; animation: play-pulse 1.8s ease-out infinite; }
+.live-go.on { background: var(--accent); color: #1d1714; animation: play-pulse 1.8s ease-out infinite; }
 .live-go svg { width: 18px; height: 18px; fill: currentColor !important; stroke: none !important; }
 
 /* ===== Plynulosť: bez rozmazania pod pohyblivými panelmi =====
@@ -317,7 +328,7 @@ dialog::backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; }
 .cal-dh small { color: var(--muted); font-size: .68rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .cal-dh b { font-size: 1.2rem; font-weight: 800; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; font-variant-numeric: tabular-nums; }
 .cal-dh.today small { color: var(--accent); }
-.cal-dh.today b { background: var(--accent); color: #062522; }
+.cal-dh.today b { background: var(--accent); color: #1d1714; }
 .cal-allday { display: flex; flex-wrap: wrap; gap: 3px; justify-content: center; max-width: 100%; }
 .cal-chip { border: 0; font: inherit; font-size: .66rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: var(--surface-3); color: var(--text); cursor: pointer; text-decoration: none; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 .cal-chip.self { background: rgba(127, 179, 213, .18); color: #9cc8e6; }
@@ -361,13 +372,13 @@ dialog::backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; }
 .cal-hint { margin: -6px 4px 10px; font-size: .76rem; }
 .cal-add { margin-left: auto; }
 /* kalendár – čitateľné farby blokov (bez color-mix, aby kontrast sedel v každom prehliadači) */
-.cal-ev { background: rgba(111, 208, 196, .16); border-color: rgba(111, 208, 196, .4); }
+.cal-ev { background: rgba(224, 178, 90, .16); border-color: rgba(224, 178, 90, .4); }
 .cal-ev.st-done { background: rgba(70, 180, 110, .16); border-color: rgba(70, 180, 110, .38); }
 .cal-ev b, .cal-ev small { color: var(--text); opacity: .78; }
 .cal-ev span { color: var(--text); }
-.cal-col.today { background-color: rgba(111, 208, 196, .04); }
+.cal-col.today { background-color: rgba(224, 178, 90, .04); }
 @media (prefers-color-scheme: light) {
-  .cal-ev { background: #e3f1ef; border-color: rgba(21, 114, 104, .3); }
+  .cal-ev { background: #f6e7cf; border-color: rgba(21, 114, 104, .3); }
   .cal-ev.st-done { background: #e2f1e7; border-color: rgba(22, 112, 61, .3); }
   .cal-dh.today b { color: #fff; }
   .cal-col.today { background-color: rgba(21, 114, 104, .04); }
@@ -396,20 +407,20 @@ dialog::backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; }
 .mc.out .mc-list { opacity: .55; }
 .mc.we:not(.out) { background: rgba(127, 127, 127, .03); }
 .mc-n { align-self: flex-start; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; font-size: .86rem; font-weight: 750; font-variant-numeric: tabular-nums; }
-.mc.today .mc-n { background: var(--accent); color: #062522; }
+.mc.today .mc-n { background: var(--accent); color: #1d1714; }
 @media (prefers-color-scheme: light) { .mc.today .mc-n { color: #fff; } }
 .mc-list { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.mc-ev { display: block; padding: 2px 6px; border-radius: 6px; font-size: .7rem; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: rgba(111, 208, 196, .16); border-left: 3px solid var(--accent); }
+.mc-ev { display: block; padding: 2px 6px; border-radius: 6px; font-size: .7rem; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: rgba(224, 178, 90, .16); border-left: 3px solid var(--accent); }
 .mc-ev b { font-weight: 800; font-variant-numeric: tabular-nums; }
 .mc-ev.st-done { background: rgba(70, 180, 110, .16); border-left-color: var(--ok); }
 .mc-ev.st-done.due { border-left-color: var(--warn); }
 .mc-ev.st-cancelled { opacity: .5; text-decoration: line-through; border-left-color: var(--muted); background: var(--surface-2); }
 .mc-ev.req { background: var(--warn-soft); border-left-color: var(--warn); color: var(--warn); }
-.mc-ev.self { background: rgba(127, 179, 213, .16); border-left-color: #7fb3d5; }
+.mc-ev.self { background: rgba(127, 179, 213, .16); border-left-color: #e08a5a; }
 .mc-more { font-size: .68rem; color: var(--muted); font-weight: 700; padding-left: 4px; }
 .mc-dots { display: none; gap: 3px; justify-content: center; margin-top: auto; }
 .mc-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-@media (prefers-color-scheme: light) { .mc-ev { background: #e3f1ef; } .mc-ev.st-done { background: #e2f1e7; } .mc-ev.self { background: rgba(63, 120, 166, .12); } }
+@media (prefers-color-scheme: light) { .mc-ev { background: #f6e7cf; } .mc-ev.st-done { background: #e2f1e7; } .mc-ev.self { background: rgba(63, 120, 166, .12); } }
 /* mobil: v bunke len číslo a bodky (počet tréningov) */
 @media (max-width: 640px) {
   .month-grid { grid-auto-rows: minmax(64px, 1fr); }
@@ -485,3 +496,136 @@ dialog::backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; }
 .code-hold .code-val { font-variant-numeric: tabular-nums; letter-spacing: .04em; transition: color .15s; }
 .code-hold.shown .code-val { color: var(--text); font-weight: 700; }
 .code-hold:active { background: rgba(127,127,127,.08); }
+
+/* =========================================================
+   Lift Tara – Greta dizajn
+   Teplá tmavohnedá, červený akcent, zlatá ako doplnok, písmo Poppins.
+   Načítava sa posledný a prekrýva farby a písmo celej appky.
+   ========================================================= */
+:root {
+  --bg: #15100e;
+  --surface: #221a16;
+  --surface-2: #2c221d;
+  --surface-3: #3a2e27;
+  --border: rgba(246, 236, 220, .08);
+  --text: #f6ecdc;
+  --muted: #b4a594;
+  --accent: #c62a3c;
+  --gold: #e0b25a;
+  --primary: #f6ecdc;
+  --primary-strong: #fff8ee;
+  --primary-ink: #15100e;
+  --primary-soft: rgba(198, 42, 60, .16);
+  --cta: #c62a3c;
+  --cta-ink: #fff8ee;
+  --sel: #c62a3c;
+  --sel-ink: #fff8ee;
+  --grad: linear-gradient(135deg, #d43a4c 0%, #a81f30 100%);
+  --grad-deep: linear-gradient(140deg, #3a1f1a 0%, #221a16 100%);
+  --glow: 0 0 0 1px rgba(224, 178, 90, .2), 0 8px 26px rgba(0, 0, 0, .35);
+  --glass: rgba(27, 20, 17, .84);
+  --input: #2c221d;
+  --placeholder: #8a7b6e;
+  --shadow: 0 1px 0 rgba(255, 240, 220, .04) inset, 0 18px 40px -26px rgba(0, 0, 0, .9);
+  --cta-ring: inset 0 0 0 1.5px rgba(224, 178, 90, .45), 0 0 16px -6px rgba(198, 42, 60, .6);
+  --ok: #8fc98a; --ok-soft: rgba(143, 201, 138, .14);
+  --warn: #e0b25a; --warn-soft: rgba(224, 178, 90, .15);
+  --danger: #ee6b78; --danger-soft: rgba(238, 107, 120, .14);
+  --font: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f7f1e6;
+    --surface: #fffaf2;
+    --surface-2: #efe5d5;
+    --surface-3: #e4d8c6;
+    --border: rgba(29, 23, 20, .08);
+    --text: #1d1714;
+    --muted: #6d6158;
+    --accent: #b22234;
+    --gold: #9a6a18;
+    --primary: #1d1714;
+    --primary-strong: #000000;
+    --primary-ink: #fff8ee;
+    --primary-soft: rgba(178, 34, 52, .1);
+    --cta: #b22234;
+    --cta-ink: #fff8ee;
+    --sel: #b22234;
+    --sel-ink: #fff8ee;
+    --grad: linear-gradient(135deg, #c62a3c 0%, #9c1d2c 100%);
+    --glass: rgba(255, 250, 242, .88);
+    --input: #efe5d5;
+    --placeholder: #9a8b7e;
+    --shadow: 0 1px 2px rgba(29, 23, 20, .04), 0 10px 30px -14px rgba(60, 40, 25, .18);
+    --cta-ring: inset 0 0 0 1.5px rgba(178, 34, 52, .35), 0 0 14px -6px rgba(178, 34, 52, .4);
+    --ok: #2e7d3a; --warn: #8a5a00; --danger: #b22234;
+    color-scheme: light;
+  }
+}
+
+html body {
+  font-family: var(--font);
+  background:
+    radial-gradient(60% 40% at 100% 0%, rgba(198, 42, 60, .13), transparent 70%),
+    radial-gradient(50% 35% at 0% 22%, rgba(224, 178, 90, .08), transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
+}
+@media (prefers-color-scheme: light) {
+  html body { background: radial-gradient(60% 40% at 100% 0%, rgba(178, 34, 52, .07), transparent 70%), var(--bg); }
+}
+button, input, select, textarea { font-family: inherit; }
+h1 { font-weight: 800; letter-spacing: -.02em; }
+
+/* horná lišta a spodné menu v teplých farbách */
+.topbar { background: var(--glass); }
+.nav { background: var(--glass); border-color: var(--border); }
+.nav a.active { color: var(--accent); }
+@media (prefers-color-scheme: dark) { .nav a.active { color: #ef5a6a; } }
+
+/* hlavné tlačidlá: červená pilulka so smotanovým textom ako v návrhu */
+.btn.primary, .btn.cta, .icon-btn.ok, .topbar-btn.active { background: var(--cta); color: var(--cta-ink); border-color: transparent; }
+.btn.primary:hover, .btn.cta:hover { background: color-mix(in srgb, var(--cta) 88%, #000); color: var(--cta-ink); }
+.hero .btn.primary, .hero .btn.primary.cta { background: var(--cta); color: var(--cta-ink); }
+.avatar, .icon-btn.ok, .plan-items .n, .icon-btn.logged { color: #fff8ee; }
+.chip.active, .tabs a.active, .seg button.active { background: var(--sel); color: var(--sel-ink); }
+
+/* zlatá ako jemný doplnok */
+.eyebrow { color: var(--gold); }
+.hero .eyebrow { color: #e0b25a; }
+.badge.done { background: var(--ok-soft); color: var(--ok); }
+
+/* ===== Babka Greta – bublina s hláškou ===== */
+.greta { display: flex; gap: 12px; align-items: flex-start; margin: 14px 0; }
+.greta img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); flex: none; background: var(--surface-2); }
+.greta .greta-bubble { background: var(--surface); border: 1px solid var(--border); border-radius: 4px 18px 18px 18px; padding: 11px 14px; font-size: .94rem; line-height: 1.45; color: var(--text); box-shadow: var(--shadow); }
+.greta .greta-bubble b { display: block; font-size: .7rem; font-weight: 700; letter-spacing: .08em; color: var(--gold); margin-bottom: 2px; text-transform: uppercase; }
+.greta.small img { width: 40px; height: 40px; }
+.greta.small .greta-bubble { font-size: .88rem; }
+
+/* Poppins je širšie písmo – záporné rozostupy pôvodného písma by slová zlepili */
+html body * { letter-spacing: 0 !important; word-spacing: .06em !important; }
+html body .badge,
+html body .brand,
+html body .cal-dh small,
+html body .chip,
+html body .contact-btn,
+html body .day-head b,
+html body .eyebrow,
+html body .fin-split,
+html body .greta .greta-bubble b,
+html body .hero-big span,
+html body .kv dt,
+html body .login-box input,
+html body .lset.head,
+html body .mini-txt small,
+html body .month-head span,
+html body .pay-summary span,
+html body .rest-row > span,
+html body .ring-txt small,
+html body .section-title,
+html body .set-title,
+html body .stat span,
+html body .sum-stats span,
+html body th { letter-spacing: .06em !important; }

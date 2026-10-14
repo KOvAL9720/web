@@ -1,3 +1,14 @@
+/* Písmo Poppins – uložené v appke (funguje offline, nič sa neposiela na Google) */
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 400; font-display: swap; src: url(../fonts/poppins-400-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 400; font-display: swap; src: url(../fonts/poppins-400-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 500; font-display: swap; src: url(../fonts/poppins-500-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 500; font-display: swap; src: url(../fonts/poppins-500-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 600; font-display: swap; src: url(../fonts/poppins-600-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 600; font-display: swap; src: url(../fonts/poppins-600-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 700; font-display: swap; src: url(../fonts/poppins-700-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 700; font-display: swap; src: url(../fonts/poppins-700-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 800; font-display: swap; src: url(../fonts/poppins-800-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Poppins'; font-style: normal; font-weight: 800; font-display: swap; src: url(../fonts/poppins-800-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 /* =========================================================
    Web trénera – rovnaký dizajn ako appky (2026):
    čiernobiely, fotka posilňovne, tyrkysová len ako akcent,
@@ -5,22 +16,22 @@
    ========================================================= */
 :root {
   color-scheme: dark light;
-  --bg: #0b0b0c; --surface: #161618; --surface-2: #1f1f22; --surface-3: #2a2a2e;
-  --border: rgba(255, 255, 255, .08); --text: #f5f5f6; --muted: #9d9da6;
-  --accent: #6fd0c4; --cta: #ffffff; --cta-ink: #0b0b0c;
-  --glass: rgba(14, 14, 16, .72);
+  --bg: #15100e; --surface: #221a16; --surface-2: #2c221d; --surface-3: #3a2e27;
+  --border: rgba(246, 236, 220, .08); --text: #f6ecdc; --muted: #b4a594;
+  --accent: #e0b25a; --red: #c62a3c; --cta: #c62a3c; --cta-ink: #fff8ee;
+  --glass: rgba(27, 20, 17, .82);
   --shadow: 0 1px 0 rgba(255, 255, 255, .04) inset, 0 18px 40px -26px rgba(0, 0, 0, .9);
   --radius: 24px;
-  --ring: inset 0 0 0 1.5px rgba(111, 208, 196, .75), 0 0 14px -4px rgba(111, 208, 196, .45);
-  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
+  --ring: inset 0 0 0 1.5px rgba(224, 178, 90, .75), 0 0 14px -4px rgba(224, 178, 90, .45);
+  --font: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   --ease: cubic-bezier(.2, .8, .2, 1); --spring: cubic-bezier(.3, 1.35, .5, 1);
 }
 @media (prefers-color-scheme: light) {
   :root {
-    --bg: #eceef1; --surface: #ffffff; --surface-2: #f2f3f5; --surface-3: #e6e7ea;
-    --border: rgba(15, 17, 20, .08); --text: #0e0f11; --muted: #5c6168;
-    --accent: #157268; --cta: #0e0f11; --cta-ink: #ffffff;
-    --glass: rgba(255, 255, 255, .78);
+    --bg: #f7f1e6; --surface: #fffaf2; --surface-2: #efe5d5; --surface-3: #e4d8c6;
+    --border: rgba(29, 23, 20, .08); --text: #1d1714; --muted: #6d6158;
+    --accent: #9a6a18; --red: #b22234; --cta: #b22234; --cta-ink: #fff8ee;
+    --glass: rgba(255, 250, 242, .86);
     --shadow: 0 1px 2px rgba(15, 17, 20, .04), 0 10px 30px -14px rgba(15, 17, 20, .16);
   }
 }
@@ -81,7 +92,7 @@ p { margin: 0 0 1em; }
 .hero-section .eyebrow { color: rgba(255, 255, 255, .8); }
 .hero-section h1 { max-width: 880px; }
 .hero-section h1 em { font-style: normal; color: var(--accent); }
-@media (prefers-color-scheme: light) { .hero-section h1 em { color: #6fd0c4; } }
+@media (prefers-color-scheme: light) { .hero-section h1 em { color: #e0b25a; } }
 .hero-section .lead { color: rgba(255, 255, 255, .82); }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
 .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 44px; max-width: 760px; }
@@ -138,7 +149,7 @@ p { margin: 0 0 1em; }
 .price-card.featured .price span, .price-card.featured .muted { color: rgba(255, 255, 255, .75); }
 .price-card.featured .checks li::before { background-color: rgba(255, 255, 255, .14); }
 .price-card.featured .btn.primary { background: #fff; color: #0b0b0c; box-shadow: var(--ring); }
-.badge { align-self: flex-start; display: inline-flex; padding: 5px 12px; border-radius: 999px; font-size: .74rem; font-weight: 800; letter-spacing: .04em; background: var(--accent); color: #062522; margin-bottom: 10px; }
+.badge { align-self: flex-start; display: inline-flex; padding: 5px 12px; border-radius: 999px; font-size: .74rem; font-weight: 800; letter-spacing: .04em; background: var(--accent); color: #1d1714; margin-bottom: 10px; }
 @media (max-width: 900px) { .price-card.featured { transform: none; } }
 
 /* Kroky */
@@ -191,7 +202,7 @@ p { margin: 0 0 1em; }
 .map::before { content: ""; position: absolute; inset: 0; background: rgba(6, 6, 7, .55); transition: background .3s; }
 .map:hover::before { background: rgba(6, 6, 7, .35); }
 .map > * { position: relative; }
-.map .pin { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #062522; box-shadow: 0 0 0 0 rgba(111, 208, 196, .6); animation: pin-pulse 2s ease-out infinite; }
+.map .pin { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #1d1714; box-shadow: 0 0 0 0 rgba(224, 178, 90, .6); animation: pin-pulse 2s ease-out infinite; }
 @keyframes pin-pulse { 70%, 100% { box-shadow: 0 0 0 18px transparent; } }
 
 .footer { border-top: 1px solid var(--border); padding: 32px 0 calc(32px + env(safe-area-inset-bottom)); color: var(--muted); font-size: .9rem; }
@@ -264,7 +275,7 @@ p { margin: 0 0 1em; }
 .cta-card.dark::before { content: ""; position: absolute; inset: 0; z-index: -2; background: url(../icons/hero.jpg) 60% 40% / cover; }
 .cta-card.dark::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(6, 6, 7, .5), rgba(6, 6, 7, .92)); }
 .cta-card.dark p { color: rgba(255, 255, 255, .75); }
-.cta-card.dark .go { color: #6fd0c4; }
+.cta-card.dark .go { color: #e0b25a; }
 .cta-card.dark .ic { background: rgba(255, 255, 255, .12); color: #fff; }
 
 .foot-links { display: flex; flex-wrap: wrap; gap: 18px; }
@@ -277,3 +288,21 @@ p { margin: 0 0 1em; }
 @media (max-width: 380px) { .brand { font-size: .98rem; } .menu .btn.small { padding: 0 11px; } }
 .brand { white-space: nowrap; }
 @media (max-width: 420px) { .site-top .wrap { gap: 8px; } .menu { gap: 6px; } .menu .btn.small { padding: 0 10px; font-size: .82rem; min-height: 36px; } .menu .btn.lang { min-width: 36px; padding: 0 8px; } .brand { gap: 8px; } .brand img { width: 26px; height: 26px; } }
+
+/* ===== Greta dizajn: červené tlačidlá, zlaté akcenty, Greta ===== */
+.hero-section .btn.primary, .btn.primary { background: var(--cta); color: var(--cta-ink); }
+.hero-section h1 em, .hero-section h1 em { color: #e0b25a; }
+.site-top:not(.solid) .menu .btn { background: rgba(255, 245, 230, .14); border-color: rgba(255, 245, 230, .25); }
+.greta-sec { display: grid; grid-template-columns: .9fr 1.1fr; gap: 48px; align-items: center; }
+@media (max-width: 860px) { .greta-sec { grid-template-columns: 1fr; gap: 28px; } }
+.greta-photo { position: relative; border-radius: 28px; overflow: hidden; aspect-ratio: 4 / 4.4; background: #2c221d; box-shadow: var(--shadow); }
+.greta-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
+.greta-photo .tag { position: absolute; left: 16px; bottom: 16px; padding: 6px 14px; border-radius: 999px; background: var(--red); color: #fff8ee; font-size: .78rem; font-weight: 700; letter-spacing: .08em; }
+.quotes { display: grid; gap: 12px; margin-top: 22px; }
+.quote-b { display: flex; gap: 12px; align-items: flex-start; }
+.quote-b img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--red); flex: none; }
+.quote-b p { margin: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 4px 18px 18px 18px; padding: 10px 14px; font-size: .98rem; }
+/* Poppins je širšie písmo – mierne rozostupy namiesto pôvodných záporných */
+h1, h2, h3 { letter-spacing: -.015em; }
+.btn, .brand, .tile b, .price, p, li { letter-spacing: 0; }
+body { word-spacing: .05em; }

@@ -695,3 +695,12 @@ html body h1 { text-shadow: 3px 3px 0 rgba(198, 42, 60, .45); }
 .lang-pill.corner { position: absolute; top: 14px; right: 14px; margin: 0; }
 .topbar .topbar-btn { flex: none; }
 @media (max-width: 360px) { .lang-pill { margin-right: 6px; } .lang-pill button { min-width: 32px; padding: 0 7px; font-size: .74rem; } }
+
+/* ikony namiesto emoji */
+.ei { width: 1em; height: 1em; flex: none; vertical-align: -.14em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ei.fill { fill: currentColor; stroke: none; }
+.pr-icon, .record .medal, .sum-emoji, .lset .n, .live-hint > span { color: var(--gold, #e0b25a); }
+.mini-ic .ei { width: .95rem; height: .95rem; color: var(--text); }
+.sum-emoji .ei { width: 3.4rem; height: 3.4rem; stroke-width: 1.6; margin: 0 auto; display: block; }
+.lset .n .ei { width: 1.1em; height: 1.1em; }
+@media (prefers-color-scheme: light) { .pr-icon, .record .medal, .sum-emoji, .lset .n, .live-hint > span { color: #9a6a18; } }

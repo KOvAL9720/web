@@ -16,8 +16,8 @@ const chatMarkSeen = () => { const last = chatState.msgs.reduce((t, m) => Math.m
 const CHAT_DEMO = () => {
   const d = (days, h) => { const t = new Date(); t.setDate(t.getDate() - days); t.setHours(h, 12, 0, 0); return t.getTime(); };
   return [
-    { id: 'd1', from: 'trainer', kind: 'text', text: 'Ahoj! Ako sa cítiš po včerajšom tréningu? 💪', at: d(2, 18) },
-    { id: 'd2', from: 'client', kind: 'text', text: 'Nohy cítim, ale dobre 😅 Vo štvrtok platí?', at: d(2, 19) },
+    { id: 'd1', from: 'trainer', kind: 'text', text: 'Ahoj! Ako sa cítiš po včerajšom tréningu?', at: d(2, 18) },
+    { id: 'd2', from: 'client', kind: 'text', text: 'Nohy cítim, ale dobre. Vo štvrtok platí?', at: d(2, 19) },
     { id: 'd3', from: 'trainer', kind: 'text', text: 'Platí, o 17:00. Nezabudni sa dobre vyspať.', at: d(1, 8) }
   ];
 };

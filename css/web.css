@@ -357,3 +357,16 @@ html body h2 { text-shadow: 3px 3px 0 rgba(198, 42, 60, .4); }
 .price-wrap .price span { font-family: var(--font); font-weight: 600; }
 .price-wrap .btn.primary { white-space: nowrap; font-size: .95rem; gap: 10px; }
 .price-wrap .checks li::before { background: var(--red) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff8ee' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 12px no-repeat !important; }
+/* Podmienky a ochrana súkromia */
+.legal-page main.section { padding-top: calc(110px + env(safe-area-inset-top)); }
+.legal { max-width: 760px; }
+.legal h1 { font-size: clamp(2rem, 6vw, 3rem); margin-bottom: 6px; }
+.legal h2 { font-size: clamp(1.5rem, 4vw, 2rem); margin: 44px 0 14px; scroll-margin-top: 90px; }
+.legal section { scroll-margin-top: 90px; }
+.legal h3 { font-size: 1.05rem; margin: 22px 0 6px; letter-spacing: 0; }
+.legal p, .legal li { color: var(--text); opacity: .92; }
+.legal ul { padding-left: 1.2em; display: grid; gap: 8px; }
+.legal a:not(.btn) { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
+.legal-back { display: inline-block; margin-bottom: 18px; color: var(--muted) !important; text-decoration: none !important; }
+.legal-toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px; }
+.legal-toc a { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); text-decoration: none !important; font-size: .9rem; font-weight: 600; }

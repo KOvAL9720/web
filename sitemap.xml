@@ -12,4 +12,16 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://koval9720.github.io/web/podmienky.html</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://koval9720.github.io/web/en/terms.html</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
 </urlset>

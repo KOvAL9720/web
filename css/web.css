@@ -345,3 +345,15 @@ html body h2 { text-shadow: 3px 3px 0 rgba(198, 42, 60, .4); }
 .greta-photo .tag { border-radius: 6px; border: 1.5px solid #fff8ee; transform: rotate(-4deg); font-family: var(--display); font-weight: 400; }
 .quote-b img { filter: sepia(.3); }
 .quote-b p { border-radius: 4px 16px 16px 16px; border-width: 1.5px; box-shadow: var(--hard); background-image: var(--scratch), var(--grain); background-blend-mode: overlay, soft-light; }
+/* Cena */
+.price-wrap { max-width: 480px; margin: 0 auto; }
+.price-wrap .price-card { transform: none; padding: 32px 28px; }
+.price-wrap .price-card h3 { margin: 4px 0 0; font-family: var(--display); font-weight: 400; font-size: 1.5rem; }
+.price-wrap .price { font-family: var(--display); font-weight: 400; }
+.price-wrap .badge { transform: rotate(-3deg); background: var(--red); color: #fff8ee; border-color: #fff8ee; }
+.price-wrap .btn { width: 100%; justify-content: center; }
+.price-wrap .btn + .btn { margin-top: 10px; }
+.price-wrap .price-card .btn.primary { background: var(--red); color: #fff8ee; box-shadow: 0 4px 0 #7d1422, 0 10px 22px -12px rgba(0, 0, 0, .7) !important; }
+.price-wrap .price span { font-family: var(--font); font-weight: 600; }
+.price-wrap .btn.primary { white-space: nowrap; font-size: .95rem; gap: 10px; }
+.price-wrap .checks li::before { background: var(--red) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff8ee' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 12px no-repeat !important; }

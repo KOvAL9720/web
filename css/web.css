@@ -370,3 +370,28 @@ html body h2 { text-shadow: 3px 3px 0 rgba(198, 42, 60, .4); }
 .legal-back { display: inline-block; margin-bottom: 18px; color: var(--muted) !important; text-decoration: none !important; }
 .legal-toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px; }
 .legal-toc a { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); text-decoration: none !important; font-size: .9rem; font-weight: 600; }
+
+/* =========================================================
+   Lift Tara – osobný tréner: balíčky a nové sekcie
+   ========================================================= */
+.tiers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: stretch; max-width: 1080px; margin: 0 auto; }
+@media (max-width: 900px) { .tiers { grid-template-columns: 1fr; max-width: 480px; } }
+.tier { padding: 30px 26px; }
+.tier h3 { margin: 4px 0 2px; font-family: var(--display); font-weight: 400; font-size: 1.7rem; letter-spacing: .01em !important; }
+.tier .tier-sub { margin: 0 0 10px; font-size: .95rem; }
+.tier .price { font-family: var(--display); font-weight: 400; margin: 6px 0 18px; }
+.tier .price span { font-family: var(--font); font-weight: 600; }
+.tier .badge { transform: rotate(-3deg); background: var(--red); color: #fff8ee; border-color: #fff8ee; }
+.tier .checks li::before { background: var(--red) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff8ee' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 12px no-repeat !important; }
+.tier .btn { width: 100%; justify-content: center; white-space: nowrap; font-size: .95rem; gap: 10px; }
+.tier.featured .btn.primary { background: var(--red); color: #fff8ee; box-shadow: 0 4px 0 #7d1422, 0 10px 22px -12px rgba(0, 0, 0, .7) !important; }
+.tier:not(.featured) .btn { border: 1.5px solid var(--border); }
+.soon { display: inline-block; margin-left: 4px; padding: 1px 8px; border-radius: 6px; border: 1.5px solid currentColor; font-size: .72rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; opacity: .8; transform: rotate(-2deg); }
+.tier-note { text-align: center; margin: 22px auto 0; max-width: 620px; font-size: .9rem; }
+#trening .checks { margin-top: 20px; }
+.phones.two .phone.main { transform: rotate(-3deg); margin-right: -7%; }
+.phones.two .phone:last-child { margin-left: 0; transform: scale(.86) rotate(4deg); }
+.end-cta { text-align: center; padding: 48px 24px; background-image: linear-gradient(180deg, rgba(6, 6, 7, .55), rgba(6, 6, 7, .9)), url(../icons/hero.jpg); background-size: cover; background-position: 50% 40%; color: #fff8ee; border: 0; }
+.end-cta .lead { color: rgba(255, 248, 238, .8); margin: 0 auto 22px; }
+.end-cta .actions { justify-content: center; }
+#trening .checks li::before { background: var(--red) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff8ee' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 12px no-repeat; }
